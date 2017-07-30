@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/github/license/juliangut/slim-exception.svg?style=flat-square)](https://github.com/juliangut/slim-exception/blob/master/LICENSE)
 
 [![Build Status](https://img.shields.io/travis/juliangut/slim-exception.svg?style=flat-square)](https://travis-ci.org/juliangut/slim-exception)
-[![Style Check](https://styleci.io/repos/XXXXXXXX/shield)](https://styleci.io/repos/XXXXXXXX)
+[![Style Check](https://styleci.io/repos/98827578/shield)](https://styleci.io/repos/98827578)
 [![Code Quality](https://img.shields.io/scrutinizer/g/juliangut/slim-exception.svg?style=flat-square)](https://scrutinizer-ci.com/g/juliangut/slim-exception)
 [![Code Coverage](https://img.shields.io/coveralls/juliangut/slim-exception.svg?style=flat-square)](https://coveralls.io/github/juliangut/slim-exception)
 
@@ -128,6 +128,25 @@ $notAllowedHandler->setDumper($dumper);
 
 $notFoundHandler = new NotFoundHandler();
 $notFoundHandler->setDumper($dumper);
+```
+
+In order to fully integrate error handling with the environment you can extend Slim's App to use HttpExceptionAwareTrait. In this way any unhandled error or exception will be captured and treated the handlers (including fatal errors)
+
+```php
+use Jgut\Slim\Exception\HttpExceptionAwareTrait;
+use Slim\App as SlimApp; 
+
+class App extends SlimApp
+{
+    use HttpExceptionAwareTrait;
+
+    public function __construct($container = [])
+    {
+        parent::__construct($container);
+
+        $this->registerErrorHandling();
+    }
+}
 ```
 
 ## Contributing

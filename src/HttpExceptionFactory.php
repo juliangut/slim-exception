@@ -25,9 +25,9 @@ class HttpExceptionFactory
     /**
      * (400) Generic bad request error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -47,9 +47,9 @@ class HttpExceptionFactory
     /**
      * (401) Generic unauthorized error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -69,9 +69,9 @@ class HttpExceptionFactory
     /**
      * (403) Generic forbidden error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -91,9 +91,9 @@ class HttpExceptionFactory
     /**
      * (404) Generic not found error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -113,9 +113,9 @@ class HttpExceptionFactory
     /**
      * (405) Generic method not allowed error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -135,9 +135,9 @@ class HttpExceptionFactory
     /**
      * (406) Generic not acceptable error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -157,9 +157,9 @@ class HttpExceptionFactory
     /**
      * (409) Generic conflict error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -179,9 +179,9 @@ class HttpExceptionFactory
     /**
      * (410) Generic gone error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -201,9 +201,9 @@ class HttpExceptionFactory
     /**
      * (415) Generic unsupported media type error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -223,9 +223,9 @@ class HttpExceptionFactory
     /**
      * (422) Generic unprocessable entity error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -245,9 +245,9 @@ class HttpExceptionFactory
     /**
      * (429) Generic too many requests error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -267,9 +267,9 @@ class HttpExceptionFactory
     /**
      * (500) Generic internal server error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -289,9 +289,9 @@ class HttpExceptionFactory
     /**
      * (501) Generic not implemented error exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param \Throwable $previous
+     * @param string|null     $message
+     * @param int|null        $code
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */
@@ -311,10 +311,10 @@ class HttpExceptionFactory
     /**
      * Get new HTTP exception.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param int        $httpStatusCode
-     * @param \Throwable $previous
+     * @param string          $message
+     * @param int             $code
+     * @param int             $httpStatusCode
+     * @param \Throwable|null $previous
      *
      * @return HttpException
      */

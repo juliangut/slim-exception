@@ -34,10 +34,10 @@ trait HttpExceptionAwareTrait
      * Custom errors handler.
      * Transforms unhandled errors into exceptions.
      *
-     * @param int    $error
-     * @param string $message
-     * @param string $file
-     * @param int    $line
+     * @param int         $error
+     * @param string      $message
+     * @param string|null $file
+     * @param int|null    $line
      *
      * @throws \ErrorException
      *

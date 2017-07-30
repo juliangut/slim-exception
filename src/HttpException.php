@@ -37,10 +37,10 @@ class HttpException extends \RuntimeException
     /**
      * Exception constructor.
      *
-     * @param string     $message
-     * @param int        $code
-     * @param int        $httpStatusCode
-     * @param \Throwable $previous
+     * @param string          $message
+     * @param int             $code
+     * @param int             $httpStatusCode
+     * @param \Throwable|null $previous
      */
     public function __construct(string $message, int $code, int $httpStatusCode, \Throwable $previous = null)
     {
