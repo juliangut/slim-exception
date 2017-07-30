@@ -1,0 +1,93 @@
+{
+  "name": "juliangut/slim-exception",
+  "description": "Slim HTTP exceptions and exception handling",
+  "keywords": [
+    "slim",
+    "http",
+    "exception"
+  ],
+  "homepage": "https://github.com/juliangut/slim-exception",
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Julián Gutiérrez",
+      "email": "juliangut@gmail.com",
+      "homepage": "http://juliangut.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "source": "https://github.com/juliangut/slim-exception",
+    "issues": "https://github.com/juliangut/slim-exception/issues"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": "^7.0",
+    "fig/http-message-util": "^1.0",
+    "pascaldevink/shortuuid": "^1.0",
+    "slim/slim": "^3.5"
+  },
+  "require-dev": {
+    "filp/whoops": "^2.1",
+    "friendsofphp/php-cs-fixer": "^2.0",
+    "humbug/humbug": "~1.0@dev",
+    "phpmd/phpmd": "^2.0",
+    "phpmetrics/phpmetrics": "^2.0",
+    "phpstan/phpstan": "~0.8",
+    "phpunit/phpunit": "^5.7|^6.0",
+    "sebastian/phpcpd": "^2.0",
+    "squizlabs/php_codesniffer": "^2.0"
+  },
+  "suggest": {
+    "filp/whoops": "For development"
+  },
+  "autoload": {
+    "psr-4": {
+      "Jgut\\Slim\\Exception\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Jgut\\Slim\\Exception\\Tests\\": "tests/Exception/"
+    }
+  },
+  "bin": [
+  ],
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "scripts": {
+    "php-lint": "php -l src && php -l tests",
+    "phpcs": "phpcs --standard=PSR2 src tests",
+    "phpcs-lint": "php-cs-fixer fix --dry-run --verbose",
+    "phpcpd": "phpcpd src",
+    "phpmd": "phpmd src text unusedcode,naming,design,controversial,codesize",
+    "phpmetrics-report": "phpmetrics --report-html=build/metrics/index.html --offline src",
+    "phpstan": "phpstan analyse --level 7 -c phpstan.neon src",
+    "phpunit": "phpunit",
+    "phpunit-coverage": "phpunit --coverage-html build/coverage",
+    "phpunit-clover": "phpunit --coverage-clover build/logs/clover.xml",
+    "humbug": "humbug",
+    "qa": [
+      "@php-lint",
+      "@phpcs",
+      "@phpcs-lint",
+      "@phpcpd",
+      "@phpmd",
+      "@phpstan"
+    ],
+    "reports": [
+      "@phpmetrics-report",
+      "@phpunit-coverage"
+    ],
+    "fix": "php-cs-fixer fix --verbose",
+    "security": "composer outdated",
+    "test": [
+      "@php-lint",
+      "@phpunit",
+      "@humbug"
+    ]
+  }
+}

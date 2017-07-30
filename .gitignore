@@ -1,0 +1,7 @@
+!.gitignore
+composer.lock
+vendor/
+.yo-rc.json
+*.cache
+humbuglog.*
+build/
