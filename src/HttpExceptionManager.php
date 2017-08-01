@@ -190,7 +190,7 @@ class HttpExceptionManager implements LoggerAwareInterface
      * @param ResponseInterface $response
      * @param HttpException     $exception
      *
-     * @return mixed
+     * @return ResponseInterface
      */
     public function handleHttpException(
         RequestInterface $request,

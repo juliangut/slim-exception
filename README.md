@@ -53,7 +53,7 @@ $container = $app->getContainer();
 
 $container['errorHandler'] = $container['phpErrorHandler'] = $manager->getErrorHandler();
 $container['notAllowedHandler'] = $manager->getNotAllowedHandler();
-$container['notFoundHandler'] =  NotAllowedHandler->getNotFoundHandler();
+$container['notFoundHandler'] =  $manager->getNotFoundHandler();
 
 // ...
 
@@ -183,7 +183,7 @@ class App extends SlimApp
     {
         parent::__construct($container);
 
-        $this->registerErrorHandling();
+        $this->registerPhpErrorHandling();
     }
 }
 ```

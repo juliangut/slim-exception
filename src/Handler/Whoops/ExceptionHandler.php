@@ -120,7 +120,7 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
         }
 
         foreach ($this->handlers[$contentType] as $handler) {
-            if (is_subclass_of($handler, PrettyPageHandler::class)) {
+            if ($handler instanceof PrettyPageHandler || is_subclass_of($handler, PrettyPageHandler::class)) {
                 $handler = $this->addRequestData($handler, $request);
             }
 
