@@ -17,9 +17,9 @@ use Jgut\Slim\Exception\HttpException;
 use Psr\Http\Message\RequestInterface;
 
 /**
- * Route not found error handler.
+ * Default errors handler.
  */
-class NotFoundHandler extends AbstractHttpExceptionHandler
+class ExceptionHandler extends AbstractHttpExceptionHandler
 {
     /**
      * {@inheritdoc}
@@ -55,7 +55,7 @@ class NotFoundHandler extends AbstractHttpExceptionHandler
     protected function getJsonError(HttpException $exception): string
     {
         return sprintf(
-            '{"error":{"ref":"%s","message":"Not found"}}',
+            '{"error":{"ref":"%s","message":"Application error"}}',
             $exception->getIdentifier()
         );
     }
@@ -71,7 +71,7 @@ class NotFoundHandler extends AbstractHttpExceptionHandler
     {
         return sprintf(
             '<?xml version="1.0" encoding="utf-8"?><root>' .
-            '<error><ref>%s</ref><message>Not found</message></error>' .
+            '<error><ref>%s</ref><message>Application error</message></error>' .
             '</root>',
             $exception->getIdentifier()
         );
@@ -88,10 +88,10 @@ class NotFoundHandler extends AbstractHttpExceptionHandler
     {
         return sprintf(
             '<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; ' .
-            'charset=utf-8"><title>Not found</title><style>body{margin:0;padding:30px;font:12px/1.5 ' .
+            'charset=utf-8"><title>Application error</title><style>body{margin:0;padding:30px;font:12px/1.5 ' .
             'Helvetica,Arial,Verdana,sans-serif;}h1{margin:0;font-size:48px;font-weight:normal;line-height:48px;' .
-            '}</style></head><body><h1>Not found (Ref. %s)</h1><p>The requested page could not be found. Check the ' .
-            'address bar to ensure your URL is spelled correctly.</p></body></html>',
+            '}</style></head><body><h1>Application error (Ref. %s)</h1><p>An application error has occurred. ' .
+            'Sorry for the temporary inconvenience.</p></body></html>',
             $exception->getIdentifier()
         );
     }
@@ -105,6 +105,6 @@ class NotFoundHandler extends AbstractHttpExceptionHandler
      */
     protected function getTextError(HttpException $exception): string
     {
-        return sprintf('(%s) Not found', $exception->getIdentifier());
+        return sprintf('(%s) Application error', $exception->getIdentifier());
     }
 }

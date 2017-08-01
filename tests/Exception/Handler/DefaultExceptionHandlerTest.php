@@ -14,7 +14,8 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Tests\Handler;
 
 use Fig\Http\Message\StatusCodeInterface;
-use Jgut\Slim\Exception\Handler\ErrorHandler;
+use Jgut\Slim\Exception\Handler\ExceptionHandler;
+use Jgut\Slim\Exception\HttpExceptionFactory;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -23,31 +24,23 @@ use Slim\Http\Response;
 /**
  * Default errors handler tests.
  */
-class ErrorHandlerTest extends TestCase
+class DefaultExceptionHandlerTest extends TestCase
 {
-    public function testTextOutput()
-    {
-        $handler = new ErrorHandler();
-
-        $request = Request::createFromEnvironment(Environment::mock());
-
-        /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), new \Exception());
-
-        self::assertContains('Application error', (string) $parsedResponse->getBody());
-    }
-
     public function testJSONOutput()
     {
-        /* @var ErrorHandler $handler */
-        $handler = $this->getMockBuilder(ErrorHandler::class)
+        /* @var ExceptionHandler $handler */
+        $handler = $this->getMockBuilder(ExceptionHandler::class)
             ->setMethods(['isCli'])
             ->getMock();
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/json']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), new \Exception());
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::internalServerError()
+        );
 
         self::assertEquals(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $parsedResponse->getStatusCode());
         self::assertEquals('application/json; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
@@ -56,15 +49,19 @@ class ErrorHandlerTest extends TestCase
 
     public function testXMLOutput()
     {
-        /* @var ErrorHandler $handler */
-        $handler = $this->getMockBuilder(ErrorHandler::class)
+        /* @var ExceptionHandler $handler */
+        $handler = $this->getMockBuilder(ExceptionHandler::class)
             ->setMethods(['isCli'])
             ->getMock();
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/xml']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), new \Exception());
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::internalServerError()
+        );
 
         self::assertEquals(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $parsedResponse->getStatusCode());
         self::assertEquals('application/xml; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
@@ -73,18 +70,56 @@ class ErrorHandlerTest extends TestCase
 
     public function testHTMLOutput()
     {
-        /* @var ErrorHandler $handler */
-        $handler = $this->getMockBuilder(ErrorHandler::class)
+        /* @var ExceptionHandler $handler */
+        $handler = $this->getMockBuilder(ExceptionHandler::class)
             ->setMethods(['isCli'])
             ->getMock();
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/html']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), new \Exception());
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::internalServerError()
+        );
 
         self::assertEquals(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $parsedResponse->getStatusCode());
         self::assertEquals('text/html; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
         self::assertRegExp('!<h1>Application error \(Ref\. .+\)</h1>!', (string) $parsedResponse->getBody());
+    }
+
+    public function testTextOutput()
+    {
+        $handler = new ExceptionHandler();
+
+        $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/plain']));
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::internalServerError()
+        );
+
+        self::assertContains('Application error', (string) $parsedResponse->getBody());
+    }
+
+    public function testDefaultContentOutput()
+    {
+        $handler = new ExceptionHandler();
+
+        $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/unknown']));
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::internalServerError()
+        );
+
+        self::assertEquals(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $parsedResponse->getStatusCode());
+        self::assertEquals('text/plain; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
+        self::assertContains('Application error', (string) $parsedResponse->getBody());
     }
 }

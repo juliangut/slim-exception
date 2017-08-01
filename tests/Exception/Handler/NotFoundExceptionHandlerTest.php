@@ -15,6 +15,7 @@ namespace Jgut\Slim\Exception\Tests\Handler;
 
 use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\Handler\NotFoundHandler;
+use Jgut\Slim\Exception\HttpExceptionFactory;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -23,22 +24,8 @@ use Slim\Http\Response;
 /**
  * Not found handler tests.
  */
-class NotFoundHandlerTest extends TestCase
+class NotFoundExceptionHandlerTest extends TestCase
 {
-    public function testTextOutput()
-    {
-        $handler = new NotFoundHandler();
-
-        $request = Request::createFromEnvironment(Environment::mock());
-
-        /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response());
-
-        self::assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $parsedResponse->getStatusCode());
-        self::assertEquals('text/plain; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
-        self::assertRegExp('/^\(.+\) Not found$/', (string) $parsedResponse->getBody());
-    }
-
     public function testJSONOutput()
     {
         /* @var NotFoundHandler $handler */
@@ -49,7 +36,11 @@ class NotFoundHandlerTest extends TestCase
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/json']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response());
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::notFound()
+        );
 
         self::assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $parsedResponse->getStatusCode());
         self::assertEquals('application/json; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
@@ -66,7 +57,11 @@ class NotFoundHandlerTest extends TestCase
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/xml']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response());
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::notFound()
+        );
 
         self::assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $parsedResponse->getStatusCode());
         self::assertEquals('application/xml; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
@@ -83,10 +78,50 @@ class NotFoundHandlerTest extends TestCase
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/html']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response());
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::notFound()
+        );
 
         self::assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $parsedResponse->getStatusCode());
         self::assertEquals('text/html; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
         self::assertRegExp('!<h1>Not found \(Ref\. .+\)</h1>!', (string) $parsedResponse->getBody());
+    }
+
+    public function testTextOutput()
+    {
+        $handler = new NotFoundHandler();
+
+        $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/plain']));
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::notFound()
+        );
+
+        self::assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $parsedResponse->getStatusCode());
+        self::assertEquals('text/plain; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
+        self::assertRegExp('/^\(.+\) Not found$/', (string) $parsedResponse->getBody());
+    }
+
+    public function testDefaultOutput()
+    {
+        $handler = new NotFoundHandler();
+
+        $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/unknown']));
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::notFound()
+        );
+
+        self::assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $parsedResponse->getStatusCode());
+        self::assertEquals('text/plain; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
+        self::assertRegExp('/^\(.+\) Not found$/', (string) $parsedResponse->getBody());
     }
 }

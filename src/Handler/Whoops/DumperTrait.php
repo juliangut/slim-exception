@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Dumper\Whoops;
+namespace Jgut\Slim\Exception\Handler\Whoops;
 
 use Whoops\Exception\FrameCollection;
 use Whoops\Exception\Inspector;

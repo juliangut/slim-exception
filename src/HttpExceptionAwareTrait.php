@@ -23,7 +23,7 @@ trait HttpExceptionAwareTrait
     /**
      * Register custom error handlers.
      */
-    protected function registerErrorHandling()
+    protected function registerPhpErrorHandling()
     {
         set_error_handler([$this, 'errorHandler']);
         register_shutdown_function([$this, 'shutdownHandler']);

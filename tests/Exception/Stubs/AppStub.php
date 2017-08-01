@@ -44,7 +44,7 @@ class AppStub
         $this->container = $container;
         $this->lastError = $lastError;
 
-        $this->registerErrorHandling();
+        $this->registerPhpErrorHandling();
     }
 
     /**

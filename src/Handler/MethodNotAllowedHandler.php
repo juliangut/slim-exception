@@ -17,9 +17,9 @@ use Jgut\Slim\Exception\HttpException;
 use Psr\Http\Message\RequestInterface;
 
 /**
- * Route not found error handler.
+ * Method not allowed error handler.
  */
-class NotFoundHandler extends AbstractHttpExceptionHandler
+class MethodNotAllowedHandler extends AbstractHttpExceptionHandler
 {
     /**
      * {@inheritdoc}
@@ -55,8 +55,9 @@ class NotFoundHandler extends AbstractHttpExceptionHandler
     protected function getJsonError(HttpException $exception): string
     {
         return sprintf(
-            '{"error":{"ref":"%s","message":"Not found"}}',
-            $exception->getIdentifier()
+            '{"error":{"ref":"%s","message":"%s"}}',
+            $exception->getIdentifier(),
+            $exception->getMessage()
         );
     }
 
@@ -71,9 +72,10 @@ class NotFoundHandler extends AbstractHttpExceptionHandler
     {
         return sprintf(
             '<?xml version="1.0" encoding="utf-8"?><root>' .
-            '<error><ref>%s</ref><message>Not found</message></error>' .
+            '<error><ref>%s</ref><message>%s</message></error>' .
             '</root>',
-            $exception->getIdentifier()
+            $exception->getIdentifier(),
+            $exception->getMessage()
         );
     }
 
@@ -88,10 +90,9 @@ class NotFoundHandler extends AbstractHttpExceptionHandler
     {
         return sprintf(
             '<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; ' .
-            'charset=utf-8"><title>Not found</title><style>body{margin:0;padding:30px;font:12px/1.5 ' .
+            'charset=utf-8"><title>Method not allowed</title><style>body{margin:0;padding:30px;font:12px/1.5 ' .
             'Helvetica,Arial,Verdana,sans-serif;}h1{margin:0;font-size:48px;font-weight:normal;line-height:48px;' .
-            '}</style></head><body><h1>Not found (Ref. %s)</h1><p>The requested page could not be found. Check the ' .
-            'address bar to ensure your URL is spelled correctly.</p></body></html>',
+            '}</style></head><body><h1>Method not allowed (Ref. %s)</h1></body></html>',
             $exception->getIdentifier()
         );
     }
@@ -105,6 +106,6 @@ class NotFoundHandler extends AbstractHttpExceptionHandler
      */
     protected function getTextError(HttpException $exception): string
     {
-        return sprintf('(%s) Not found', $exception->getIdentifier());
+        return sprintf('(%s) %s', $exception->getIdentifier(), $exception->getMessage());
     }
 }

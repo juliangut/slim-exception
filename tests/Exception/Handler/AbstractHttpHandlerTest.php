@@ -14,13 +14,9 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Tests\Handler;
 
 use Fig\Http\Message\StatusCodeInterface;
-use Jgut\Slim\Exception\Dumper\Whoops\ExceptionDumper;
-use Jgut\Slim\Exception\Handler\ErrorHandler;
 use Jgut\Slim\Exception\HttpExceptionFactory;
 use Jgut\Slim\Exception\Tests\Stubs\HandlerStub;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -30,86 +26,21 @@ use Slim\Http\Response;
  */
 class AbstractHttpHandlerTest extends TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage text/unknown is not among known content types
-     */
-    public function testInvalidDefaultContentType()
-    {
-        $handler = new ErrorHandler();
-        $handler->setDefaultContentType('text/unknown');
-    }
-
-    public function testLogHttpException()
-    {
-        $exceptionMessage = 'This is the exception message';
-
-        $logger = $this->getMockBuilder(LoggerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $logger
-            ->expects(self::once())
-            ->method('log')
-            ->with(LogLevel::ERROR, $exceptionMessage);
-        /* @var LoggerInterface $logger */
-
-        $handler = new HandlerStub();
-        $handler->setLogger($logger);
-
-        $request = Request::createFromEnvironment(Environment::mock());
-
-        $handler($request, new Response(), HttpExceptionFactory::badRequest($exceptionMessage));
-    }
-
-    public function testLogErrorException()
-    {
-        $exceptionMessage = 'This is the exception message';
-
-        $logger = $this->getMockBuilder(LoggerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $logger
-            ->expects(self::once())
-            ->method('log')
-            ->with(LogLevel::ALERT, $exceptionMessage);
-        /* @var LoggerInterface $logger */
-
-        $handler = new HandlerStub();
-        $handler->setLogger($logger);
-
-        $request = Request::createFromEnvironment(Environment::mock());
-
-        $originalException = new \ErrorException('Original error');
-
-        $handler(
-            $request,
-            new Response(),
-            HttpExceptionFactory::internalServerError($exceptionMessage, null, $originalException)
-        );
-    }
-
     public function testCustomContentType()
     {
-        $dumper = $this->getMockBuilder(ExceptionDumper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $dumper
-            ->expects(self::once())
-            ->method('getFormattedException')
-            ->will(self::throwException(new \RuntimeException()));
-        /* @var ExceptionDumper $dumper */
+        $handler = new HandlerStub();
 
-        $handler = new ErrorHandler();
-        $handler->setDumper($dumper);
-        $handler->addContentType('text/unknown');
-        $handler->setDefaultContentType('text/unknown');
-
-        $request = Request::createFromEnvironment(Environment::mock());
+        $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/plain']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), HttpExceptionFactory::internalServerError());
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::internalServerError()
+        );
 
         self::assertEquals(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $parsedResponse->getStatusCode());
+        self::assertEquals('Internal server error', (string) $parsedResponse->getBody());
         self::assertEquals('text/plain; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
     }
 
@@ -122,24 +53,19 @@ class AbstractHttpHandlerTest extends TestCase
      */
     public function testFormattedOutput($contentType, $expectedContentType)
     {
-        $dumper = $this->getMockBuilder(ExceptionDumper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $dumper
-            ->expects(self::once())
-            ->method('getFormattedException')
-            ->will(self::returnValue('output'));
-        /* @var ExceptionDumper $dumper */
-
         $handler = new HandlerStub();
-        $handler->setDumper($dumper);
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => $contentType]));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), HttpExceptionFactory::internalServerError());
+        $parsedResponse = $handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::internalServerError()
+        );
 
         self::assertEquals(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $parsedResponse->getStatusCode());
+        self::assertEquals('Internal server error', (string) $parsedResponse->getBody());
         self::assertEquals($expectedContentType . '; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
     }
 
@@ -160,7 +86,8 @@ class AbstractHttpHandlerTest extends TestCase
             ['text/html', 'text/html'],
             ['application/xhtml+xml', 'application/xhtml+xml'],
             ['text/plain', 'text/plain'],
-            ['text/unknown', 'text/html'],
+            ['text/html;q=0.6', 'text/html'],
+            ['text/unknown', 'text/plain'],
         ];
     }
 }

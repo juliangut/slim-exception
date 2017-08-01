@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Dumper\Whoops;
 
-use Jgut\Slim\Exception\Dumper\Whoops\TextHandler;
+use Jgut\Slim\Exception\Handler\Whoops\TextHandler;
 use Jgut\Slim\Exception\HttpExceptionFactory;
 use PHPUnit\Framework\TestCase;
 use Whoops\Exception\Inspector;

@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Dumper\Whoops;
+namespace Jgut\Slim\Exception\Handler\Whoops;
 
-use Jgut\Slim\Exception\Dumper\Dumper;
+use Jgut\Slim\Exception\Handler\AbstractHttpExceptionHandler;
 use Jgut\Slim\Exception\HttpException;
 use Psr\Http\Message\RequestInterface;
 use Whoops\Handler\Handler;
@@ -21,12 +21,10 @@ use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
 
 /**
- * HTTP exception dumper based on Whoops.
+ * Debug exception handler.
  */
-class ExceptionDumper implements Dumper
+class ExceptionHandler extends AbstractHttpExceptionHandler
 {
-    use DumperTrait;
-
     /**
      * Whoops runner.
      *
@@ -62,21 +60,32 @@ class ExceptionDumper implements Dumper
     }
 
     /**
-     * Add handler.
+     * Add whoops handler.
      *
-     * @param string[] $contentTypes
-     * @param Handler  $handler
+     * @param Handler              $handler
+     * @param string|string[]|null $contentTypes
      *
      * @throws \RuntimeException
      */
-    public function addHandler(Handler $handler, array $contentTypes = [])
+    public function addHandler(Handler $handler, $contentTypes = null)
     {
-        if (!count($contentTypes) && method_exists($handler, 'contentType')) {
+        if ($contentTypes === null && method_exists($handler, 'contentType')) {
             $contentTypes = array_filter([call_user_func([$handler, 'contentType'])]);
         }
 
+        if (!is_array($contentTypes)) {
+            $contentTypes = [$contentTypes];
+        }
+
+        $contentTypes = array_filter(
+            $contentTypes,
+            function ($contentType) {
+                return is_string($contentType);
+            }
+        );
+
         if (!count($contentTypes)) {
-            throw new \RuntimeException(sprintf('No content defined for %s handler', get_class($handler)));
+            throw new \RuntimeException(sprintf('No content type defined for %s handler', get_class($handler)));
         }
 
         foreach ($contentTypes as $contentType) {
@@ -90,16 +99,24 @@ class ExceptionDumper implements Dumper
 
     /**
      * {@inheritdoc}
+     */
+    protected function getContentTypes(): array
+    {
+        return array_keys($this->handlers);
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * @throws \RuntimeException
      */
-    public function getFormattedException(
+    public function getExceptionOutput(
         string $contentType,
         HttpException $exception,
         RequestInterface $request
     ): string {
-        if (!array_key_exists($contentType, $this->handlers)) {
-            throw new \RuntimeException(sprintf('There is no defined handler for "%s"', $contentType));
+        if (!in_array($contentType, $this->getContentTypes())) {
+            throw new \RuntimeException(sprintf('There is no defined handler for content type "%s"', $contentType));
         }
 
         foreach ($this->handlers[$contentType] as $handler) {

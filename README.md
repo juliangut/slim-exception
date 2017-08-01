@@ -12,7 +12,11 @@
 
 # slim-exception
 
-HTTP aware exceptions and whoops based exception handling for Slim Framework
+HTTP aware exceptions and exception handling for Slim Framework
+
+Default Slim's error handlers customization of exceptions response is cumbersome to say the least, error handlers are quite simple, doesn't really provide any useful information during development and at the same time are ugly when on production.
+
+This package aims to unify error handling into a simpler and more extensible OOP API, handling exceptions depending on what HTTP status code they should produce.
 
 ## Installation
 
@@ -22,12 +26,6 @@ HTTP aware exceptions and whoops based exception handling for Slim Framework
 composer require juliangut/slim-exception
 ```
 
-If you want extra information on errors output you need [whoops](https://github.com/filp/whoops) for the new error handlers 
-
-```
-composer require filp/whoops
-```
-
 ## Usage
 
 Require composer autoload file
@@ -35,102 +33,143 @@ Require composer autoload file
 ```php
 require './vendor/autoload.php';
 
-use Jgut\Slim\Exception\Handler\ErrorHandler;
-use Jgut\Slim\Exception\Handler\NotAllowedHandler;
-use Jgut\Slim\Exception\Handler\NotFoundHandler;
+use Jgut\Slim\Exception\Handler\ExceptionHandler;
+use Jgut\Slim\Exception\Handler\MethodNotAllowedExceptionHandler;
+use Jgut\Slim\Exception\Handler\NotFoundExceptionHandler;
+use Jgut\Slim\Exception\HttpExceptionManager;
 
 // Create Slim App
 
+// Create manager with handlers for HTTP exceptions you want to capture
+$exceptionManager = new HttpExceptionManager(new ExceptionHandler());
+$exceptionManager->addHandler(404, new NotFoundHandler();
+$exceptionManager->addHandler(405, new MethodNotAllowedHandler();
+$exceptionManager->addHandler(400, new YourBadRequestHandler();
+$exceptionManager->addHandler(401, new YourUnauthorizedRequestHandler();
+
+$exceptionManager->setLogger(new Psr3LoggerInstance());
+
 $container = $app->getContainer();
 
-$container['errorHandler'] = $container['phpErrorHandler'] = new ErrorHandler();
-$container['notAllowedHandler'] = new NotAllowedHandler();
-$container['notFoundHandler'] = new NotFoundHandler();
+$container['errorHandler'] = $container['phpErrorHandler'] = $manager->getErrorHandler();
+$container['notAllowedHandler'] = $manager->getNotAllowedHandler();
+$container['notFoundHandler'] =  NotAllowedHandler->getNotFoundHandler();
 
 // ...
 
 $app->run();
 ```
 
-## HTTP exceptions
+Original Slim's error handling is bypassed by the HTTP exception manager forcing that any unhandled exception thrown during application execution will be ultimately transformed into an `HttpException` and handed over to `HttpExceptionManager::handleHttpException`
 
-### Identifier
+Non HttpExceptions (for example an exception thrown by a third party library) will be automatically transformed into a 500 HttpException and alternatively you can use `HttpExceptionFactory` to throw HTTP exceptions yourself. Those exceptions will be handled to their corresponding handler depending on their "status code" or by the default handler in case no handler is defined for the specific status code
 
-Exceptions have a unique identifier
+In the above example if you `throw HttpExceptionFactory::unauthorized()` during the execution of the application it'll be captured by the manager had handed over to "YourUnauthorizedRequestHandler" so you can format and return a proper custom response
+
+### HTTP exceptions
+
+The base of this error handling are the HTTP exceptions. This exceptions carry an HTTP status code which is used by the manager to hand the exception to corresponding handler apart from being used as response status code
+
+```php
+use Jgut\Slim\Exception\HttpException;
+
+$exceptionCode = 101; // Internal code
+$httpStatusCode = 401; // Unauthorized
+$exception = new HttpException('You shall not pass!', $exceptionCode, $httpStatusCode);
+
+$exception->getHttpStatusCode(); // 401 Unauthorized
+```
+
+Additionally exceptions have a unique identifier which can be used for logging exceptions and displaying for example on APIs, allowing you to have more information over the erroneous situation when addressed
 
 ```php
 $exception->getIdentifier();
 ```
 
-By displaying this identifier and at the same time logging the exceptions allows to have more information over the erroneous situation
-
-### HTTP status
-
-Exceptions carry a HTTP status code which can be directly used in Response objects
-
-```php
-$exception->getHttpStatusCode();
-```
-
-### Factory
-
-```php
-use Jgut\Slim\Exception\HttpExceptionFactory;
-
-$exceptionCode = 10; // Internal code
-$httpStatusCode = 401; // Unauthorized
-throw HttpExceptionFactory::create('You shall not pass!', $exceptionCode, $httpStatusCode);
-```
+#### Factory
 
 In order to simplify HTTP exception creation and assure correct HTTP status code selection there are several shortcut creation methods
 
 ```php
-throw HttpExceptionFactory::unauthorized('You shall not pass!');
-throw HttpExceptionFactory::notAcceptable('Throughput reached');
-throw HttpExceptionFactory::unprocessableEntity('Already exists');
+throw HttpExceptionFactory::unauthorized('You shall not pass!', 101);
+throw HttpExceptionFactory::notAcceptable('Throughput reached', 102);
+throw HttpExceptionFactory::unprocessableEntity('Already exists', 103);
 ``` 
 
-## Handlers
+### Handlers
 
-Default Slim error handlers are quite simple, doesn't really provide any useful information during development and at the same time are ugly when on production.
+HttpExceptionManager hands control to handlers based on the status code of the exception being treated
 
-The three new handlers behaves identical to the ones officially shipped with Slim, the too allow you to customize response error content but its true power comes when bundled with a dumper. The selection of return content type is automatically done based on request "Accept" header
+Only one default handler is mandatory (set on manager construction). This default manager will be responsible of handling exceptions which don't have an specific associated handler. This handler serves the same purpose as Slim's 'errorHandler' and 'phpErrorHandler'
 
-### Dumpers
+Out of the box three handlers are provided
 
-In order to display errors with as much useful information as possible you can set an exception dumper on handlers. This dumper will set error information on response content based on request "Accept" header and gracefully fallback if don't know how to format output.
+* `ExceptionHandler` meant to be used as default fallback handler (any unhandled errors)
+* `NotFoundHandler` meant for 404 errors
+* `MethodNotAllowedHandler` meant for 405 errors
 
-Currently the dumper is based on whoops but you can create your own by implementing `Jgut\Slim\Exception\Dumper\Dumper` interface
+#### Custom handlers
+
+By implementing `HttpExceptionHandler` interface (or extending `AbstractHttpExceptionHandler`) you can create your custom exception handlers and assign them to the status code you want
 
 ```php
-require './vendor/autoload.php';
+use Jgut\Slim\Exception\Handler\AbstractHttpExceptionHandler;
 
-use Jgut\Slim\Exception\Handler\ErrorHandler;
-use Jgut\Slim\Exception\Handler\NotAllowedHandler;
-use Jgut\Slim\Exception\Handler\NotFoundHandler;
-use Jgut\Slim\Exception\Dumper\Whoops\ExceptionDumper;
-use Jgut\Slim\Exception\Dumper\Whoops\HtmlHandler;
-use Jgut\Slim\Exception\Dumper\Whoops\JsonHandler;
-use Jgut\Slim\Exception\Dumper\Whoops\TextHandler;
-use Whoops\Run as Whoops;
+class MyCustomHandler extends AbstractHttpExceptionHandler
+{
+    public function handleException(
+        RequestInterface $request,
+        ResponseInterface $response,
+        HttpException $exception
+    ): ResponseInterface {
+        // return response formatted in the fashion you please
+    }
+}
+``` 
 
-$whoops = new Whoops();
-$whoops->pushHandler(new TextHandler());
-$whoops->pushHandler(new JsonHandler());
-$whoops->pushHandler(new HtmlHandler());
-$dumper = new ExceptionDumper($whoops);
+```php
+use Jgut\Slim\Exception\Handler\ExceptionHandler;
+use Jgut\Slim\Exception\HttpExceptionManager;
 
-$exceptionHandler = new ErrorHandler();
-$exceptionHandler->setDumper($dumper);
+$exceptionManager = new HttpExceptionManager(new ExceptionHandler());
+$exceptionManager->addHandler([400, 401, 403, 406, 409], new MyCustomHandler();
+``` 
 
-$notAllowedHandler = new NotAllowedHandler();
-$notAllowedHandler->setDumper($dumper);
+### Whoops
 
-$notFoundHandler = new NotFoundHandler();
-$notFoundHandler->setDumper($dumper);
+Development environment deserves a better more informative error handling.
+
+[Whoops](https://github.com/filp/whoops) is a great tool for this purpose and its usage is contemplated by this package. There is an special Whoops HTTP exception handler which can be used as default exception handler
+
+For you to use this handler you'll need to require whoops first
+
+```
+composer require filp/whoops
 ```
 
-In order to fully integrate error handling with the environment you can extend Slim's App to use HttpExceptionAwareTrait. In this way any unhandled error or exception will be captured and treated the handlers (including fatal errors)
+```php
+use Jgut\Slim\Exception\Handler\Whoops\ExceptionHandler;
+use Jgut\Slim\Exception\Handler\Whoops\HtmlHandler;
+use Jgut\Slim\Exception\Handler\Whoops\JsonHandler;
+use Jgut\Slim\Exception\Handler\Whoops\TextHandler;
+use Jgut\Slim\Exception\Handler\Whoops\XmlHandler;
+use Jgut\Slim\Exception\HttpExceptionManager;
+use Whoops\Run;
+
+$whoopsHandler = new ExceptionHandler(new Run());
+
+// Assign whoops handlers per content type
+$whoopsHandler->addHandler(new HtmlHandler(), ['text/html', 'application/xhtml+xml']);
+$whoopsHandler->addHandler(new JsonHandler(), ['text/json', 'application/json', 'application/x-json']);
+$whoopsHandler->addHandler(new XmlHandler(), ['text/xml', 'application/xml', 'application/x-xml']);
+$whoopsHandler->addHandler(new TextHandler(), ['text/plain']);
+
+$exceptionManager = new HttpExceptionManager($whoopsHandler);
+```
+
+## Catch all errors
+
+In order to fully integrate error handling with the environment you can extend Slim's App to use HttpExceptionAwareTrait. In this way any unhandled error will be captured and treated by the error handler (including fatal errors)
 
 ```php
 use Jgut\Slim\Exception\HttpExceptionAwareTrait;
