@@ -15,14 +15,20 @@ namespace Jgut\Slim\Exception\Handler\Whoops;
 
 use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\HttpException;
+use Symfony\Component\VarDumper\Cloner\AbstractCloner;
+use Symfony\Component\VarDumper\Cloner\Stub;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Whoops\Exception\FrameCollection;
 use Whoops\Handler\Handler;
+use Whoops\Handler\PlainTextHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Util\Misc;
 use Whoops\Util\TemplateHelper;
 
 /**
  * Whoops custom HTML response handler.
+ *
+ * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
  */
 class HtmlHandler extends PrettyPageHandler
 {
@@ -42,7 +48,7 @@ class HtmlHandler extends PrettyPageHandler
      */
     public function handle(): int
     {
-        $helper = new TemplateHelper();
+        $templateHelper = $this->getTemplateHelper();
 
         $templateFile = $this->getResource('views/layout.html.php');
         $cssFile = $this->getResource('css/whoops.base.css');
@@ -50,9 +56,9 @@ class HtmlHandler extends PrettyPageHandler
         $clipboard = $this->getResource('js/clipboard.min.js');
         $jsFile = $this->getResource('js/whoops.base.js');
 
-        $code = $this->getExceptionCode();
         $inspector = $this->getInspector();
-        $frames = $this->detectApplicationFrames($this->filterInternalFrames($inspector->getFrames()));
+        $frames = $this->getFrames();
+        $code = $this->getCode();
 
         // List of variables that will be passed to the layout template.
         $vars = [
@@ -79,7 +85,7 @@ class HtmlHandler extends PrettyPageHandler
 
             'title' => $this->getPageTitle(),
             'name' => explode('\\', $inspector->getExceptionName()),
-            'message' => $inspector->getException()->getMessage(),
+            'message' => $inspector->getExceptionMessage(),
             'code' => $code,
             'plain_exception' => $this->formatExceptionText(),
             'frames' => $frames,
@@ -105,15 +111,73 @@ class HtmlHandler extends PrettyPageHandler
             $vars['stylesheet'] .= file_get_contents($this->getResource($this->customCss));
         }
 
-        $extraTables = array_map(function ($table) use ($inspector) {
-            return $table instanceof \Closure ? $table($inspector) : $table;
-        }, $this->getDataTables());
+        $extraTables = array_map(
+            function ($table) use ($inspector) {
+                return $table instanceof \Closure ? $table($inspector) : $table;
+            },
+            $this->getDataTables()
+        );
         $vars['tables'] = array_merge($extraTables, $vars['tables']);
 
-        $helper->setVariables($vars);
-        $helper->render($templateFile);
+        $plainTextHandler = new PlainTextHandler();
+        $plainTextHandler->setException($this->getException());
+        $plainTextHandler->setInspector($this->getInspector());
+        $vars['preface'] = sprintf(
+            "<!--\n\n\n%s\n\n\n\n\n\n\n\n\n\n\n-->",
+            $templateHelper->escape($plainTextHandler->generateResponse())
+        );
+
+        $templateHelper->setVariables($vars);
+        $templateHelper->render($templateFile);
 
         return Handler::QUIT;
+    }
+
+    /**
+     * Get template helper.
+     *
+     * @return TemplateHelper
+     */
+    protected function getTemplateHelper(): TemplateHelper
+    {
+        $templateHelper = new TemplateHelper();
+
+        if (class_exists('Symfony\Component\VarDumper\Cloner\VarCloner')) {
+            $cloner = new VarCloner();
+            $cloner->addCasters(['*' => [$this, 'getCustomCaster']]);
+            $templateHelper->setCloner($cloner);
+        }
+
+        return $templateHelper;
+    }
+
+    /**
+     * Add caster for VarCloner.
+     *
+     * @param mixed $obj
+     * @param array $cast
+     * @param Stub  $stub
+     * @param bool  $isNested
+     * @param int   $filter
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     *
+     * @return array
+     */
+    public function getCustomCaster($obj, array $cast, Stub $stub, bool $isNested, int $filter = 0)
+    {
+        // Only dump object internals if a custom caster exists.
+        $class = $stub->class;
+        $classes = [$class => $class] + class_parents($class) + class_implements($class);
+
+        foreach ($classes as $class) {
+            if (isset(AbstractCloner::$defaultCasters[$class])) {
+                return $cast;
+            }
+        }
+
+        // Remove all internals
+        return [];
     }
 
     /**
@@ -121,7 +185,7 @@ class HtmlHandler extends PrettyPageHandler
      *
      * @return string
      */
-    protected function getExceptionCode(): string
+    protected function getCode(): string
     {
         /* @var HttpException $exception */
         $exception = $this->getException();
@@ -144,12 +208,12 @@ class HtmlHandler extends PrettyPageHandler
     /**
      * Detect frames that belong to the application.
      *
-     * @param FrameCollection $frames
-     *
      * @return FrameCollection
      */
-    protected function detectApplicationFrames(FrameCollection $frames): FrameCollection
+    protected function getFrames(): FrameCollection
     {
+        $frames = $this->filterInternalFrames($this->getInspector()->getFrames());
+
         if ($this->getApplicationPaths()) {
             foreach ($frames as $frame) {
                 foreach ($this->getApplicationPaths() as $path) {
