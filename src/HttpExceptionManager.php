@@ -112,9 +112,9 @@ class HttpExceptionManager implements LoggerAwareInterface
     /**
      * Get generic error handler.
      *
-     * @return callable
+     * @return \Closure
      */
-    public function getErrorHandler(): callable
+    public function getErrorHandler(): \Closure
     {
         return function (
             RequestInterface $request,
@@ -132,9 +132,9 @@ class HttpExceptionManager implements LoggerAwareInterface
     /**
      * Get 404 not found error handler.
      *
-     * @return callable
+     * @return \Closure
      */
-    public function getNotFoundHandler(): callable
+    public function getNotFoundHandler(): \Closure
     {
         return function (
             RequestInterface $request,
@@ -147,9 +147,9 @@ class HttpExceptionManager implements LoggerAwareInterface
     /**
      * Get 405 not allowed error handler.
      *
-     * @return callable
+     * @return \Closure
      */
-    public function getNotAllowedHandler(): callable
+    public function getNotAllowedHandler(): \Closure
     {
         return function (
             RequestInterface $request,

@@ -69,7 +69,7 @@ class XmlHandler extends XmlResponseHandler
      *
      * @param \SimpleXMLElement $node
      * @param array             $data
-     * @param string            $nodeKey
+     * @param string|null       $nodeKey
      *
      * @return \SimpleXMLElement
      */
