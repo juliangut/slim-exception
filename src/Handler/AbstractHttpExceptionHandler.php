@@ -15,8 +15,8 @@ namespace Jgut\Slim\Exception\Handler;
 
 use Jgut\Slim\Exception\HttpException;
 use Jgut\Slim\Exception\HttpExceptionHandler;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Stream;
 
 /**
@@ -28,7 +28,7 @@ abstract class AbstractHttpExceptionHandler implements HttpExceptionHandler
      * {@inheritdoc}
      */
     public function handleException(
-        RequestInterface $request,
+        ServerRequestInterface $request,
         ResponseInterface $response,
         HttpException $exception
     ): ResponseInterface {
@@ -46,11 +46,11 @@ abstract class AbstractHttpExceptionHandler implements HttpExceptionHandler
     /**
      * Get request content type.
      *
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      *
      * @return string
      */
-    protected function getContentType(RequestInterface $request): string
+    protected function getContentType(ServerRequestInterface $request): string
     {
         $knownTypes = $this->getContentTypes();
         $requestedTypes = array_map(
@@ -91,15 +91,15 @@ abstract class AbstractHttpExceptionHandler implements HttpExceptionHandler
     /**
      * Get error content.
      *
-     * @param string           $contentType
-     * @param HttpException    $exception
-     * @param RequestInterface $request
+     * @param string                 $contentType
+     * @param HttpException          $exception
+     * @param ServerRequestInterface $request
      *
      * @return string
      */
     abstract protected function getExceptionOutput(
         string $contentType,
         HttpException $exception,
-        RequestInterface $request
+        ServerRequestInterface $request
     ): string;
 }

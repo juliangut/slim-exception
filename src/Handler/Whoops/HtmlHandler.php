@@ -20,7 +20,6 @@ use Symfony\Component\VarDumper\Cloner\Stub;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Whoops\Exception\FrameCollection;
 use Whoops\Handler\Handler;
-use Whoops\Handler\PlainTextHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Util\Misc;
 use Whoops\Util\TemplateHelper;
@@ -57,8 +56,8 @@ class HtmlHandler extends PrettyPageHandler
         $jsFile = $this->getResource('js/whoops.base.js');
 
         $inspector = $this->getInspector();
-        $frames = $this->getFrames();
-        $code = $this->getCode();
+        $frames = $this->getExceptionFrames();
+        $code = $this->getExceptionCode();
 
         // List of variables that will be passed to the layout template.
         $vars = [
@@ -119,7 +118,7 @@ class HtmlHandler extends PrettyPageHandler
         );
         $vars['tables'] = array_merge($extraTables, $vars['tables']);
 
-        $plainTextHandler = new PlainTextHandler();
+        $plainTextHandler = new TextHandler();
         $plainTextHandler->setException($this->getException());
         $plainTextHandler->setInspector($this->getInspector());
         $vars['preface'] = sprintf(
@@ -185,7 +184,7 @@ class HtmlHandler extends PrettyPageHandler
      *
      * @return string
      */
-    protected function getCode(): string
+    protected function getExceptionCode(): string
     {
         /* @var HttpException $exception */
         $exception = $this->getException();
@@ -210,7 +209,7 @@ class HtmlHandler extends PrettyPageHandler
      *
      * @return FrameCollection
      */
-    protected function getFrames(): FrameCollection
+    protected function getExceptionFrames(): FrameCollection
     {
         $frames = $this->filterInternalFrames($this->getInspector()->getFrames());
 

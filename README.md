@@ -118,7 +118,7 @@ use Jgut\Slim\Exception\Handler\AbstractHttpExceptionHandler;
 class MyCustomHandler extends AbstractHttpExceptionHandler
 {
     public function handleException(
-        RequestInterface $request,
+        ServerRequestInterface $request,
         ResponseInterface $response,
         HttpException $exception
     ): ResponseInterface {

@@ -15,7 +15,7 @@ namespace Jgut\Slim\Exception\Handler\Whoops;
 
 use Jgut\Slim\Exception\Handler\AbstractHttpExceptionHandler;
 use Jgut\Slim\Exception\HttpException;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
@@ -113,7 +113,7 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
     public function getExceptionOutput(
         string $contentType,
         HttpException $exception,
-        RequestInterface $request
+        ServerRequestInterface $request
     ): string {
         if (!in_array($contentType, $this->getContentTypes())) {
             throw new \RuntimeException(sprintf('There is no defined handler for content type "%s"', $contentType));
@@ -137,12 +137,12 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
     /**
      * Add extra data table with request information.
      *
-     * @param PrettyPageHandler $handler
-     * @param RequestInterface  $request
+     * @param PrettyPageHandler      $handler
+     * @param ServerRequestInterface $request
      *
      * @return PrettyPageHandler
      */
-    protected function addRequestData(PrettyPageHandler $handler, RequestInterface $request): PrettyPageHandler
+    protected function addRequestData(PrettyPageHandler $handler, ServerRequestInterface $request): PrettyPageHandler
     {
         static $dataTableLabel = 'Slim Application (Request)';
 

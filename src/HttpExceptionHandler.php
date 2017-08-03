@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * HTTP exception handler interface.
@@ -24,14 +24,14 @@ interface HttpExceptionHandler
     /**
      * Handle HTTP exception.
      *
-     * @param RequestInterface  $request
-     * @param ResponseInterface $response
-     * @param HttpException     $exception
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     * @param HttpException          $exception
      *
      * @return ResponseInterface
      */
     public function handleException(
-        RequestInterface $request,
+        ServerRequestInterface $request,
         ResponseInterface $response,
         HttpException $exception
     ): ResponseInterface;

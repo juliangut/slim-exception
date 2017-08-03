@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception;
 
 use Fig\Http\Message\StatusCodeInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
@@ -117,7 +117,7 @@ class HttpExceptionManager implements LoggerAwareInterface
     public function getErrorHandler(): \Closure
     {
         return function (
-            RequestInterface $request,
+            ServerRequestInterface $request,
             ResponseInterface $response,
             \Throwable $exception
         ): ResponseInterface {
@@ -137,7 +137,7 @@ class HttpExceptionManager implements LoggerAwareInterface
     public function getNotFoundHandler(): \Closure
     {
         return function (
-            RequestInterface $request,
+            ServerRequestInterface $request,
             ResponseInterface $response
         ): ResponseInterface {
             return $this->handleHttpException($request, $response, HttpExceptionFactory::notFound());
@@ -152,7 +152,7 @@ class HttpExceptionManager implements LoggerAwareInterface
     public function getNotAllowedHandler(): \Closure
     {
         return function (
-            RequestInterface $request,
+            ServerRequestInterface $request,
             ResponseInterface $response,
             array $methods = []
         ): ResponseInterface {
@@ -186,14 +186,14 @@ class HttpExceptionManager implements LoggerAwareInterface
     }
 
     /**
-     * @param RequestInterface  $request
-     * @param ResponseInterface $response
-     * @param HttpException     $exception
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     * @param HttpException          $exception
      *
      * @return ResponseInterface
      */
     public function handleHttpException(
-        RequestInterface $request,
+        ServerRequestInterface $request,
         ResponseInterface $response,
         HttpException $exception
     ): ResponseInterface {
@@ -226,10 +226,10 @@ class HttpExceptionManager implements LoggerAwareInterface
     /**
      * Log exception.
      *
-     * @param RequestInterface $request
-     * @param HttpException    $exception
+     * @param ServerRequestInterface $request
+     * @param HttpException          $exception
      */
-    protected function log(RequestInterface $request, HttpException $exception)
+    protected function log(ServerRequestInterface $request, HttpException $exception)
     {
         if (!$this->logger) {
             return;

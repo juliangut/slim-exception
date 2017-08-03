@@ -15,7 +15,7 @@ namespace Jgut\Slim\Exception\Tests\Stubs;
 
 use Jgut\Slim\Exception\Handler\AbstractHttpExceptionHandler;
 use Jgut\Slim\Exception\HttpException;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class HandlerStub extends AbstractHttpExceptionHandler
 {
@@ -25,7 +25,7 @@ class HandlerStub extends AbstractHttpExceptionHandler
     protected function getExceptionOutput(
         string $contentType,
         HttpException $exception,
-        RequestInterface $request
+        ServerRequestInterface $request
     ): string {
         return $exception->getMessage();
     }

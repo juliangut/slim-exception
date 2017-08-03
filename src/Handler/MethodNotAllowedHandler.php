@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Handler;
 
 use Jgut\Slim\Exception\HttpException;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Method not allowed error handler.
@@ -27,7 +27,7 @@ class MethodNotAllowedHandler extends AbstractHttpExceptionHandler
     protected function getExceptionOutput(
         string $contentType,
         HttpException $exception,
-        RequestInterface $request
+        ServerRequestInterface $request
     ): string {
         if (in_array($contentType, ['text/json', 'application/json', 'application/x-json'], true)) {
             return $this->getJsonError($exception);
