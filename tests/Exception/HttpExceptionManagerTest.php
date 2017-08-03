@@ -89,12 +89,8 @@ class HttpExceptionManagerTest extends TestCase
 
         $manager = new HttpExceptionManager(new HandlerStub());
 
-        $handler = $manager->getErrorHandler();
-
-        $this->assertInstanceOf(\Closure::class, $handler);
-
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), new \Exception('message', 0));
+        $parsedResponse = $manager->errorHandler($request, new Response(), new \Exception('message', 0));
 
         self::assertEquals(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $parsedResponse->getStatusCode());
         self::assertEquals('Internal server error', (string) $parsedResponse->getBody());
@@ -113,12 +109,8 @@ class HttpExceptionManagerTest extends TestCase
         $manager = new HttpExceptionManager(new HandlerStub());
         $manager->addHandler(StatusCodeInterface::STATUS_BAD_REQUEST, $customHandler);
 
-        $handler = $manager->getErrorHandler();
-
-        $this->assertInstanceOf(\Closure::class, $handler);
-
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), HttpExceptionFactory::badRequest());
+        $parsedResponse = $manager->errorHandler($request, new Response(), HttpExceptionFactory::badRequest());
 
         self::assertEquals(StatusCodeInterface::STATUS_BAD_REQUEST, $parsedResponse->getStatusCode());
         self::assertEquals('Captured exception', (string) $parsedResponse->getBody());
@@ -130,12 +122,8 @@ class HttpExceptionManagerTest extends TestCase
 
         $manager = new HttpExceptionManager(new HandlerStub());
 
-        $handler = $manager->getNotFoundHandler();
-
-        $this->assertInstanceOf(\Closure::class, $handler);
-
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response());
+        $parsedResponse = $manager->notFoundHandler($request, new Response());
 
         self::assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $parsedResponse->getStatusCode());
         self::assertEquals('Not found', (string) $parsedResponse->getBody());
@@ -147,12 +135,8 @@ class HttpExceptionManagerTest extends TestCase
 
         $manager = new HttpExceptionManager(new HandlerStub());
 
-        $handler = $manager->getNotAllowedHandler();
-
-        $this->assertInstanceOf(\Closure::class, $handler);
-
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), ['POST', 'PUT']);
+        $parsedResponse = $manager->notAllowedHandler($request, new Response(), ['POST', 'PUT']);
 
         self::assertEquals(StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED, $parsedResponse->getStatusCode());
         self::assertEquals('Method "GET" not allowed. Must be one of POST, PUT', (string) $parsedResponse->getBody());
@@ -164,12 +148,8 @@ class HttpExceptionManagerTest extends TestCase
 
         $manager = new HttpExceptionManager(new HandlerStub());
 
-        $handler = $manager->getNotAllowedHandler();
-
-        $this->assertInstanceOf(\Closure::class, $handler);
-
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler($request, new Response(), ['POST', 'PUT']);
+        $parsedResponse = $manager->notAllowedHandler($request, new Response(), ['POST', 'PUT']);
 
         self::assertEquals(StatusCodeInterface::STATUS_OK, $parsedResponse->getStatusCode());
         self::assertEquals('Allowed methods: POST, PUT', (string) $parsedResponse->getBody());

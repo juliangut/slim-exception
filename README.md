@@ -51,9 +51,9 @@ $exceptionManager->setLogger(new Psr3LoggerInstance());
 
 $container = $app->getContainer();
 
-$container['errorHandler'] = $container['phpErrorHandler'] = $manager->getErrorHandler();
-$container['notAllowedHandler'] = $manager->getNotAllowedHandler();
-$container['notFoundHandler'] =  $manager->getNotFoundHandler();
+$container['errorHandler'] = $container['phpErrorHandler'] = [$manager, 'errorHandler'];
+$container['notFoundHandler'] =  [$manager, 'notFoundHandler'];
+$container['notAllowedHandler'] = [$manager, 'notAllowedHandler'];
 
 // ...
 
@@ -137,14 +137,15 @@ $exceptionManager->addHandler([400, 401, 403, 406, 409], new MyCustomHandler();
 
 ### Whoops
 
-Development environment deserves a better more informative error handling.
+Development environment deserves a better, more informative error handling.
 
 [Whoops](https://github.com/filp/whoops) is a great tool for this purpose and its usage is contemplated by this package. There is an special Whoops HTTP exception handler which can be used as default exception handler
 
-For you to use this handler you'll need to require whoops first
+For you to use this handler you'll need to require whoops first. Additionally symfony's var-dumper plays nice with whoops so require it too
 
 ```
 composer require filp/whoops
+composer require symfony/var-dumper
 ```
 
 ```php
@@ -159,17 +160,17 @@ use Whoops\Run;
 $whoopsHandler = new ExceptionHandler(new Run());
 
 // Assign whoops handlers per content type
+$whoopsHandler->addHandler(new TextHandler(), ['text/plain']);
 $whoopsHandler->addHandler(new HtmlHandler(), ['text/html', 'application/xhtml+xml']);
 $whoopsHandler->addHandler(new JsonHandler(), ['text/json', 'application/json', 'application/x-json']);
 $whoopsHandler->addHandler(new XmlHandler(), ['text/xml', 'application/xml', 'application/x-xml']);
-$whoopsHandler->addHandler(new TextHandler(), ['text/plain']);
 
 $exceptionManager = new HttpExceptionManager($whoopsHandler);
 ```
 
-## Catch all errors
+## Handle all errors
 
-In order to fully integrate error handling with the environment you can extend Slim's App to use HttpExceptionAwareTrait. In this way any unhandled error will be captured and treated by the error handler (including fatal errors)
+In order to fully integrate error handling with the environment you can extend Slim's App to use HttpExceptionAwareTrait. In this way any triggered and unhandled error will be captured and treated by the error handler
 
 ```php
 use Jgut\Slim\Exception\HttpExceptionAwareTrait;
@@ -186,6 +187,11 @@ class App extends SlimApp
         $this->registerPhpErrorHandling();
     }
 }
+
+$app = new App();
+
+// This error will be captured and handled gracefully
+trigger_error('This is embarrasing', E_USER_ERROR);
 ```
 
 ## Contributing

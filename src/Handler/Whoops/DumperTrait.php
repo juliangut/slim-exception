@@ -102,14 +102,18 @@ trait DumperTrait
      */
     protected function getFirstNonInternalFrame(array $frames): int
     {
-        $excludedPathRegex = sprintf('!^%s/.+\.php!', dirname(__DIR__, 2));
+        $excludedPathRegex = sprintf('!^%s/.+\.php$!', dirname(__DIR__, 2));
+        $excludedClosureRegex = sprintf(
+            '!^%s::(error|notFound|notAllowed)Handler$!',
+            str_replace('\\', '\\\\', HttpExceptionManager::class)
+        );
 
         $firstFrame = 0;
         for ($i = 0, $length = count($frames); $i < $length; $i++) {
             $frame = $frames[$i];
             $frameCallback = sprintf('%s::%s', $frame->getClass(), $frame->getFunction());
 
-            if ($frameCallback === HttpExceptionManager::class . '::Jgut\Slim\Exception\{closure}'
+            if (preg_match($excludedClosureRegex, $frameCallback)
                 || preg_match($excludedPathRegex, $frame->getFile())
             ) {
                 continue;

@@ -110,79 +110,81 @@ class HttpExceptionManager implements LoggerAwareInterface
     }
 
     /**
-     * Get generic error handler.
+     * Generic error handler.
      *
-     * @return \Closure
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     * @param \Throwable             $exception
+     *
+     * @return ResponseInterface
      */
-    public function getErrorHandler(): \Closure
-    {
-        return function (
-            ServerRequestInterface $request,
-            ResponseInterface $response,
-            \Throwable $exception
-        ): ResponseInterface {
-            if (!$exception instanceof HttpException) {
-                $exception = HttpExceptionFactory::internalServerError(null, null, $exception);
-            }
+    public function errorHandler(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        \Throwable $exception
+    ): ResponseInterface {
+        if (!$exception instanceof HttpException) {
+            $exception = HttpExceptionFactory::internalServerError(null, null, $exception);
+        }
 
-            return $this->handleHttpException($request, $response, $exception);
-        };
+        return $this->handleHttpException($request, $response, $exception);
     }
 
     /**
-     * Get 404 not found error handler.
+     * 404 not found error handler.
      *
-     * @return \Closure
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     *
+     * @return ResponseInterface
      */
-    public function getNotFoundHandler(): \Closure
-    {
-        return function (
-            ServerRequestInterface $request,
-            ResponseInterface $response
-        ): ResponseInterface {
-            return $this->handleHttpException($request, $response, HttpExceptionFactory::notFound());
-        };
+    public function notFoundHandler(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ResponseInterface {
+        return $this->handleHttpException($request, $response, HttpExceptionFactory::notFound());
     }
 
     /**
-     * Get 405 not allowed error handler.
+     * 405 not allowed error handler.
      *
-     * @return \Closure
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     * @param array                  $methods
+     *
+     * @return ResponseInterface
      */
-    public function getNotAllowedHandler(): \Closure
-    {
-        return function (
-            ServerRequestInterface $request,
-            ResponseInterface $response,
-            array $methods = []
-        ): ResponseInterface {
-            if ($request->getMethod() === 'OPTIONS') {
-                $body = new Stream(fopen('php://temp', 'wb+'));
-                $body->write(
-                    sprintf(
-                        'Allowed method%s: %s',
-                        count($methods) > 1 ? 's' : '',
-                        implode(', ', $methods)
-                    )
-                );
-
-                return $response
-                    ->withStatus(StatusCodeInterface::STATUS_OK)
-                    ->withHeader('Content-Type', 'text/plain; charset=utf-8')
-                    ->withBody($body);
-            }
-
-            $exception = HttpExceptionFactory::methodNotAllowed(
+    public function notAllowedHandler(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $methods = []
+    ): ResponseInterface {
+        if ($request->getMethod() === 'OPTIONS') {
+            $body = new Stream(fopen('php://temp', 'wb+'));
+            $body->write(
                 sprintf(
-                    'Method "%s" not allowed. Must be%s %s',
-                    $request->getMethod(),
-                    count($methods) > 1 ? ' one of' : '',
+                    'Allowed method%s: %s',
+                    count($methods) > 1 ? 's' : '',
                     implode(', ', $methods)
                 )
             );
 
-            return $this->handleHttpException($request, $response, $exception);
-        };
+            return $response
+                ->withStatus(StatusCodeInterface::STATUS_OK)
+                ->withHeader('Content-Type', 'text/plain; charset=utf-8')
+                ->withBody($body);
+        }
+
+        $exception = HttpExceptionFactory::methodNotAllowed(
+            sprintf(
+                'Method "%s" not allowed. Must be%s %s',
+                $request->getMethod(),
+                count($methods) > 1 ? ' one of' : '',
+                implode(', ', $methods)
+            )
+        );
+
+        return $this->handleHttpException($request, $response, $exception);
     }
 
     /**
