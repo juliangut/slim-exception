@@ -102,7 +102,7 @@ trait DumperTrait
      */
     protected function getFirstNonInternalFrame(array $frames): int
     {
-        $excludedPathRegex = sprintf('!^%s/!', dirname(__DIR__, 2));
+        $excludedPathRegex = sprintf('!^%s/.+\.php!', dirname(__DIR__, 2));
 
         $firstFrame = 0;
         for ($i = 0, $length = count($frames); $i < $length; $i++) {
@@ -118,6 +118,12 @@ trait DumperTrait
             if ($frameCallback === App::class . '::__invoke') {
                 // notFoundHandler/notAllowedHandler directly called by \Slim\App::__invoke. Display manager handling
                 $firstFrame = $i - 1;
+                break;
+            }
+
+            if ($frame->getFile() === '[internal]') {
+                // \Error or triggered errors (transformed into \ErrorException)
+                $firstFrame = $i + 1;
                 break;
             }
 
