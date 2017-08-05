@@ -26,7 +26,7 @@ class HtmlHandlerTest extends TestCase
 {
     public function testHtmlOutput()
     {
-        $exception = HttpExceptionFactory::internalServerError('Impossible error', null, new \ErrorException());
+        $exception = HttpExceptionFactory::internalServerError('Impossible error', null, null, new \ErrorException());
         $inspector = new Inspector($exception);
         $whoops = new Whoops();
 

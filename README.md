@@ -64,7 +64,7 @@ Original Slim's error handling is bypassed by the HTTP exception manager forcing
 
 Non HttpExceptions (for example an exception thrown by a third party library) will be automatically transformed into a 500 HttpException and alternatively you can use `HttpExceptionFactory` to throw HTTP exceptions yourself. Those exceptions will be handled to their corresponding handler depending on their "status code" or by the default handler in case no handler is defined for the specific status code
 
-In the above example if you `throw HttpExceptionFactory::unauthorized()` during the execution of the application it'll be captured by the manager had handed over to "YourUnauthorizedRequestHandler" so you can format and return a proper custom response
+In the above example if you `throw HttpExceptionFactory::unauthorized()` during the execution of the application it'll be captured by the manager hand handed over to "YourUnauthorizedRequestHandler" so you can format and return a proper custom response
 
 ### HTTP exceptions
 
@@ -73,9 +73,9 @@ The base of this error handling are the HTTP exceptions. This exceptions carry a
 ```php
 use Jgut\Slim\Exception\HttpException;
 
-$exceptionCode = 101; // Internal code
+$exceptionCode = 1001; // Internal code
 $httpStatusCode = 401; // Unauthorized
-$exception = new HttpException('You shall not pass!', $exceptionCode, $httpStatusCode);
+$exception = new HttpException('You shall not pass!', 'You do not have permission', $exceptionCode, $httpStatusCode);
 
 $exception->getHttpStatusCode(); // 401 Unauthorized
 ```
@@ -91,9 +91,9 @@ $exception->getIdentifier();
 In order to simplify HTTP exception creation and assure correct HTTP status code selection there are several shortcut creation methods
 
 ```php
-throw HttpExceptionFactory::unauthorized('You shall not pass!', 101);
-throw HttpExceptionFactory::notAcceptable('Throughput reached', 102);
-throw HttpExceptionFactory::unprocessableEntity('Already exists', 103);
+throw HttpExceptionFactory::unauthorized('You shall not pass!', 'You do not have permission', 1001);
+throw HttpExceptionFactory::notAcceptable('Throughput reached', 'Too much', 1002);
+throw HttpExceptionFactory::unprocessableEntity('Already exists', 'Entity already exists', 1030);
 ``` 
 
 ### Handlers

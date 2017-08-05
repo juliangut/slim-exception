@@ -73,20 +73,7 @@ abstract class AbstractHttpExceptionHandler implements HttpExceptionHandler
      *
      * @return array
      */
-    protected function getContentTypes(): array
-    {
-        return [
-            'text/plain',
-            'text/json',
-            'application/json',
-            'application/x-json',
-            'text/xml',
-            'application/xml',
-            'application/x-xml',
-            'text/html',
-            'application/xhtml+xml',
-        ];
-    }
+    abstract protected function getContentTypes(): array;
 
     /**
      * Get error content.

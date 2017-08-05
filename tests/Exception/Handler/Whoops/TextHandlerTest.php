@@ -43,7 +43,7 @@ class TextHandlerTest extends TestCase
     public function testTextOutput()
     {
         $originalException = new \ErrorException('Original exception');
-        $exception = HttpExceptionFactory::tooManyRequests(null, null, $originalException);
+        $exception = HttpExceptionFactory::tooManyRequests(null, null, null, $originalException);
         $inspector = new Inspector($exception);
 
         $handler = new TextHandler();

@@ -79,7 +79,7 @@ class HttpExceptionManagerTest extends TestCase
         $manager->handleHttpException(
             $request,
             new Response(),
-            HttpExceptionFactory::internalServerError($exceptionMessage, null, $originalException)
+            HttpExceptionFactory::internalServerError($exceptionMessage, null, null, $originalException)
         );
     }
 
@@ -101,6 +101,9 @@ class HttpExceptionManagerTest extends TestCase
         $request = Request::createFromEnvironment(Environment::mock());
 
         $customHandler = $this->getMockForAbstractClass(AbstractHttpExceptionHandler::class);
+        $customHandler->expects($this->once())
+            ->method('getContentTypes')
+            ->will($this->returnValue(['text/plain']));
         $customHandler->expects($this->once())
             ->method('getExceptionOutput')
             ->will($this->returnValue('Captured exception'));

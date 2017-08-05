@@ -24,6 +24,24 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
     /**
      * {@inheritdoc}
      */
+    protected function getContentTypes(): array
+    {
+        return [
+            'text/plain',
+            'text/json',
+            'application/json',
+            'application/x-json',
+            'text/xml',
+            'application/xml',
+            'application/x-xml',
+            'text/html',
+            'application/xhtml+xml',
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getExceptionOutput(
         string $contentType,
         HttpException $exception,
@@ -43,6 +61,18 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
 
         // text/plain
         return $this->getTextError($exception);
+    }
+
+    /**
+     * Get simple text formatted error.
+     *
+     * @param HttpException $exception
+     *
+     * @return string
+     */
+    protected function getTextError(HttpException $exception): string
+    {
+        return sprintf('(%s) Application error', $exception->getIdentifier());
     }
 
     /**
@@ -94,17 +124,5 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
             'Sorry for the temporary inconvenience.</p></body></html>',
             $exception->getIdentifier()
         );
-    }
-
-    /**
-     * Get simple text formatted error.
-     *
-     * @param HttpException $exception
-     *
-     * @return string
-     */
-    protected function getTextError(HttpException $exception): string
-    {
-        return sprintf('(%s) Application error', $exception->getIdentifier());
     }
 }

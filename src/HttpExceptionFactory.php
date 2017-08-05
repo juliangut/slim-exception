@@ -26,6 +26,7 @@ class HttpExceptionFactory
      * (400) Generic bad request error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -33,11 +34,13 @@ class HttpExceptionFactory
      */
     public static function badRequest(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Bad request',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_BAD_REQUEST,
             StatusCodeInterface::STATUS_BAD_REQUEST,
             $previous
@@ -48,6 +51,7 @@ class HttpExceptionFactory
      * (401) Generic unauthorized error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -55,11 +59,13 @@ class HttpExceptionFactory
      */
     public static function unauthorized(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Unauthorized',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_UNAUTHORIZED,
             StatusCodeInterface::STATUS_UNAUTHORIZED,
             $previous
@@ -70,6 +76,7 @@ class HttpExceptionFactory
      * (403) Generic forbidden error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -77,11 +84,13 @@ class HttpExceptionFactory
      */
     public static function forbidden(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Forbidden',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_FORBIDDEN,
             StatusCodeInterface::STATUS_FORBIDDEN,
             $previous
@@ -92,6 +101,7 @@ class HttpExceptionFactory
      * (404) Generic not found error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -99,11 +109,13 @@ class HttpExceptionFactory
      */
     public static function notFound(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Not found',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_NOT_FOUND,
             StatusCodeInterface::STATUS_NOT_FOUND,
             $previous
@@ -114,6 +126,7 @@ class HttpExceptionFactory
      * (405) Generic method not allowed error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -121,11 +134,13 @@ class HttpExceptionFactory
      */
     public static function methodNotAllowed(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Method not allowed',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED,
             StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED,
             $previous
@@ -136,6 +151,7 @@ class HttpExceptionFactory
      * (406) Generic not acceptable error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -143,11 +159,13 @@ class HttpExceptionFactory
      */
     public static function notAcceptable(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Not acceptable',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_NOT_ACCEPTABLE,
             StatusCodeInterface::STATUS_NOT_ACCEPTABLE,
             $previous
@@ -158,6 +176,7 @@ class HttpExceptionFactory
      * (409) Generic conflict error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -165,11 +184,13 @@ class HttpExceptionFactory
      */
     public static function conflict(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Conflict',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_CONFLICT,
             StatusCodeInterface::STATUS_CONFLICT,
             $previous
@@ -180,6 +201,7 @@ class HttpExceptionFactory
      * (410) Generic gone error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -187,11 +209,13 @@ class HttpExceptionFactory
      */
     public static function gone(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Gone',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_GONE,
             StatusCodeInterface::STATUS_GONE,
             $previous
@@ -202,6 +226,7 @@ class HttpExceptionFactory
      * (415) Generic unsupported media type error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -209,11 +234,13 @@ class HttpExceptionFactory
      */
     public static function unsupportedMediaType(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Unsupported media type',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_UNSUPPORTED_MEDIA_TYPE,
             StatusCodeInterface::STATUS_UNSUPPORTED_MEDIA_TYPE,
             $previous
@@ -224,6 +251,7 @@ class HttpExceptionFactory
      * (422) Generic unprocessable entity error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -231,11 +259,13 @@ class HttpExceptionFactory
      */
     public static function unprocessableEntity(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Unprocessable entity',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
             StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
             $previous
@@ -246,6 +276,7 @@ class HttpExceptionFactory
      * (429) Generic too many requests error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -253,11 +284,13 @@ class HttpExceptionFactory
      */
     public static function tooManyRequests(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Too many requests',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_TOO_MANY_REQUESTS,
             StatusCodeInterface::STATUS_TOO_MANY_REQUESTS,
             $previous
@@ -268,6 +301,7 @@ class HttpExceptionFactory
      * (500) Generic internal server error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -275,11 +309,13 @@ class HttpExceptionFactory
      */
     public static function internalServerError(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Internal server error',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
             StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
             $previous
@@ -290,6 +326,7 @@ class HttpExceptionFactory
      * (501) Generic not implemented error exception.
      *
      * @param string|null     $message
+     * @param string|null     $description
      * @param int|null        $code
      * @param \Throwable|null $previous
      *
@@ -297,11 +334,13 @@ class HttpExceptionFactory
      */
     public static function notImplemented(
         string $message = null,
+        string $description = null,
         int $code = null,
         \Throwable $previous = null
     ): HttpException {
         return static::create(
             $message ?: 'Not implemented',
+            $description ?: '',
             $code ?? StatusCodeInterface::STATUS_NOT_IMPLEMENTED,
             StatusCodeInterface::STATUS_NOT_IMPLEMENTED,
             $previous
@@ -312,6 +351,7 @@ class HttpExceptionFactory
      * Get new HTTP exception.
      *
      * @param string          $message
+     * @param string          $description
      * @param int             $code
      * @param int             $httpStatusCode
      * @param \Throwable|null $previous
@@ -320,10 +360,11 @@ class HttpExceptionFactory
      */
     public static function create(
         string $message,
+        string $description,
         int $code,
         int $httpStatusCode,
         \Throwable $previous = null
     ): HttpException {
-        return new HttpException($message, $code, $httpStatusCode, $previous);
+        return new HttpException($message, $description, $code, $httpStatusCode, $previous);
     }
 }

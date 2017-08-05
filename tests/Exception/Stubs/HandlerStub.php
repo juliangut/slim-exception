@@ -22,6 +22,24 @@ class HandlerStub extends AbstractHttpExceptionHandler
     /**
      * {@inheritdoc}
      */
+    protected function getContentTypes(): array
+    {
+        return [
+            'text/plain',
+            'text/json',
+            'application/json',
+            'application/x-json',
+            'text/xml',
+            'application/xml',
+            'application/x-xml',
+            'text/html',
+            'application/xhtml+xml',
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getExceptionOutput(
         string $contentType,
         HttpException $exception,

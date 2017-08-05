@@ -24,7 +24,7 @@ class HttpExceptionFactoryTest extends TestCase
     public function testCustomException()
     {
         $previous = new \Exception();
-        $exception = HttpExceptionFactory::create('Message', 10, 400, $previous);
+        $exception = HttpExceptionFactory::create('Message', 'description', 10, 400, $previous);
 
         self::assertEquals('Message', $exception->getMessage());
         self::assertEquals(10, $exception->getCode());

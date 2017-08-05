@@ -1,3 +1,4 @@
 parameters:
   ignoreErrors:
     - '/Call to an undefined method Throwable::getIdentifier\(\)/'
+    - '/Call to an undefined method Throwable::getDescription\(\)/'

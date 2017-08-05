@@ -40,6 +40,7 @@ trait DumperTrait
             'id' => $exception->getIdentifier(),
             'type' => get_class($exception),
             'message' => $exception->getMessage(),
+            'description' => $exception->getDescription(),
         ];
 
         if ($addTrace) {

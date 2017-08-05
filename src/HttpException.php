@@ -28,6 +28,13 @@ class HttpException extends \RuntimeException
     protected $identifier;
 
     /**
+     * Exception description.
+     *
+     * @var string
+     */
+    protected $description;
+
+    /**
      * HTTP status code.
      *
      * @var int
@@ -38,26 +45,43 @@ class HttpException extends \RuntimeException
      * Exception constructor.
      *
      * @param string          $message
+     * @param string          $description
      * @param int             $code
      * @param int             $httpStatusCode
      * @param \Throwable|null $previous
      */
-    public function __construct(string $message, int $code, int $httpStatusCode, \Throwable $previous = null)
-    {
+    public function __construct(
+        string $message,
+        string $description,
+        int $code,
+        int $httpStatusCode,
+        \Throwable $previous = null
+    ) {
         parent::__construct($message, $code, $previous);
 
         $this->identifier = ShortUuid::uuid4();
+        $this->description = $description;
         $this->httpStatusCode = $httpStatusCode;
     }
 
     /**
-     * Get error unique identifier.
+     * Get exception unique identifier.
      *
      * @return string
      */
     public function getIdentifier(): string
     {
         return $this->identifier;
+    }
+
+    /**
+     * Get exception description.
+     *
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
     /**

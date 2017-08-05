@@ -23,9 +23,10 @@ class HttpExceptionTest extends TestCase
 {
     public function testException()
     {
-        $exception = new HttpException('message', 0, 400);
+        $exception = new HttpException('message', 'description', 0, 400);
 
         self::assertNotNull($exception->getIdentifier());
+        self::assertEquals('description', $exception->getDescription());
         self::assertEquals(400, $exception->getHttpStatusCode());
     }
 }
