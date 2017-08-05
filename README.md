@@ -73,16 +73,19 @@ The base of this error handling are the HTTP exceptions. This exceptions carry a
 ```php
 use Jgut\Slim\Exception\HttpException;
 
+$exceptionMessage = 'You shall not pass!';
+$exceptionDescription = 'You do not have permission';
 $exceptionCode = 1001; // Internal code
 $httpStatusCode = 401; // Unauthorized
-$exception = new HttpException('You shall not pass!', 'You do not have permission', $exceptionCode, $httpStatusCode);
+$exception = new HttpException($exceptionMessage, $exceptionDescription, $exceptionCode, $httpStatusCode);
 
 $exception->getHttpStatusCode(); // 401 Unauthorized
 ```
 
-Additionally exceptions have a unique identifier which can be used for logging exceptions and displaying for example on APIs, allowing you to have more information over the erroneous situation when addressed
+Additionally exceptions have a description and a unique identifier which can be used for logging exceptions and displaying for example on APIs, allowing you to have more information over the erroneous situation when addressed
 
 ```php
+$exception->getDescription();
 $exception->getIdentifier();
 ```
 

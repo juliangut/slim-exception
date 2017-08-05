@@ -31,19 +31,19 @@ class HtmlHandlerTest extends TestCase
         $whoops = new Whoops();
 
         $handler = new HtmlHandler();
+        $handler->handleUnconditionally(true);
         $handler->setException($exception);
         $handler->setInspector($inspector);
         $handler->setRun($whoops);
         $handler->setApplicationPaths([
             dirname(dirname(dirname(dirname(__DIR__)))) . '/src/Exception/HttpExceptionFactory.php',
         ]);
-        $handler->addCustomCss('js/zepto.min.js');
-        $handler->addDataTable('A', []);
 
         ob_start();
         $handler->handle();
         $output = ob_get_clean();
 
-        self::assertRegExp('/\(.+\) Jgut\\\\Slim\\\\Exception\\\\HttpException/', $output);
+        self::assertContains('Jgut\\Slim\\Exception\\HttpException', $output);
+        self::assertContains('Impossible error', $output);
     }
 }
