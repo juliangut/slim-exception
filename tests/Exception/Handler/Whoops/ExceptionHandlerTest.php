@@ -15,6 +15,7 @@ namespace Jgut\Slim\Tests\Exception\Dumper\Whoops;
 
 use Jgut\Slim\Exception\Handler\Whoops\ExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionFactory;
+use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -29,6 +30,19 @@ use Whoops\Run as Whoops;
  */
 class ExceptionHandlerTest extends TestCase
 {
+    /**
+     * @var Negotiator
+     */
+    protected $negotiator;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        $this->negotiator = new Negotiator();
+    }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessageRegExp /No content type defined for .+ handler/
@@ -45,7 +59,7 @@ class ExceptionHandlerTest extends TestCase
         $whoops = new Whoops();
         $whoops->pushHandler($handler);
 
-        new ExceptionHandler($whoops);
+        new ExceptionHandler($this->negotiator, $whoops);
     }
 
     /**
@@ -60,7 +74,7 @@ class ExceptionHandlerTest extends TestCase
 
         $whoops = new Whoops();
 
-        $handler = new ExceptionHandler($whoops);
+        $handler = new ExceptionHandler($this->negotiator, $whoops);
 
         $handler->addHandler($textHandler, 10);
     }
@@ -71,7 +85,7 @@ class ExceptionHandlerTest extends TestCase
      */
     public function testNotDefinedContentType()
     {
-        $handler = new ExceptionHandler(new Whoops());
+        $handler = new ExceptionHandler($this->negotiator, new Whoops());
 
         $exception = HttpExceptionFactory::badRequest();
         $request = Request::createFromEnvironment(Environment::mock());
@@ -88,7 +102,7 @@ class ExceptionHandlerTest extends TestCase
             ->method('handle');
         /* @var JsonResponseHandler $jsonHandler */
 
-        $handler = new ExceptionHandler(new Whoops());
+        $handler = new ExceptionHandler($this->negotiator, new Whoops());
         $handler->addHandler($jsonHandler);
 
         $exception = HttpExceptionFactory::forbidden();
@@ -106,7 +120,7 @@ class ExceptionHandlerTest extends TestCase
             ->method('handle');
         /* @var XmlResponseHandler $xmlHandler */
 
-        $handler = new ExceptionHandler(new Whoops());
+        $handler = new ExceptionHandler($this->negotiator, new Whoops());
         $handler->addHandler($xmlHandler);
 
         $exception = HttpExceptionFactory::conflict();
@@ -124,7 +138,7 @@ class ExceptionHandlerTest extends TestCase
             ->method('handle');
         /* @var PrettyPageHandler $htmlHandler */
 
-        $handler = new ExceptionHandler(new Whoops());
+        $handler = new ExceptionHandler($this->negotiator, new Whoops());
         $handler->addHandler($htmlHandler);
 
         $exception = HttpExceptionFactory::tooManyRequests();
@@ -142,7 +156,7 @@ class ExceptionHandlerTest extends TestCase
             ->method('handle');
         /* @var PlainTextHandler $textHandler */
 
-        $handler = new ExceptionHandler(new Whoops());
+        $handler = new ExceptionHandler($this->negotiator, new Whoops());
         $handler->addHandler($textHandler);
 
         $exception = HttpExceptionFactory::badRequest();

@@ -19,6 +19,7 @@ use Jgut\Slim\Exception\HttpExceptionFactory;
 use Jgut\Slim\Exception\HttpExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionManager;
 use Jgut\Slim\Exception\Tests\Stubs\HandlerStub;
+use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -31,6 +32,19 @@ use Slim\Http\Response;
  */
 class HttpExceptionManagerTest extends TestCase
 {
+    /**
+     * @var Negotiator
+     */
+    protected $negotiator;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        $this->negotiator = new Negotiator();
+    }
+
     public function testLogHttpException()
     {
         $exceptionMessage = 'This is the exception message';
@@ -44,7 +58,7 @@ class HttpExceptionManagerTest extends TestCase
             ->with(LogLevel::ERROR, $exceptionMessage);
         /* @var LoggerInterface $logger */
 
-        $manager = new HttpExceptionManager(new HandlerStub());
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
         $manager->setLogger($logger);
 
         $request = Request::createFromEnvironment(Environment::mock());
@@ -69,7 +83,7 @@ class HttpExceptionManagerTest extends TestCase
             ->with(LogLevel::ALERT, $exceptionMessage);
         /* @var LoggerInterface $logger */
 
-        $manager = new HttpExceptionManager(new HandlerStub());
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
         $manager->setLogger($logger);
 
         $request = Request::createFromEnvironment(Environment::mock());
@@ -87,7 +101,7 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $manager = new HttpExceptionManager(new HandlerStub());
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->errorHandler($request, new Response(), new \Exception('message', 0));
@@ -100,7 +114,9 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $customHandler = $this->getMockForAbstractClass(AbstractHttpExceptionHandler::class);
+        $customHandler = $this->getMockBuilder(AbstractHttpExceptionHandler::class)
+            ->setConstructorArgs([$this->negotiator])
+            ->getMockForAbstractClass();
         $customHandler->expects($this->once())
             ->method('getContentTypes')
             ->will($this->returnValue(['text/plain']));
@@ -109,7 +125,7 @@ class HttpExceptionManagerTest extends TestCase
             ->will($this->returnValue('Captured exception'));
         /* @var HttpExceptionHandler $customHandler */
 
-        $manager = new HttpExceptionManager(new HandlerStub());
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
         $manager->addHandler(StatusCodeInterface::STATUS_BAD_REQUEST, $customHandler);
 
         /* @var Response $parsedResponse */
@@ -123,7 +139,7 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $manager = new HttpExceptionManager(new HandlerStub());
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->notFoundHandler($request, new Response());
@@ -136,7 +152,7 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $manager = new HttpExceptionManager(new HandlerStub());
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->notAllowedHandler($request, new Response(), ['POST', 'PUT']);
@@ -149,7 +165,7 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock(['REQUEST_METHOD' => 'OPTIONS']));
 
-        $manager = new HttpExceptionManager(new HandlerStub());
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->notAllowedHandler($request, new Response(), ['POST', 'PUT']);

@@ -15,6 +15,7 @@ namespace Jgut\Slim\Exception\Handler\Whoops;
 
 use Jgut\Slim\Exception\Handler\AbstractHttpExceptionHandler;
 use Jgut\Slim\Exception\HttpException;
+use Negotiation\Negotiator;
 use Psr\Http\Message\ServerRequestInterface;
 use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
@@ -42,12 +43,15 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
     /**
      * Abstract errors handler constructor.
      *
-     * @param Whoops $whoops
+     * @param Negotiator $negotiator
+     * @param Whoops     $whoops
      *
      * @throws \RuntimeException
      */
-    public function __construct(Whoops $whoops)
+    public function __construct(Negotiator $negotiator, Whoops $whoops)
     {
+        parent::__construct($negotiator);
+
         foreach ($whoops->getHandlers() as $handler) {
             $this->addHandler($handler);
         }

@@ -27,7 +27,7 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
     protected function getContentTypes(): array
     {
         return [
-            'text/plain',
+            'text/plain', // default
             'text/json',
             'application/json',
             'application/x-json',

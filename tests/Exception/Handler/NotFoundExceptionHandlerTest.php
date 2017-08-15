@@ -16,6 +16,7 @@ namespace Jgut\Slim\Exception\Tests\Handler;
 use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\Handler\NotFoundHandler;
 use Jgut\Slim\Exception\HttpExceptionFactory;
+use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -26,10 +27,24 @@ use Slim\Http\Response;
  */
 class NotFoundExceptionHandlerTest extends TestCase
 {
+    /**
+     * @var Negotiator
+     */
+    protected $negotiator;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        $this->negotiator = new Negotiator();
+    }
+
     public function testJSONOutput()
     {
         /* @var NotFoundHandler $handler */
         $handler = $this->getMockBuilder(NotFoundHandler::class)
+            ->setConstructorArgs([$this->negotiator])
             ->setMethods(['isCli'])
             ->getMock();
 
@@ -51,6 +66,7 @@ class NotFoundExceptionHandlerTest extends TestCase
     {
         /* @var NotFoundHandler $handler */
         $handler = $this->getMockBuilder(NotFoundHandler::class)
+            ->setConstructorArgs([$this->negotiator])
             ->setMethods(['isCli'])
             ->getMock();
 
@@ -72,6 +88,7 @@ class NotFoundExceptionHandlerTest extends TestCase
     {
         /* @var NotFoundHandler $handler */
         $handler = $this->getMockBuilder(NotFoundHandler::class)
+            ->setConstructorArgs([$this->negotiator])
             ->setMethods(['isCli'])
             ->getMock();
 
@@ -91,7 +108,7 @@ class NotFoundExceptionHandlerTest extends TestCase
 
     public function testTextOutput()
     {
-        $handler = new NotFoundHandler();
+        $handler = new NotFoundHandler($this->negotiator);
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/plain']));
 
@@ -109,7 +126,7 @@ class NotFoundExceptionHandlerTest extends TestCase
 
     public function testDefaultOutput()
     {
-        $handler = new NotFoundHandler();
+        $handler = new NotFoundHandler($this->negotiator);
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/unknown']));
 

@@ -15,6 +15,7 @@ namespace Jgut\Slim\Exception\Handler;
 
 use Jgut\Slim\Exception\HttpException;
 use Jgut\Slim\Exception\HttpExceptionHandler;
+use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Stream;
@@ -24,6 +25,23 @@ use Slim\Http\Stream;
  */
 abstract class AbstractHttpExceptionHandler implements HttpExceptionHandler
 {
+    /**
+     * Content type negotiator.
+     *
+     * @var Negotiator
+     */
+    protected $negotiator;
+
+    /**
+     * AbstractHttpExceptionHandler constructor.
+     *
+     * @param Negotiator $negotiator
+     */
+    public function __construct(Negotiator $negotiator)
+    {
+        $this->negotiator = $negotiator;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -52,26 +70,31 @@ abstract class AbstractHttpExceptionHandler implements HttpExceptionHandler
      */
     protected function getContentType(ServerRequestInterface $request): string
     {
-        $knownTypes = $this->getContentTypes();
-        $requestedTypes = array_map(
-            function (string $contentType) {
-                return explode(';', $contentType)[0];
-            },
-            explode(',', $request->getHeaderLine('Accept'))
-        );
-        $selectedTypes = array_intersect($requestedTypes, $knownTypes);
+        $contentType = trim($request->getHeaderLine('Accept'));
+        $acceptedTypes = $this->getContentTypes();
 
-        if (count($selectedTypes)) {
-            return reset($selectedTypes);
+        if ($contentType !== '') {
+            try {
+                /* @var \Negotiation\BaseAccept $best */
+                $best = $this->negotiator->getBest($contentType, $acceptedTypes);
+
+                if ($best) {
+                    return $best->getValue();
+                }
+                // @codeCoverageIgnoreStart
+            } catch (\Exception $exception) {
+                // No action needed
+            }
+            // @codeCoverageIgnoreEnd
         }
 
-        return $knownTypes[0];
+        return $acceptedTypes[0];
     }
 
     /**
      * Get available content types.
      *
-     * @return array
+     * @return string[]
      */
     abstract protected function getContentTypes(): array;
 

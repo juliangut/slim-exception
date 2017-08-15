@@ -16,6 +16,7 @@ namespace Jgut\Slim\Exception\Tests\Handler;
 use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionFactory;
+use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -26,10 +27,24 @@ use Slim\Http\Response;
  */
 class DefaultExceptionHandlerTest extends TestCase
 {
+    /**
+     * @var Negotiator
+     */
+    protected $negotiator;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        $this->negotiator = new Negotiator();
+    }
+
     public function testJSONOutput()
     {
         /* @var ExceptionHandler $handler */
         $handler = $this->getMockBuilder(ExceptionHandler::class)
+            ->setConstructorArgs([$this->negotiator])
             ->setMethods(['isCli'])
             ->getMock();
 
@@ -51,6 +66,7 @@ class DefaultExceptionHandlerTest extends TestCase
     {
         /* @var ExceptionHandler $handler */
         $handler = $this->getMockBuilder(ExceptionHandler::class)
+            ->setConstructorArgs([$this->negotiator])
             ->setMethods(['isCli'])
             ->getMock();
 
@@ -72,6 +88,7 @@ class DefaultExceptionHandlerTest extends TestCase
     {
         /* @var ExceptionHandler $handler */
         $handler = $this->getMockBuilder(ExceptionHandler::class)
+            ->setConstructorArgs([$this->negotiator])
             ->setMethods(['isCli'])
             ->getMock();
 
@@ -91,7 +108,7 @@ class DefaultExceptionHandlerTest extends TestCase
 
     public function testTextOutput()
     {
-        $handler = new ExceptionHandler();
+        $handler = new ExceptionHandler($this->negotiator);
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/plain']));
 
@@ -107,7 +124,7 @@ class DefaultExceptionHandlerTest extends TestCase
 
     public function testDefaultContentOutput()
     {
-        $handler = new ExceptionHandler();
+        $handler = new ExceptionHandler($this->negotiator);
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/unknown']));
 
