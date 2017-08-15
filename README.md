@@ -37,15 +37,18 @@ use Jgut\Slim\Exception\Handler\ExceptionHandler;
 use Jgut\Slim\Exception\Handler\MethodNotAllowedExceptionHandler;
 use Jgut\Slim\Exception\Handler\NotFoundExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionManager;
+use Negotiation\Negotiator;
 
 // Create Slim App
 
+$contentNegotiator = new Negotiator();
+
 // Create manager with handlers for HTTP exceptions you want to capture
-$exceptionManager = new HttpExceptionManager(new ExceptionHandler());
-$exceptionManager->addHandler(404, new NotFoundHandler();
-$exceptionManager->addHandler(405, new MethodNotAllowedHandler();
-$exceptionManager->addHandler(400, new YourBadRequestHandler();
-$exceptionManager->addHandler(401, new YourUnauthorizedRequestHandler();
+$exceptionManager = new HttpExceptionManager(new ExceptionHandler($contentNegotiator));
+$exceptionManager->addHandler(404, new NotFoundHandler($contentNegotiator);
+$exceptionManager->addHandler(405, new MethodNotAllowedHandler($contentNegotiator);
+$exceptionManager->addHandler(400, new YourBadRequestHandler($contentNegotiator);
+$exceptionManager->addHandler(401, new YourUnauthorizedRequestHandler($contentNegotiator);
 
 $exceptionManager->setLogger(new Psr3LoggerInstance());
 
@@ -133,8 +136,9 @@ class MyCustomHandler extends AbstractHttpExceptionHandler
 ```php
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionManager;
+use Negotiation\Negotiator;
 
-$exceptionManager = new HttpExceptionManager(new ExceptionHandler());
+$exceptionManager = new HttpExceptionManager(new ExceptionHandler(new Negotiator()));
 $exceptionManager->addHandler([400, 401, 403, 406, 409], new MyCustomHandler();
 ``` 
 
@@ -158,9 +162,10 @@ use Jgut\Slim\Exception\Handler\Whoops\JsonHandler;
 use Jgut\Slim\Exception\Handler\Whoops\TextHandler;
 use Jgut\Slim\Exception\Handler\Whoops\XmlHandler;
 use Jgut\Slim\Exception\HttpExceptionManager;
+use Negotiation\Negotiator;
 use Whoops\Run;
 
-$whoopsHandler = new ExceptionHandler(new Run());
+$whoopsHandler = new ExceptionHandler(new Negotiator(), new Run());
 
 // Assign whoops handlers per content type
 $whoopsHandler->addHandler(new TextHandler(), ['text/plain']);
