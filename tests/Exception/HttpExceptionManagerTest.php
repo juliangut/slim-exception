@@ -158,19 +158,6 @@ class HttpExceptionManagerTest extends TestCase
         $parsedResponse = $manager->notAllowedHandler($request, new Response(), ['POST', 'PUT']);
 
         self::assertEquals(StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED, $parsedResponse->getStatusCode());
-        self::assertEquals('Method "GET" not allowed. Must be one of POST, PUT', (string) $parsedResponse->getBody());
-    }
-
-    public function testNotAllowedRequestHandler()
-    {
-        $request = Request::createFromEnvironment(Environment::mock(['REQUEST_METHOD' => 'OPTIONS']));
-
-        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
-
-        /* @var Response $parsedResponse */
-        $parsedResponse = $manager->notAllowedHandler($request, new Response(), ['POST', 'PUT']);
-
-        self::assertEquals(StatusCodeInterface::STATUS_OK, $parsedResponse->getStatusCode());
-        self::assertEquals('Allowed methods: POST, PUT', (string) $parsedResponse->getBody());
+        self::assertEquals('Method GET not allowed. Allowed methods: POST, PUT', (string) $parsedResponse->getBody());
     }
 }

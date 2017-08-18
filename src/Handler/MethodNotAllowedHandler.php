@@ -13,13 +13,36 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Handler;
 
+use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\HttpException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Method not allowed error handler.
  */
 class MethodNotAllowedHandler extends ExceptionHandler
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function handleException(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        HttpException $exception
+    ): ResponseInterface {
+        if ($request->getMethod() === 'OPTIONS') {
+            preg_match('/Allowed methods: .+$/', $exception->getMessage(), $matches);
+
+            return $response
+                ->withStatus(StatusCodeInterface::STATUS_OK)
+                ->withHeader('Content-Type', 'text/plain; charset=utf-8')
+                ->withBody($this->getNewBody($matches[0]));
+        }
+
+        return parent::handleException($request, $response, $exception);
+    }
+
     /**
      * Get simple text formatted error.
      *

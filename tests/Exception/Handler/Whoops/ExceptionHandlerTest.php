@@ -31,16 +31,16 @@ use Whoops\Run as Whoops;
 class ExceptionHandlerTest extends TestCase
 {
     /**
-     * @var Negotiator
+     * @var ExceptionHandler
      */
-    protected $negotiator;
+    protected $handler;
 
     /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-        $this->negotiator = new Negotiator();
+        $this->handler = new ExceptionHandler(new Negotiator(), new Whoops());
     }
 
     /**
@@ -59,7 +59,7 @@ class ExceptionHandlerTest extends TestCase
         $whoops = new Whoops();
         $whoops->pushHandler($handler);
 
-        new ExceptionHandler($this->negotiator, $whoops);
+        new ExceptionHandler(new Negotiator(), $whoops);
     }
 
     /**
@@ -72,11 +72,7 @@ class ExceptionHandlerTest extends TestCase
             ->getMock();
         /* @var PlainTextHandler $textHandler */
 
-        $whoops = new Whoops();
-
-        $handler = new ExceptionHandler($this->negotiator, $whoops);
-
-        $handler->addHandler($textHandler, 10);
+        $this->handler->addHandler($textHandler, 10);
     }
 
     /**
@@ -85,12 +81,10 @@ class ExceptionHandlerTest extends TestCase
      */
     public function testNotDefinedContentType()
     {
-        $handler = new ExceptionHandler($this->negotiator, new Whoops());
-
         $exception = HttpExceptionFactory::badRequest();
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $handler->getExceptionOutput('text/unknown', $exception, $request);
+        $this->handler->getExceptionOutput('text/unknown', $exception, $request);
     }
 
     public function testJson()
@@ -102,13 +96,12 @@ class ExceptionHandlerTest extends TestCase
             ->method('handle');
         /* @var JsonResponseHandler $jsonHandler */
 
-        $handler = new ExceptionHandler($this->negotiator, new Whoops());
-        $handler->addHandler($jsonHandler);
+        $this->handler->addHandler($jsonHandler);
 
         $exception = HttpExceptionFactory::forbidden();
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $handler->getExceptionOutput('application/json', $exception, $request);
+        $this->handler->getExceptionOutput('application/json', $exception, $request);
     }
 
     public function testXml()
@@ -120,13 +113,12 @@ class ExceptionHandlerTest extends TestCase
             ->method('handle');
         /* @var XmlResponseHandler $xmlHandler */
 
-        $handler = new ExceptionHandler($this->negotiator, new Whoops());
-        $handler->addHandler($xmlHandler);
+        $this->handler->addHandler($xmlHandler);
 
         $exception = HttpExceptionFactory::conflict();
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $handler->getExceptionOutput('application/xml', $exception, $request);
+        $this->handler->getExceptionOutput('application/xml', $exception, $request);
     }
 
     public function testHtml()
@@ -138,13 +130,12 @@ class ExceptionHandlerTest extends TestCase
             ->method('handle');
         /* @var PrettyPageHandler $htmlHandler */
 
-        $handler = new ExceptionHandler($this->negotiator, new Whoops());
-        $handler->addHandler($htmlHandler);
+        $this->handler->addHandler($htmlHandler);
 
         $exception = HttpExceptionFactory::tooManyRequests();
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $handler->getExceptionOutput('text/html', $exception, $request);
+        $this->handler->getExceptionOutput('text/html', $exception, $request);
     }
 
     public function testText()
@@ -156,12 +147,11 @@ class ExceptionHandlerTest extends TestCase
             ->method('handle');
         /* @var PlainTextHandler $textHandler */
 
-        $handler = new ExceptionHandler($this->negotiator, new Whoops());
-        $handler->addHandler($textHandler);
+        $this->handler->addHandler($textHandler);
 
         $exception = HttpExceptionFactory::badRequest();
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $handler->getExceptionOutput('text/plain', $exception, $request);
+        $this->handler->getExceptionOutput('text/plain', $exception, $request);
     }
 }

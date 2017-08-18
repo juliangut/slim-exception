@@ -28,30 +28,39 @@ use Slim\Http\Response;
 class NotFoundExceptionHandlerTest extends TestCase
 {
     /**
-     * @var Negotiator
+     * @var NotFoundHandler
      */
-    protected $negotiator;
+    protected $handler;
 
     /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-        $this->negotiator = new Negotiator();
+        $this->handler = new NotFoundHandler(new Negotiator());
+    }
+
+    public function testOptionsRequest()
+    {
+        $request = Request::createFromEnvironment(Environment::mock(['REQUEST_METHOD' => 'OPTIONS']));
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $this->handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::notFound()
+        );
+
+        self::assertEquals(StatusCodeInterface::STATUS_OK, $parsedResponse->getStatusCode());
+        self::assertEquals('Not found', (string) $parsedResponse->getBody());
     }
 
     public function testJSONOutput()
     {
-        /* @var NotFoundHandler $handler */
-        $handler = $this->getMockBuilder(NotFoundHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/json']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::notFound()
@@ -64,16 +73,10 @@ class NotFoundExceptionHandlerTest extends TestCase
 
     public function testXMLOutput()
     {
-        /* @var NotFoundHandler $handler */
-        $handler = $this->getMockBuilder(NotFoundHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/xml']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::notFound()
@@ -86,16 +89,10 @@ class NotFoundExceptionHandlerTest extends TestCase
 
     public function testHTMLOutput()
     {
-        /* @var NotFoundHandler $handler */
-        $handler = $this->getMockBuilder(NotFoundHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/html']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::notFound()
@@ -108,12 +105,10 @@ class NotFoundExceptionHandlerTest extends TestCase
 
     public function testTextOutput()
     {
-        $handler = new NotFoundHandler($this->negotiator);
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/plain']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::notFound()
@@ -126,12 +121,10 @@ class NotFoundExceptionHandlerTest extends TestCase
 
     public function testDefaultOutput()
     {
-        $handler = new NotFoundHandler($this->negotiator);
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/unknown']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::notFound()

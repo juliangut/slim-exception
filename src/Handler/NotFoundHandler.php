@@ -13,13 +13,34 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Handler;
 
+use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\HttpException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Route not found error handler.
  */
 class NotFoundHandler extends ExceptionHandler
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function handleException(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        HttpException $exception
+    ): ResponseInterface {
+        if ($request->getMethod() === 'OPTIONS') {
+            return $response
+                ->withStatus(StatusCodeInterface::STATUS_OK)
+                ->withHeader('Content-Type', 'text/plain; charset=utf-8')
+                ->withBody($this->getNewBody($exception->getMessage()));
+        }
+
+        return parent::handleException($request, $response, $exception);
+    }
+
     /**
      * Get simple text formatted error.
      *

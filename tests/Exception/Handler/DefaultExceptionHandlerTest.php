@@ -28,30 +28,24 @@ use Slim\Http\Response;
 class DefaultExceptionHandlerTest extends TestCase
 {
     /**
-     * @var Negotiator
+     * @var ExceptionHandler
      */
-    protected $negotiator;
+    protected $handler;
 
     /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-        $this->negotiator = new Negotiator();
+        $this->handler = new ExceptionHandler(new Negotiator());
     }
 
     public function testJSONOutput()
     {
-        /* @var ExceptionHandler $handler */
-        $handler = $this->getMockBuilder(ExceptionHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/json']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::internalServerError()
@@ -64,16 +58,10 @@ class DefaultExceptionHandlerTest extends TestCase
 
     public function testXMLOutput()
     {
-        /* @var ExceptionHandler $handler */
-        $handler = $this->getMockBuilder(ExceptionHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/xml']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::internalServerError()
@@ -86,16 +74,10 @@ class DefaultExceptionHandlerTest extends TestCase
 
     public function testHTMLOutput()
     {
-        /* @var ExceptionHandler $handler */
-        $handler = $this->getMockBuilder(ExceptionHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/html']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::internalServerError()
@@ -108,12 +90,10 @@ class DefaultExceptionHandlerTest extends TestCase
 
     public function testTextOutput()
     {
-        $handler = new ExceptionHandler($this->negotiator);
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/plain']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::internalServerError()
@@ -124,12 +104,10 @@ class DefaultExceptionHandlerTest extends TestCase
 
     public function testDefaultContentOutput()
     {
-        $handler = new ExceptionHandler($this->negotiator);
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/unknown']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::internalServerError()

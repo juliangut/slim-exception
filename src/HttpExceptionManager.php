@@ -159,32 +159,13 @@ class HttpExceptionManager implements LoggerAwareInterface
         ResponseInterface $response,
         array $methods = []
     ): ResponseInterface {
-        if ($request->getMethod() === 'OPTIONS') {
-            $body = new Stream(fopen('php://temp', 'wb+'));
-            $body->write(
-                sprintf(
-                    'Allowed method%s: %s',
-                    count($methods) > 1 ? 's' : '',
-                    implode(', ', $methods)
-                )
-            );
-
-            return $response
-                ->withStatus(StatusCodeInterface::STATUS_OK)
-                ->withHeader('Content-Type', 'text/plain; charset=utf-8')
-                ->withBody($body);
-        }
-
-        $exception = HttpExceptionFactory::methodNotAllowed(
-            sprintf(
-                'Method "%s" not allowed. Must be%s %s',
-                $request->getMethod(),
-                count($methods) > 1 ? ' one of' : '',
-                implode(', ', $methods)
+        return $this->handleHttpException(
+            $request,
+            $response,
+            HttpExceptionFactory::methodNotAllowed(
+                sprintf('Method %s not allowed. Allowed methods: %s', $request->getMethod(), implode(', ', $methods))
             )
         );
-
-        return $this->handleHttpException($request, $response, $exception);
     }
 
     /**

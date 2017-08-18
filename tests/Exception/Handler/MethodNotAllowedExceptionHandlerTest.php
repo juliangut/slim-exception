@@ -28,30 +28,39 @@ use Slim\Http\Response;
 class MethodNotAllowedExceptionHandlerTest extends TestCase
 {
     /**
-     * @var Negotiator
+     * @var MethodNotAllowedHandler
      */
-    protected $negotiator;
+    protected $handler;
 
     /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-        $this->negotiator = new Negotiator();
+        $this->handler = new MethodNotAllowedHandler(new Negotiator());
+    }
+
+    public function testOptionsRequest()
+    {
+        $request = Request::createFromEnvironment(Environment::mock(['REQUEST_METHOD' => 'OPTIONS']));
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $this->handler->handleException(
+            $request,
+            new Response(),
+            HttpExceptionFactory::methodNotAllowed('Method GET not allowed. Allowed methods: POST, PUT')
+        );
+
+        self::assertEquals(StatusCodeInterface::STATUS_OK, $parsedResponse->getStatusCode());
+        self::assertEquals('Allowed methods: POST, PUT', (string) $parsedResponse->getBody());
     }
 
     public function testJSONOutput()
     {
-        /* @var MethodNotAllowedHandler $handler */
-        $handler = $this->getMockBuilder(MethodNotAllowedHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/json']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::methodNotAllowed()
@@ -64,16 +73,10 @@ class MethodNotAllowedExceptionHandlerTest extends TestCase
 
     public function testXMLOutput()
     {
-        /* @var MethodNotAllowedHandler $handler */
-        $handler = $this->getMockBuilder(MethodNotAllowedHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'application/xml']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::methodNotAllowed()
@@ -86,16 +89,10 @@ class MethodNotAllowedExceptionHandlerTest extends TestCase
 
     public function testHTMLOutput()
     {
-        /* @var MethodNotAllowedHandler $handler */
-        $handler = $this->getMockBuilder(MethodNotAllowedHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->setMethods(['isCli'])
-            ->getMock();
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/html']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::methodNotAllowed()
@@ -108,12 +105,10 @@ class MethodNotAllowedExceptionHandlerTest extends TestCase
 
     public function testTextOutput()
     {
-        $handler = new MethodNotAllowedHandler($this->negotiator);
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/plain']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::methodNotAllowed()
@@ -126,12 +121,10 @@ class MethodNotAllowedExceptionHandlerTest extends TestCase
 
     public function testDefaultOutput()
     {
-        $handler = new MethodNotAllowedHandler($this->negotiator);
-
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/unknown']));
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $handler->handleException(
+        $parsedResponse = $this->handler->handleException(
             $request,
             new Response(),
             HttpExceptionFactory::methodNotAllowed()

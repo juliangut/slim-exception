@@ -52,13 +52,25 @@ abstract class AbstractHttpExceptionHandler implements HttpExceptionHandler
     ): ResponseInterface {
         $contentType = $this->getContentType($request);
 
-        $body = new Stream(fopen('php://temp', 'wb+'));
-        $body->write($this->getExceptionOutput($contentType, $exception, $request));
-
         return $response
             ->withStatus($exception->getHttpStatusCode())
             ->withHeader('Content-Type', $contentType . '; charset=utf-8')
-            ->withBody($body);
+            ->withBody($this->getNewBody($this->getExceptionOutput($contentType, $exception, $request)));
+    }
+
+    /**
+     * Get new body with content.
+     *
+     * @param string $content
+     *
+     * @return Stream
+     */
+    protected function getNewBody(string $content = ''): Stream
+    {
+        $body = new Stream(fopen('php://temp', 'wb+'));
+        $body->write($content);
+
+        return $body;
     }
 
     /**
