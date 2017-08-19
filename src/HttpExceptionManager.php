@@ -19,7 +19,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
-use Slim\Http\Stream;
 
 /**
  * HTTP exceptions manager.
