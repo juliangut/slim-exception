@@ -28,6 +28,8 @@ trait HttpExceptionAwareTrait
         set_error_handler([$this, 'errorHandler']);
         register_shutdown_function([$this, 'shutdownHandler']);
         set_exception_handler([$this, 'exceptionHandler']);
+
+        ini_set('display_errors', 'off');
     }
 
     /**
