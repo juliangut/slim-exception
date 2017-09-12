@@ -56,6 +56,8 @@ trait HttpExceptionAwareTrait
 
     /**
      * Custom shutdown handler.
+     *
+     * @SuppressWarnings(PHPMD.ExitExpression)
      */
     public function shutdownHandler()
     {
@@ -66,6 +68,12 @@ trait HttpExceptionAwareTrait
             $message = preg_replace('/ in .+\.php:\d+$/', '', $message[0]);
 
             $this->exceptionHandler(new \ErrorException($message, 0, $error['type'], $error['file'], $error['line']));
+
+            // @codeCoverageIgnoreStart
+            if (!defined('PHPUNIT_TEST')) {
+                exit;
+            }
+            // @codeCoverageIgnoreEnd
         }
     }
 
