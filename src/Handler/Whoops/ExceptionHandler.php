@@ -26,6 +26,8 @@ use Whoops\Run as Whoops;
  */
 class ExceptionHandler extends AbstractHttpExceptionHandler
 {
+    const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
+
     /**
      * Whoops runner.
      *
@@ -148,20 +150,21 @@ class ExceptionHandler extends AbstractHttpExceptionHandler
      */
     protected function addRequestData(PrettyPageHandler $handler, ServerRequestInterface $request): PrettyPageHandler
     {
-        static $dataTableLabel = 'Slim Application (Request)';
-
-        if (empty($handler->getDataTables($dataTableLabel))) {
-            $handler->addDataTable('Slim Application (Request)', [
-                'Accept Charset' => $request->getHeader('Accept') ?: '<none>',
-                'Content Charset' => $request->getHeader('Content-Type') ?: '<none>',
-                'Path' => $request->getUri()->getPath(),
-                'Query String' => $request->getUri()->getQuery() ?: '<none>',
-                'HTTP Method' => $request->getMethod(),
-                'Base URL' => (string) $request->getUri(),
-                'Scheme' => $request->getUri()->getScheme(),
-                'Port' => $request->getUri()->getPort(),
-                'Host' => $request->getUri()->getHost(),
-            ]);
+        if (empty($handler->getDataTables(self::REQUEST_DATA_TABLE_LABEL))) {
+            $handler->addDataTable(
+                self::REQUEST_DATA_TABLE_LABEL,
+                [
+                    'Accept Charset' => $request->getHeader('Accept') ?: '<none>',
+                    'Content Charset' => $request->getHeader('Content-Type') ?: '<none>',
+                    'Path' => $request->getUri()->getPath(),
+                    'Query String' => $request->getUri()->getQuery() ?: '<none>',
+                    'HTTP Method' => $request->getMethod(),
+                    'Base URL' => (string) $request->getUri(),
+                    'Scheme' => $request->getUri()->getScheme(),
+                    'Port' => $request->getUri()->getPort(),
+                    'Host' => $request->getUri()->getHost(),
+                ]
+            );
         }
 
         return $handler;
