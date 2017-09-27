@@ -53,7 +53,7 @@ abstract class AbstractHttpExceptionHandler implements HttpExceptionHandler
         $contentType = $this->getContentType($request);
 
         return $response
-            ->withStatus($exception->getHttpStatusCode())
+            ->withStatus($exception->getStatusCode())
             ->withHeader('Content-Type', $contentType . '; charset=utf-8')
             ->withBody($this->getNewBody($this->getExceptionOutput($contentType, $exception, $request)));
     }

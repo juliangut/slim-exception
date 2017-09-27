@@ -18,7 +18,7 @@ use PascalDeVink\ShortUuid\ShortUuid;
 /**
  * HTTP exception class.
  */
-class HttpException extends \RuntimeException
+class HttpException extends \DomainException
 {
     /**
      * Unique error identifier.
@@ -39,7 +39,7 @@ class HttpException extends \RuntimeException
      *
      * @var int
      */
-    protected $httpStatusCode;
+    protected $statusCode;
 
     /**
      * Exception constructor.
@@ -61,7 +61,7 @@ class HttpException extends \RuntimeException
 
         $this->identifier = ShortUuid::uuid4();
         $this->description = $description;
-        $this->httpStatusCode = $httpStatusCode;
+        $this->statusCode = $httpStatusCode;
     }
 
     /**
@@ -89,8 +89,8 @@ class HttpException extends \RuntimeException
      *
      * @return int
      */
-    public function getHttpStatusCode(): int
+    public function getStatusCode(): int
     {
-        return $this->httpStatusCode;
+        return $this->statusCode;
     }
 }

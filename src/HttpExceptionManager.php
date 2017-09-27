@@ -187,7 +187,7 @@ class HttpExceptionManager implements LoggerAwareInterface
 
         $handler = $this->defaultHandler;
 
-        $statusCode = $exception->getHttpStatusCode();
+        $statusCode = $exception->getStatusCode();
         if (array_key_exists($statusCode, $this->handlers)) {
             $handler = $this->handlers[$statusCode];
         }
@@ -235,7 +235,7 @@ class HttpExceptionManager implements LoggerAwareInterface
     final public function getLogLevel(HttpException $exception): string
     {
         while ($exception instanceof HttpException
-            && $exception->getHttpStatusCode() === StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
+            && $exception->getStatusCode() === StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
             && $exception->getPrevious() !== null) {
             $exception = $exception->getPrevious();
         }

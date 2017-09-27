@@ -39,7 +39,7 @@ class HtmlHandler extends PrettyPageHandler
         $exception = $this->getException();
 
         while ($exception instanceof HttpException
-            && $exception->getHttpStatusCode() === StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
+            && $exception->getStatusCode() === StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
             && $exception->getPrevious() !== null) {
             $exception = $exception->getPrevious();
         }

@@ -28,7 +28,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Message', $exception->getMessage());
         self::assertEquals(10, $exception->getCode());
-        self::assertEquals(400, $exception->getHttpStatusCode());
+        self::assertEquals(400, $exception->getStatusCode());
         self::assertEquals($previous, $exception->getPrevious());
     }
 
@@ -38,7 +38,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Bad request', $exception->getMessage());
         self::assertEquals(400, $exception->getCode());
-        self::assertEquals(400, $exception->getHttpStatusCode());
+        self::assertEquals(400, $exception->getStatusCode());
     }
 
     public function testUnauthorized()
@@ -47,7 +47,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Unauthorized', $exception->getMessage());
         self::assertEquals(401, $exception->getCode());
-        self::assertEquals(401, $exception->getHttpStatusCode());
+        self::assertEquals(401, $exception->getStatusCode());
     }
 
     public function testForbidden()
@@ -56,7 +56,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Forbidden', $exception->getMessage());
         self::assertEquals(403, $exception->getCode());
-        self::assertEquals(403, $exception->getHttpStatusCode());
+        self::assertEquals(403, $exception->getStatusCode());
     }
 
     public function testNotFound()
@@ -65,7 +65,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Not found', $exception->getMessage());
         self::assertEquals(404, $exception->getCode());
-        self::assertEquals(404, $exception->getHttpStatusCode());
+        self::assertEquals(404, $exception->getStatusCode());
     }
 
     public function testMethodNotAllowed()
@@ -74,7 +74,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Method not allowed', $exception->getMessage());
         self::assertEquals(405, $exception->getCode());
-        self::assertEquals(405, $exception->getHttpStatusCode());
+        self::assertEquals(405, $exception->getStatusCode());
     }
 
     public function testNotAcceptable()
@@ -83,7 +83,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Not acceptable', $exception->getMessage());
         self::assertEquals(406, $exception->getCode());
-        self::assertEquals(406, $exception->getHttpStatusCode());
+        self::assertEquals(406, $exception->getStatusCode());
     }
 
     public function testConflict()
@@ -92,7 +92,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Conflict', $exception->getMessage());
         self::assertEquals(409, $exception->getCode());
-        self::assertEquals(409, $exception->getHttpStatusCode());
+        self::assertEquals(409, $exception->getStatusCode());
     }
 
     public function testGone()
@@ -101,7 +101,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Gone', $exception->getMessage());
         self::assertEquals(410, $exception->getCode());
-        self::assertEquals(410, $exception->getHttpStatusCode());
+        self::assertEquals(410, $exception->getStatusCode());
     }
 
     public function testUnsupportedMediaType()
@@ -110,7 +110,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Unsupported media type', $exception->getMessage());
         self::assertEquals(415, $exception->getCode());
-        self::assertEquals(415, $exception->getHttpStatusCode());
+        self::assertEquals(415, $exception->getStatusCode());
     }
 
     public function testUnprocessableEntity()
@@ -119,7 +119,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Unprocessable entity', $exception->getMessage());
         self::assertEquals(422, $exception->getCode());
-        self::assertEquals(422, $exception->getHttpStatusCode());
+        self::assertEquals(422, $exception->getStatusCode());
     }
 
     public function testTooManyRequests()
@@ -128,7 +128,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Too many requests', $exception->getMessage());
         self::assertEquals(429, $exception->getCode());
-        self::assertEquals(429, $exception->getHttpStatusCode());
+        self::assertEquals(429, $exception->getStatusCode());
     }
 
     public function testInternalServerError()
@@ -137,7 +137,7 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Internal server error', $exception->getMessage());
         self::assertEquals(500, $exception->getCode());
-        self::assertEquals(500, $exception->getHttpStatusCode());
+        self::assertEquals(500, $exception->getStatusCode());
     }
 
     public function testNotImplemented()
@@ -146,6 +146,6 @@ class HttpExceptionFactoryTest extends TestCase
 
         self::assertEquals('Not implemented', $exception->getMessage());
         self::assertEquals(501, $exception->getCode());
-        self::assertEquals(501, $exception->getHttpStatusCode());
+        self::assertEquals(501, $exception->getStatusCode());
     }
 }

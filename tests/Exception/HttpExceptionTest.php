@@ -27,6 +27,6 @@ class HttpExceptionTest extends TestCase
 
         self::assertNotNull($exception->getIdentifier());
         self::assertEquals('description', $exception->getDescription());
-        self::assertEquals(400, $exception->getHttpStatusCode());
+        self::assertEquals(400, $exception->getStatusCode());
     }
 }
