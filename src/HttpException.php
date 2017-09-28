@@ -47,21 +47,21 @@ class HttpException extends \DomainException
      * @param string          $message
      * @param string          $description
      * @param int             $code
-     * @param int             $httpStatusCode
+     * @param int             $statusCode
      * @param \Throwable|null $previous
      */
     public function __construct(
         string $message,
         string $description,
         int $code,
-        int $httpStatusCode,
+        int $statusCode,
         \Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
 
         $this->identifier = ShortUuid::uuid4();
         $this->description = $description;
-        $this->statusCode = $httpStatusCode;
+        $this->statusCode = $statusCode;
     }
 
     /**

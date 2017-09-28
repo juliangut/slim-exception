@@ -353,7 +353,7 @@ class HttpExceptionFactory
      * @param string          $message
      * @param string          $description
      * @param int             $code
-     * @param int             $httpStatusCode
+     * @param int             $statusCode
      * @param \Throwable|null $previous
      *
      * @return HttpException
@@ -362,9 +362,9 @@ class HttpExceptionFactory
         string $message,
         string $description,
         int $code,
-        int $httpStatusCode,
+        int $statusCode,
         \Throwable $previous = null
     ): HttpException {
-        return new HttpException($message, $description, $code, $httpStatusCode, $previous);
+        return new HttpException($message, $description, $code, $statusCode, $previous);
     }
 }
