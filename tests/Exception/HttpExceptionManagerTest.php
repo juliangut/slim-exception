@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Tests;
 
 use Fig\Http\Message\StatusCodeInterface;
-use Jgut\Slim\Exception\Handler\AbstractHttpExceptionHandler;
+use Jgut\Slim\Exception\Formatter\Text;
+use Jgut\Slim\Exception\Handler\ExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionFactory;
-use Jgut\Slim\Exception\HttpExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionManager;
 use Jgut\Slim\Exception\Tests\Stubs\HandlerStub;
 use Negotiation\Negotiator;
@@ -58,7 +58,14 @@ class HttpExceptionManagerTest extends TestCase
             ->with(LogLevel::ERROR, $exceptionMessage);
         /* @var LoggerInterface $logger */
 
-        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain');
+
+        $manager = new HttpExceptionManager($handler);
         $manager->setLogger($logger);
 
         $request = Request::createFromEnvironment(Environment::mock());
@@ -83,7 +90,14 @@ class HttpExceptionManagerTest extends TestCase
             ->with(LogLevel::ALERT, $exceptionMessage);
         /* @var LoggerInterface $logger */
 
-        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain');
+
+        $manager = new HttpExceptionManager($handler);
         $manager->setLogger($logger);
 
         $request = Request::createFromEnvironment(Environment::mock());
@@ -101,7 +115,14 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain');
+
+        $manager = new HttpExceptionManager($handler);
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->errorHandler($request, new Response(), new \Exception('message', 0));
@@ -114,32 +135,35 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $customHandler = $this->getMockBuilder(AbstractHttpExceptionHandler::class)
-            ->setConstructorArgs([$this->negotiator])
-            ->getMockForAbstractClass();
-        $customHandler->expects($this->once())
-            ->method('getContentTypes')
-            ->will($this->returnValue(['text/plain']));
-        $customHandler->expects($this->once())
-            ->method('getExceptionOutput')
-            ->will($this->returnValue('Captured exception'));
-        /* @var HttpExceptionHandler $customHandler */
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
 
-        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
-        $manager->addHandler(StatusCodeInterface::STATUS_BAD_REQUEST, $customHandler);
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain');
+
+        $manager = new HttpExceptionManager(new ExceptionHandler($this->negotiator));
+        $manager->addHandler(StatusCodeInterface::STATUS_BAD_REQUEST, $handler);
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->errorHandler($request, new Response(), HttpExceptionFactory::badRequest());
 
         self::assertEquals(StatusCodeInterface::STATUS_BAD_REQUEST, $parsedResponse->getStatusCode());
-        self::assertEquals('Captured exception', (string) $parsedResponse->getBody());
+        self::assertEquals('Bad request', (string) $parsedResponse->getBody());
     }
 
     public function testNotFoundErrorHandler()
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain');
+
+        $manager = new HttpExceptionManager($handler);
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->notFoundHandler($request, new Response());
@@ -152,7 +176,14 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
-        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain');
+
+        $manager = new HttpExceptionManager($handler);
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->notAllowedHandler($request, new Response(), ['POST', 'PUT']);

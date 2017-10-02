@@ -14,115 +14,158 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Handler;
 
 use Jgut\Slim\Exception\HttpException;
+use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\HttpExceptionHandler;
+use Negotiation\Negotiator;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Http\Stream;
 
 /**
- * Default errors handler.
+ * HTTP exception handler.
  */
-class ExceptionHandler extends AbstractHttpExceptionHandler
+class ExceptionHandler implements HttpExceptionHandler
 {
     /**
-     * {@inheritdoc}
+     * Content type negotiator.
+     *
+     * @var Negotiator
      */
-    protected function getContentTypes(): array
+    protected $negotiator;
+
+    /**
+     * Formatter list.
+     *
+     * @var HttpExceptionFormatter[]
+     */
+    protected $formatters = [];
+
+    /**
+     * AbstractHttpExceptionHandler constructor.
+     *
+     * @param Negotiator $negotiator
+     */
+    public function __construct(Negotiator $negotiator)
     {
-        return [
-            'text/plain', // default
-            'text/json',
-            'application/json',
-            'application/x-json',
-            'text/xml',
-            'application/xml',
-            'application/x-xml',
-            'text/html',
-            'application/xhtml+xml',
-        ];
+        $this->negotiator = $negotiator;
+    }
+
+    /**
+     * Add exception formatter.
+     *
+     * @param HttpExceptionFormatter $formatter
+     * @param string|string[]|null   $contentTypes
+     *
+     * @throws \RuntimeException
+     */
+    public function addFormatter(HttpExceptionFormatter $formatter, $contentTypes = null)
+    {
+        if ($contentTypes === null) {
+            $contentTypes = $formatter->getContentTypes();
+        }
+
+        if (!is_array($contentTypes)) {
+            $contentTypes = [$contentTypes];
+        }
+
+        $contentTypes = array_filter(
+            $contentTypes,
+            function ($contentType) {
+                return is_string($contentType);
+            }
+        );
+
+        if (!count($contentTypes)) {
+            throw new \RuntimeException(sprintf('No content type defined for %s formatter', get_class($formatter)));
+        }
+
+        foreach ($contentTypes as $contentType) {
+            $this->formatters[$contentType] = $formatter;
+        }
     }
 
     /**
      * {@inheritdoc}
+     */
+    public function handleException(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        HttpException $exception
+    ): ResponseInterface {
+        $contentType = $this->getContentType($request);
+        $outputContent = $this->getExceptionOutput($contentType, $exception, $request);
+
+        return $response
+            ->withStatus($exception->getStatusCode())
+            ->withHeader('Content-Type', $contentType . '; charset=utf-8')
+            ->withBody($this->getNewBody($outputContent));
+    }
+
+    /**
+     * Get request content type.
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @throws \RuntimeException
+     *
+     * @return string
+     */
+    protected function getContentType(ServerRequestInterface $request): string
+    {
+        if (count($this->formatters) === 0) {
+            throw new \RuntimeException('No formatters defined');
+        }
+
+        $contentType = trim($request->getHeaderLine('Accept'));
+        $acceptedTypes = array_keys($this->formatters);
+
+        if ($contentType !== '') {
+            try {
+                /* @var \Negotiation\BaseAccept $best */
+                $best = $this->negotiator->getBest($contentType, $acceptedTypes);
+
+                if ($best) {
+                    return $best->getValue();
+                }
+                // @codeCoverageIgnoreStart
+            } catch (\Exception $exception) {
+                // No action needed
+            }
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $acceptedTypes[0];
+    }
+
+    /**
+     * Get error content.
+     *
+     * @param string                 $contentType
+     * @param HttpException          $exception
+     * @param ServerRequestInterface $request
+     *
+     * @return string
      */
     protected function getExceptionOutput(
         string $contentType,
         HttpException $exception,
         ServerRequestInterface $request
     ): string {
-        if (in_array($contentType, ['text/json', 'application/json', 'application/x-json'], true)) {
-            return $this->getJsonError($exception);
-        }
-
-        if (in_array($contentType, ['text/xml', 'application/xml', 'application/x-xml'], true)) {
-            return $this->getXmlError($exception);
-        }
-
-        if (in_array($contentType, ['text/html', 'application/xhtml+xml'], true)) {
-            return $this->getHtmlError($exception);
-        }
-
-        // text/plain
-        return $this->getTextError($exception);
+        return $this->formatters[$contentType]->formatException($exception, $request);
     }
 
     /**
-     * Get simple text formatted error.
+     * Get new body with content.
      *
-     * @param HttpException $exception
+     * @param string $content
      *
-     * @return string
+     * @return Stream
      */
-    protected function getTextError(HttpException $exception): string
+    protected function getNewBody(string $content = ''): Stream
     {
-        return sprintf('(%s) Application error', $exception->getIdentifier());
-    }
+        $body = new Stream(fopen('php://temp', 'wb+'));
+        $body->write($content);
 
-    /**
-     * Get simple JSON formatted error.
-     *
-     * @param HttpException $exception
-     *
-     * @return string
-     */
-    protected function getJsonError(HttpException $exception): string
-    {
-        return sprintf(
-            '{"error":{"ref":"%s","message":"Application error"}}',
-            $exception->getIdentifier()
-        );
-    }
-
-    /**
-     * Get simple XML formatted error.
-     *
-     * @param HttpException $exception
-     *
-     * @return string
-     */
-    protected function getXmlError(HttpException $exception): string
-    {
-        return sprintf(
-            '<?xml version="1.0" encoding="utf-8"?><root>' .
-            '<error><ref>%s</ref><message>Application error</message></error>' .
-            '</root>',
-            $exception->getIdentifier()
-        );
-    }
-
-    /**
-     * Get simple HTML formatted error.
-     *
-     * @param HttpException $exception
-     *
-     * @return string
-     */
-    protected function getHtmlError(HttpException $exception): string
-    {
-        return sprintf(
-            '<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; ' .
-            'charset=utf-8"><title>Application error</title><style>body{margin:0;padding:30px;font:12px/1.5 ' .
-            'Helvetica,Arial,Verdana,sans-serif;}h1{margin:0;font-size:48px;font-weight:normal;line-height:48px;' .
-            '}</style></head><body><h1>Application error (Ref. %s)</h1><p>An application error has occurred. ' .
-            'Sorry for the temporary inconvenience.</p></body></html>',
-            $exception->getIdentifier()
-        );
+        return $body;
     }
 }

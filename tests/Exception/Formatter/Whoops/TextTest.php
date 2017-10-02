@@ -11,42 +11,63 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Tests\Dumper\Whoops;
+namespace Jgut\Slim\Exception\Tests\Formatter\Whoops;
 
-use Jgut\Slim\Exception\Handler\Whoops\TextHandler;
+use Jgut\Slim\Exception\Formatter\Whoops\Text;
 use Jgut\Slim\Exception\HttpExceptionFactory;
 use PHPUnit\Framework\TestCase;
 use Whoops\Exception\Inspector;
 
 /**
- * Whoops custom plain text response handler tests.
+ * Whoops custom plain text HTTP exception formatter tests.
  */
-class TextHandlerTest extends TestCase
+class TextTest extends TestCase
 {
+    /**
+     * @var Text
+     */
+    protected $formatter;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        $this->formatter = new Text();
+    }
+
+    public function testContentType()
+    {
+        $contentTypes = [
+            'text/plain',
+        ];
+
+        self::assertEquals($contentTypes, $this->formatter->getContentTypes());
+    }
+
     public function testNoTraceOutput()
     {
         $exception = HttpExceptionFactory::tooManyRequests();
         $inspector = new Inspector($exception);
 
-        $handler = new TextHandler();
-        $handler->addTraceToOutput(false);
-        $handler->setException($exception);
-        $handler->setInspector($inspector);
+        $this->formatter->addTraceToOutput(false);
+        $this->formatter->setException($exception);
+        $this->formatter->setInspector($inspector);
 
         ob_start();
-        $handler->handle();
+        $this->formatter->handle();
         $output = ob_get_clean();
 
         self::assertNotRegExp('/Stack trace:/', $output);
     }
 
-    public function testTextOutput()
+    public function testOutput()
     {
         $originalException = new \ErrorException('Original exception');
         $exception = HttpExceptionFactory::tooManyRequests(null, null, null, $originalException);
         $inspector = new Inspector($exception);
 
-        $handler = new TextHandler();
+        $handler = new Text();
         $handler->addTraceFunctionArgsToOutput(true);
         $handler->setException($exception);
         $handler->setInspector($inspector);

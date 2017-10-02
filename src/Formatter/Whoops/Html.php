@@ -11,22 +11,34 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Handler\Whoops;
+namespace Jgut\Slim\Exception\Formatter\Whoops;
 
 use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\HttpException;
+use Jgut\Slim\Exception\HttpExceptionFormatter;
 use Whoops\Exception\FrameCollection;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Util\Misc;
 
 /**
- * Whoops custom HTML response handler.
+ * Whoops custom HTML HTTP exception formatter.
  *
  * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
  */
-class HtmlHandler extends PrettyPageHandler
+class Html extends PrettyPageHandler implements HttpExceptionFormatter
 {
-    use DumperTrait;
+    use FormatterTrait;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContentTypes(): array
+    {
+        return [
+            'text/html',
+            'application/xhtml+xml',
+        ];
+    }
 
     /**
      * Get exception code.
@@ -64,8 +76,10 @@ class HtmlHandler extends PrettyPageHandler
 
         if ($this->getApplicationPaths()) {
             foreach ($frames as $frame) {
+                $filePath = $frame->getFile();
+
                 foreach ($this->getApplicationPaths() as $path) {
-                    if (strpos($frame->getFile(), $path) === 0) {
+                    if (strpos($filePath, $path) === 0) {
                         $frame->setApplication(true);
                         break;
                     }

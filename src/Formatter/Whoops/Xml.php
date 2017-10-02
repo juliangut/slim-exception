@@ -11,17 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Handler\Whoops;
+namespace Jgut\Slim\Exception\Formatter\Whoops;
 
+use Jgut\Slim\Exception\HttpExceptionFormatter;
 use Whoops\Handler\Handler;
 use Whoops\Handler\XmlResponseHandler;
 
 /**
- * Whoops custom XML response handler.
+ * Whoops custom XML HTTP exception formatter.
  */
-class XmlHandler extends XmlResponseHandler
+class Xml extends XmlResponseHandler implements HttpExceptionFormatter
 {
-    use DumperTrait;
+    use FormatterTrait;
 
     /**
      * XmlHandler constructor.
@@ -29,6 +30,18 @@ class XmlHandler extends XmlResponseHandler
     public function __construct()
     {
         $this->addTraceToOutput(true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContentTypes(): array
+    {
+        return [
+            'application/xml',
+            'text/xml',
+            'application/x-xml',
+        ];
     }
 
     /**

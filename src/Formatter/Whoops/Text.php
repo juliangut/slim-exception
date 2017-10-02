@@ -11,16 +11,17 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Handler\Whoops;
+namespace Jgut\Slim\Exception\Formatter\Whoops;
 
+use Jgut\Slim\Exception\HttpExceptionFormatter;
 use Whoops\Handler\PlainTextHandler;
 
 /**
- * Whoops custom plain text response handler.
+ * Whoops custom plain text HTTP exception formatter.
  */
-class TextHandler extends PlainTextHandler
+class Text extends PlainTextHandler implements HttpExceptionFormatter
 {
-    use DumperTrait;
+    use FormatterTrait;
 
     /**
      * {@inheritdoc}
@@ -30,6 +31,16 @@ class TextHandler extends PlainTextHandler
         parent::__construct($logger);
 
         $this->addTraceFunctionArgsToOutput(true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContentTypes(): array
+    {
+        return [
+            'text/plain',
+        ];
     }
 
     /**

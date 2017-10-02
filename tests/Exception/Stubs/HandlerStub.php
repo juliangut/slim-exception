@@ -13,30 +13,12 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Stubs;
 
-use Jgut\Slim\Exception\Handler\AbstractHttpExceptionHandler;
+use Jgut\Slim\Exception\Handler\ExceptionHandler;
 use Jgut\Slim\Exception\HttpException;
 use Psr\Http\Message\ServerRequestInterface;
 
-class HandlerStub extends AbstractHttpExceptionHandler
+class HandlerStub extends ExceptionHandler
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function getContentTypes(): array
-    {
-        return [
-            'text/plain',
-            'text/json',
-            'application/json',
-            'application/x-json',
-            'text/xml',
-            'application/xml',
-            'application/x-xml',
-            'text/html',
-            'application/xhtml+xml',
-        ];
-    }
-
     /**
      * {@inheritdoc}
      */

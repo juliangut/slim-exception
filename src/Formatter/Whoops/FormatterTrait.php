@@ -11,9 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Handler\Whoops;
+namespace Jgut\Slim\Exception\Formatter\Whoops;
 
+use Jgut\Slim\Exception\HttpException;
 use Jgut\Slim\Exception\HttpExceptionManager;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 use Whoops\Exception\FrameCollection;
 use Whoops\Exception\Inspector;
@@ -21,8 +23,20 @@ use Whoops\Exception\Inspector;
 /**
  * Whoops dumper helper trait.
  */
-trait DumperTrait
+trait FormatterTrait
 {
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \LogicException
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function formatException(HttpException $exception, ServerRequestInterface $request): string
+    {
+        throw new \LogicException(sprintf('Calling %s::format is not possible', __CLASS__));
+    }
+
     /**
      * Get array data from exception.
      *

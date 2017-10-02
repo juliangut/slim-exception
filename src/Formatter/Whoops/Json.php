@@ -11,17 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Handler\Whoops;
+namespace Jgut\Slim\Exception\Formatter\Whoops;
 
+use Jgut\Slim\Exception\HttpExceptionFormatter;
 use Whoops\Handler\Handler;
 use Whoops\Handler\JsonResponseHandler;
 
 /**
- * Whoops custom JSON response handler.
+ * Whoops custom JSON HTTP exception formatter.
  */
-class JsonHandler extends JsonResponseHandler
+class Json extends JsonResponseHandler implements HttpExceptionFormatter
 {
-    use DumperTrait;
+    use FormatterTrait;
 
     /**
      * JsonHandler constructor.
@@ -29,6 +30,18 @@ class JsonHandler extends JsonResponseHandler
     public function __construct()
     {
         $this->addTraceToOutput(true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContentTypes(): array
+    {
+        return [
+            'application/json',
+            'text/json',
+            'application/x-json',
+        ];
     }
 
     /**
