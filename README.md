@@ -56,7 +56,7 @@ $exceptionManager = new HttpExceptionManager($defaultHandler);
 // Add handler for 404 "Not found" HTTP exceptions
 $notFoundHandler = new ExceptionHandler($contentNegotiator);
 $notFoundHandler->addFormatter(new Json());
-$notFoundHandler->addFormatter(new Html('Not found', 'The requested page could not be found));
+$notFoundHandler->addFormatter(new Html('Not found', 'The requested page could not be found'));
 $exceptionManager->addHandler([404], $notFoundHandler);
 
 // Add more handlers for specific HTTP exceptions
@@ -151,6 +151,17 @@ use Negotiation\Negotiator;
 $exceptionManager = new HttpExceptionManager(new ExceptionHandler(new Negotiator()));
 $exceptionManager->addHandler([400, 401, 403, 406, 409], new MyCustomHandler();
 ``` 
+
+### Formatters
+
+Formatting HTTP exceptions is performed based on "Accept" header of the request.
+
+There are four types of formatters bundled in the library but you can create your own easily
+
+* `Html` responds to text/html and application/xhtml+xml content types
+* `Json` responds to application/json, text/json and application/x-json content types
+* `Text` responds to text/plain content type
+* `Xml` responds to application/xml, text/xml and application/x-xml content types
 
 ### Whoops
 
