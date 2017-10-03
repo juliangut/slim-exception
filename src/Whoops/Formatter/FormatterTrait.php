@@ -146,13 +146,15 @@ trait FormatterTrait
                 break;
             }
 
-            $nextFrame = $frames[$i + 1];
-            $nextFrameCallback = sprintf('%s::%s', $nextFrame->getClass(), $nextFrame->getFunction());
+            if (isset($frames[$i + 1])) {
+                $nextFrame = $frames[$i + 1];
+                $nextFrameCallback = sprintf('%s::%s', $nextFrame->getClass(), $nextFrame->getFunction());
 
-            if ($nextFrameCallback === App::class . '::handleException') {
-                // Exception captured by \Slim\App::handleException. Skip Slim's handling
-                $firstFrame = $i + 2;
-                break;
+                if ($nextFrameCallback === App::class . '::handleException') {
+                    // Exception captured by \Slim\App::handleException. Skip Slim's handling
+                    $firstFrame = $i + 2;
+                    break;
+                }
             }
 
             $firstFrame = $i;
