@@ -11,9 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Formatter\Whoops;
+namespace Jgut\Slim\Exception\Whoops\Formatter;
 
 use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Handler\PlainTextHandler;
 
 /**
@@ -50,6 +51,10 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
      */
     public function generateResponse(): string
     {
+        /* @var \Jgut\Slim\Exception\HttpException $exception */
+        $exception = $this->getException();
+        $this->setInspector(new Inspector($exception));
+
         /* @var bool $addTrace */
         $addTrace = $this->addTraceToOutput();
 

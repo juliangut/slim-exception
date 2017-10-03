@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Tests\Handler;
+namespace Jgut\Slim\Exception\Tests\Whoops\Handler;
 
 use Jgut\Slim\Exception\Formatter\Text;
-use Jgut\Slim\Exception\Formatter\Whoops\Html;
-use Jgut\Slim\Exception\Handler\WhoopsExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionFactory;
+use Jgut\Slim\Exception\Whoops\Formatter\Html;
+use Jgut\Slim\Exception\Whoops\Handler\ExceptionHandler;
 use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
@@ -27,10 +27,10 @@ use Whoops\Run as Whoops;
 /**
  * Whoops HTTP exception handler tests.
  */
-class WhoopsExceptionHandlerTest extends TestCase
+class ExceptionHandlerTest extends TestCase
 {
     /**
-     * @var WhoopsExceptionHandler
+     * @var ExceptionHandler
      */
     protected $handler;
 
@@ -39,7 +39,7 @@ class WhoopsExceptionHandlerTest extends TestCase
      */
     public function setUp()
     {
-        $this->handler = new WhoopsExceptionHandler(new Negotiator(), new Whoops());
+        $this->handler = new ExceptionHandler(new Negotiator(), new Whoops());
     }
 
     /**

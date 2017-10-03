@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Formatter\Whoops;
+namespace Jgut\Slim\Exception\Whoops\Formatter;
 
 use Jgut\Slim\Exception\HttpException;
 use Jgut\Slim\Exception\HttpExceptionManager;

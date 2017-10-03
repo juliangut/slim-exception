@@ -16,7 +16,7 @@ HTTP aware exceptions and exception handling for Slim Framework
 
 Default Slim's error handlers customization of exceptions response is cumbersome to say the least, error handlers are quite simple, doesn't really provide any useful information during development and at the same time are ugly when on production.
 
-This package aims to unify error handling into a simpler and more extensible OOP API, handling exceptions depending on what HTTP status code they should produce.
+This package aims to unify error handling into a simpler and more extensible OOP API by providing an HTTP aware exception class and handling those depending on what HTTP status code they should produce.
 
 ## Installation
 
@@ -33,11 +33,10 @@ Require composer autoload file
 ```php
 require './vendor/autoload.php';
 
-use Jgut\Slim\Exception\Handler\ExceptionHandler;
+use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\Formatter\Html;
 use Jgut\Slim\Exception\Formatter\Json;
-use Jgut\Slim\Exception\Formatter\Text;
-use Jgut\Slim\Exception\Formatter\Xml;
+use Jgut\Slim\Exception\Handler\ExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionManager;
 use Negotiation\Negotiator;
 
@@ -57,10 +56,14 @@ $exceptionManager = new HttpExceptionManager($defaultHandler);
 $notFoundHandler = new ExceptionHandler($contentNegotiator);
 $notFoundHandler->addFormatter(new Json());
 $notFoundHandler->addFormatter(new Html('Not found', 'The requested page could not be found'));
-$exceptionManager->addHandler([404], $notFoundHandler);
+$exceptionManager->addHandler(StatusCodeInterface::STATUS_NOT_FOUND, $notFoundHandler);
 
-// Add more handlers for specific HTTP exceptions
-// For example 405 "Method not allowed"
+// Add handler for 405 "Method not allowed" HTTP exceptions
+$notAllowedHandler = new ExceptionHandler($contentNegotiator);
+$notAllowedHandler->addFormatter(new Json());
+$notAllowedHandler->addFormatter(new Html('Method not allowed', 'The requested method is not allowed'));
+$exceptionManager->addHandler(StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED, $notAllowedHandler);
+
 $exceptionManager->setLogger(new Psr3LoggerInstance());
 
 $container = $app->getContainer();
@@ -121,25 +124,19 @@ Only one default handler is mandatory (set on manager construction). This defaul
 
 Out of the box two handlers are provided
 
-* `ExceptionHandler` base handler for production
-* `WhoopsExceptionHandler` meant for development only
+* `Jgut\Slim\Exception\Handler\ExceptionHandler` easily extendable handler for production
+* `Jgut\Slim\Exception\Whoops\Handler\ExceptionHandler` meant for development only
 
 #### Custom handlers
 
-By implementing `HttpExceptionHandler` interface (or extending `ExceptionHandler`) you can create your custom exception handlers and assign them to the status code you want
+By implementing `HttpExceptionHandler` interface (or extending `Jgut\Slim\Exception\Handler\ExceptionHandler`) you can create your custom exception handlers and assign them to the status code you want
 
 ```php
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
 
 class MyCustomHandler extends ExceptionHandler
 {
-    public function handleException(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        HttpException $exception
-    ): ResponseInterface {
-        // return response formatted in the fashion you please
-    }
+    // handle and respond a formatted exception in the fashion you please
 }
 ``` 
 
@@ -148,7 +145,13 @@ use Jgut\Slim\Exception\Handler\ExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionManager;
 use Negotiation\Negotiator;
 
-$exceptionManager = new HttpExceptionManager(new ExceptionHandler(new Negotiator()));
+$defaultHandler = new ExceptionHandler(new Negotiator());
+// Add exception formatters
+
+$customHandler = new MyCustomHandler(new Negotiator());
+// Add exception formatters
+
+$exceptionManager = new HttpExceptionManager($defaultHandler);
 $exceptionManager->addHandler([400, 401, 403, 406, 409], new MyCustomHandler();
 ``` 
 
@@ -177,19 +180,19 @@ composer require --dev symfony/var-dumper
 ```
 
 ```php
-use Jgut\Slim\Exception\Handler\WhoopsExceptionHandler;
-use Jgut\Slim\Exception\Formatter\Whoops\Html;
-use Jgut\Slim\Exception\Formatter\Whoops\Json;
+use Jgut\Slim\Exception\Whoops\Formatter\Html;
+use Jgut\Slim\Exception\Whoops\Formatter\Json;
+use Jgut\Slim\Exception\Whoops\Handler\ExceptionHandler as WhoopsExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionManager;
 use Negotiation\Negotiator;
 use Whoops\Run;
 
+// Create Whoops handler and assign formatters
 $whoopsHandler = new WhoopsExceptionHandler(new Negotiator(), new Run());
-
-// Assign whoops formatters per content type
 $whoopsHandler->addFormatter(new Html());
 $whoopsHandler->addFormatter(new Json());
 
+// Set Whoops handler as default for development
 $exceptionManager = new HttpExceptionManager($whoopsHandler);
 ```
 

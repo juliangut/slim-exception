@@ -11,11 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Handler;
+namespace Jgut\Slim\Exception\Whoops\Handler;
 
-use Jgut\Slim\Exception\Formatter\Whoops\Html;
+use Jgut\Slim\Exception\Handler\ExceptionHandler as BaseExceptionHandler;
 use Jgut\Slim\Exception\HttpException;
 use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\Whoops\Formatter\Html;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ServerRequestInterface;
 use Whoops\Handler\HandlerInterface;
@@ -24,7 +25,7 @@ use Whoops\Run as Whoops;
 /**
  * Debug exception handler.
  */
-class WhoopsExceptionHandler extends ExceptionHandler
+class ExceptionHandler extends BaseExceptionHandler
 {
     const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
 

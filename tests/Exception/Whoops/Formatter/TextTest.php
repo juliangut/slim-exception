@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Tests\Formatter\Whoops;
+namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
-use Jgut\Slim\Exception\Formatter\Whoops\Text;
 use Jgut\Slim\Exception\HttpExceptionFactory;
+use Jgut\Slim\Exception\Whoops\Formatter\Text;
 use PHPUnit\Framework\TestCase;
 use Whoops\Exception\Inspector;
 

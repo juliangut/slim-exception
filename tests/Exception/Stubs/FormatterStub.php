@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Stubs;
 
-use Jgut\Slim\Exception\Formatter\Whoops\FormatterTrait;
 use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\Whoops\Formatter\FormatterTrait;
 
 class FormatterStub implements HttpExceptionFormatter
 {

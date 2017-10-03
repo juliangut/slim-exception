@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Tests\Formatter\Whoops;
+namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
 use Jgut\Slim\Exception\HttpExceptionFactory;
 use Jgut\Slim\Exception\Tests\Stubs\FormatterStub;

@@ -11,20 +11,20 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Tests\Formatter\Whoops;
+namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
-use Jgut\Slim\Exception\Formatter\Whoops\Xml;
 use Jgut\Slim\Exception\HttpExceptionFactory;
+use Jgut\Slim\Exception\Whoops\Formatter\Json;
 use PHPUnit\Framework\TestCase;
 use Whoops\Exception\Inspector;
 
 /**
- * Whoops custom XML HTTP exception formatter tests.
+ * Whoops custom JSON HTTP exception formatter tests.
  */
-class XmlTest extends TestCase
+class JsonTest extends TestCase
 {
     /**
-     * @var Xml
+     * @var Json
      */
     protected $formatter;
 
@@ -33,21 +33,21 @@ class XmlTest extends TestCase
      */
     public function setUp()
     {
-        $this->formatter = new Xml();
+        $this->formatter = new Json();
     }
 
     public function testContentType()
     {
         $contentTypes = [
-            'application/xml',
-            'text/xml',
-            'application/x-xml',
+            'application/json',
+            'text/json',
+            'application/x-json',
         ];
 
         self::assertEquals($contentTypes, $this->formatter->getContentTypes());
     }
 
-    public function testXmlOutput()
+    public function testOutput()
     {
         $exception = HttpExceptionFactory::forbidden('Forbidden');
         $inspector = new Inspector($exception);
@@ -60,7 +60,7 @@ class XmlTest extends TestCase
         $this->formatter->handle();
         $output = ob_get_clean();
 
-        self::assertRegExp('!<id>.+</id>!', $output);
-        self::assertRegExp('!<message>Forbidden</message>!', $output);
+        self::assertRegExp('/"id": ".+"/', $output);
+        self::assertRegExp('/"message": "Forbidden"/', $output);
     }
 }

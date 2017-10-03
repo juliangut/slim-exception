@@ -11,20 +11,21 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Tests\Formatter\Whoops;
+namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
-use Jgut\Slim\Exception\Formatter\Whoops\Json;
 use Jgut\Slim\Exception\HttpExceptionFactory;
+use Jgut\Slim\Exception\Whoops\Formatter\Html;
 use PHPUnit\Framework\TestCase;
 use Whoops\Exception\Inspector;
+use Whoops\Run as Whoops;
 
 /**
- * Whoops custom JSON HTTP exception formatter tests.
+ * Whoops custom HTML HTTP exception formatter tests.
  */
-class JsonTest extends TestCase
+class HtmlTest extends TestCase
 {
     /**
-     * @var Json
+     * @var Html
      */
     protected $formatter;
 
@@ -33,15 +34,14 @@ class JsonTest extends TestCase
      */
     public function setUp()
     {
-        $this->formatter = new Json();
+        $this->formatter = new Html();
     }
 
     public function testContentType()
     {
         $contentTypes = [
-            'application/json',
-            'text/json',
-            'application/x-json',
+            'text/html',
+            'application/xhtml+xml',
         ];
 
         self::assertEquals($contentTypes, $this->formatter->getContentTypes());
@@ -49,18 +49,24 @@ class JsonTest extends TestCase
 
     public function testOutput()
     {
-        $exception = HttpExceptionFactory::forbidden('Forbidden');
+        $exception = HttpExceptionFactory::internalServerError('Impossible error', null, null, new \ErrorException());
         $inspector = new Inspector($exception);
+        $whoops = new Whoops();
 
-        $this->formatter->addTraceToOutput(true);
+        $this->formatter->handleUnconditionally(true);
         $this->formatter->setException($exception);
         $this->formatter->setInspector($inspector);
+        $this->formatter->setRun($whoops);
+        $this->formatter->setApplicationPaths([
+            dirname(__DIR__, 4) . '/src/Exception/HttpExceptionFactory.php',
+            __FILE__,
+        ]);
 
         ob_start();
         $this->formatter->handle();
         $output = ob_get_clean();
 
-        self::assertRegExp('/"id": ".+"/', $output);
-        self::assertRegExp('/"message": "Forbidden"/', $output);
+        self::assertContains('Jgut\\Slim\\Exception\\HttpException', $output);
+        self::assertContains('Impossible error', $output);
     }
 }

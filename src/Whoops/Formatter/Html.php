@@ -11,14 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Jgut\Slim\Exception\Formatter\Whoops;
+namespace Jgut\Slim\Exception\Whoops\Formatter;
 
-use Fig\Http\Message\StatusCodeInterface;
-use Jgut\Slim\Exception\HttpException;
 use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Exception\FrameCollection;
 use Whoops\Handler\PrettyPageHandler;
-use Whoops\Util\Misc;
 
 /**
  * Whoops custom HTML HTTP exception formatter.
@@ -41,34 +39,19 @@ class Html extends PrettyPageHandler implements HttpExceptionFormatter
     }
 
     /**
-     * Get exception code.
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    protected function getExceptionCode(): string
+    public function handle()
     {
-        /* @var HttpException $exception */
+        /** @var \Jgut\Slim\Exception\HttpException $exception */
         $exception = $this->getException();
+        $this->setInspector(new Inspector($exception));
 
-        while ($exception instanceof HttpException
-            && $exception->getStatusCode() === StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
-            && $exception->getPrevious() !== null) {
-            $exception = $exception->getPrevious();
-        }
-
-        $code = $exception->getCode();
-        if ($exception instanceof \ErrorException) {
-            // ErrorExceptions wrap the php-error types within the 'severity' property
-            $code = Misc::translateErrorCode($exception->getSeverity());
-        }
-
-        return (string) $code;
+        return parent::handle();
     }
 
     /**
-     * Detect frames that belong to the application.
-     *
-     * @return FrameCollection
+     * {@inheritdoc}
      */
     protected function getExceptionFrames(): FrameCollection
     {
