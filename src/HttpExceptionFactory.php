@@ -39,8 +39,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Bad request',
-            $description ?: '',
+            $message ? trim($message) : 'Bad request',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_BAD_REQUEST,
             StatusCodeInterface::STATUS_BAD_REQUEST,
             $previous
@@ -64,8 +64,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Unauthorized',
-            $description ?: '',
+            $message ? trim($message) : 'Unauthorized',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_UNAUTHORIZED,
             StatusCodeInterface::STATUS_UNAUTHORIZED,
             $previous
@@ -89,8 +89,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Forbidden',
-            $description ?: '',
+            $message ? trim($message) : 'Forbidden',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_FORBIDDEN,
             StatusCodeInterface::STATUS_FORBIDDEN,
             $previous
@@ -114,8 +114,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Not found',
-            $description ?: '',
+            $message ? trim($message) : 'Not found',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_NOT_FOUND,
             StatusCodeInterface::STATUS_NOT_FOUND,
             $previous
@@ -139,8 +139,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Method not allowed',
-            $description ?: '',
+            $message ? trim($message) : 'Method not allowed',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED,
             StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED,
             $previous
@@ -164,8 +164,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Not acceptable',
-            $description ?: '',
+            $message ? trim($message) : 'Not acceptable',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_NOT_ACCEPTABLE,
             StatusCodeInterface::STATUS_NOT_ACCEPTABLE,
             $previous
@@ -189,8 +189,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Conflict',
-            $description ?: '',
+            $message ? trim($message) : 'Conflict',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_CONFLICT,
             StatusCodeInterface::STATUS_CONFLICT,
             $previous
@@ -214,8 +214,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Gone',
-            $description ?: '',
+            $message ? trim($message) : 'Gone',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_GONE,
             StatusCodeInterface::STATUS_GONE,
             $previous
@@ -239,8 +239,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Unsupported media type',
-            $description ?: '',
+            $message ? trim($message) : 'Unsupported media type',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_UNSUPPORTED_MEDIA_TYPE,
             StatusCodeInterface::STATUS_UNSUPPORTED_MEDIA_TYPE,
             $previous
@@ -264,8 +264,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Unprocessable entity',
-            $description ?: '',
+            $message ? trim($message) : 'Unprocessable entity',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
             StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
             $previous
@@ -289,8 +289,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Too many requests',
-            $description ?: '',
+            $message ? trim($message) : 'Too many requests',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_TOO_MANY_REQUESTS,
             StatusCodeInterface::STATUS_TOO_MANY_REQUESTS,
             $previous
@@ -314,8 +314,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Internal server error',
-            $description ?: '',
+            $message ? trim($message) : 'Internal server error',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
             StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
             $previous
@@ -339,8 +339,8 @@ class HttpExceptionFactory
         \Throwable $previous = null
     ): HttpException {
         return static::create(
-            $message ?: 'Not implemented',
-            $description ?: '',
+            $message ? trim($message) : 'Not implemented',
+            $description ? trim($description) : '',
             $code ?? StatusCodeInterface::STATUS_NOT_IMPLEMENTED,
             StatusCodeInterface::STATUS_NOT_IMPLEMENTED,
             $previous
