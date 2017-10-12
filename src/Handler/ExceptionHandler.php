@@ -19,6 +19,7 @@ use Jgut\Slim\Exception\HttpExceptionHandler;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Slim\Http\Stream;
 
 /**
@@ -97,7 +98,7 @@ class ExceptionHandler implements HttpExceptionHandler
 
         return $response
             ->withStatus($exception->getStatusCode())
-            ->withHeader('Content-Type', $contentType . '; charset=utf-8')
+            ->withHeader('Content-Type=', $contentType . '; charset=utf-8')
             ->withBody($this->getNewBody($outputContent));
     }
 
@@ -159,9 +160,9 @@ class ExceptionHandler implements HttpExceptionHandler
      *
      * @param string $content
      *
-     * @return Stream
+     * @return StreamInterface
      */
-    protected function getNewBody(string $content = ''): Stream
+    protected function getNewBody(string $content): StreamInterface
     {
         $body = new Stream(fopen('php://temp', 'wb+'));
         $body->write($content);
