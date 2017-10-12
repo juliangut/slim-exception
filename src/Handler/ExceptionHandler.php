@@ -98,7 +98,7 @@ class ExceptionHandler implements HttpExceptionHandler
 
         return $response
             ->withStatus($exception->getStatusCode())
-            ->withHeader('Content-Type=', $contentType . '; charset=utf-8')
+            ->withHeader('Content-Type', $contentType . '; charset=utf-8')
             ->withBody($this->getNewBody($outputContent));
     }
 
