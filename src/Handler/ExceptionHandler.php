@@ -20,6 +20,8 @@ use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Slim\Http\Headers;
+use Slim\Http\Response;
 use Slim\Http\Stream;
 
 /**
@@ -96,10 +98,9 @@ class ExceptionHandler implements HttpExceptionHandler
         $contentType = $this->getContentType($request);
         $outputContent = $this->getExceptionOutput($contentType, $exception, $request);
 
-        return $response
+        return $this->getNewResponse($outputContent, $response->getProtocolVersion())
             ->withStatus($exception->getStatusCode())
-            ->withHeader('Content-Type', $contentType . '; charset=utf-8')
-            ->withBody($this->getNewBody($outputContent));
+            ->withHeader('Content-Type', $contentType . '; charset=utf-8');
     }
 
     /**
@@ -156,17 +157,18 @@ class ExceptionHandler implements HttpExceptionHandler
     }
 
     /**
-     * Get new body with content.
+     * Get new response object.
      *
      * @param string $content
+     * @param string $protocol
      *
-     * @return StreamInterface
+     * @return ResponseInterface
      */
-    protected function getNewBody(string $content): StreamInterface
+    protected function getNewResponse(string $content, string $protocol): ResponseInterface
     {
-        $body = new Stream(fopen('php://temp', 'wb+'));
-        $body->write($content);
+        $response = new Response(200);
+        $response->getBody()->write($content);
 
-        return $body;
+        return $response->withProtocolVersion($protocol);
     }
 }
