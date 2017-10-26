@@ -95,7 +95,8 @@ class ExceptionHandler implements HttpExceptionHandler
         $contentType = $this->getContentType($request);
         $outputContent = $this->getExceptionOutput($contentType, $exception, $request);
 
-        return $this->getNewResponse($outputContent, $response->getProtocolVersion())
+        return $this->getNewResponse($outputContent)
+            ->withProtocolVersion($response->getProtocolVersion())
             ->withStatus($exception->getStatusCode())
             ->withHeader('Content-Type', $contentType . '; charset=utf-8');
     }
@@ -157,15 +158,14 @@ class ExceptionHandler implements HttpExceptionHandler
      * Get new response object.
      *
      * @param string $content
-     * @param string $protocol
      *
      * @return ResponseInterface
      */
-    protected function getNewResponse(string $content, string $protocol): ResponseInterface
+    protected function getNewResponse(string $content): ResponseInterface
     {
         $response = new Response(200);
         $response->getBody()->write($content);
 
-        return $response->withProtocolVersion($protocol);
+        return $response;
     }
 }
