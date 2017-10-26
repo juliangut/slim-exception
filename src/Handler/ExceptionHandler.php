@@ -19,10 +19,7 @@ use Jgut\Slim\Exception\HttpExceptionHandler;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
-use Slim\Http\Headers;
 use Slim\Http\Response;
-use Slim\Http\Stream;
 
 /**
  * HTTP exception handler.
