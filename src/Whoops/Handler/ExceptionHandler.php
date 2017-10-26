@@ -48,6 +48,7 @@ class ExceptionHandler extends BaseExceptionHandler
     {
         parent::__construct($negotiator);
 
+        $whoops = clone $whoops;
         $whoops->clearHandlers();
         $whoops->allowQuit(false);
         $whoops->writeToOutput(false);
