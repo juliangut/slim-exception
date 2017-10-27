@@ -30,13 +30,15 @@ trait HttpExceptionAwareTrait
         set_exception_handler([$this, 'exceptionHandler']);
 
         ini_set('display_errors', 'off');
+
+        error_reporting(-1);
     }
 
     /**
      * Custom errors handler.
      * Transforms unhandled errors into exceptions.
      *
-     * @param int         $error
+     * @param int         $severity
      * @param string      $message
      * @param string|null $file
      * @param int|null    $line
@@ -45,10 +47,10 @@ trait HttpExceptionAwareTrait
      *
      * @return bool
      */
-    public function errorHandler(int $error, string $message, string $file = null, int $line = null): bool
+    public function errorHandler(int $severity, string $message, string $file = null, int $line = null): bool
     {
-        if ($error & error_reporting()) {
-            throw new \ErrorException($message, 0, $error, $file, $line);
+        if (error_reporting() & $severity) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
         }
 
         return false;
@@ -64,10 +66,7 @@ trait HttpExceptionAwareTrait
         $error = $this->getLastError();
 
         if (count($error) && $this->isFatalError($error['type'])) {
-            $message = explode("\n", $error['message']);
-            $message = preg_replace('/ in .+\.php:\d+$/', '', $message[0]);
-
-            $this->exceptionHandler(new \ErrorException($message, 0, $error['type'], $error['file'], $error['line']));
+            $this->exceptionHandler($this->getFatalException($error));
 
             // @codeCoverageIgnoreStart
             if (!defined('PHPUNIT_TEST')) {
@@ -86,12 +85,13 @@ trait HttpExceptionAwareTrait
     {
         $container = $this->getContainer();
 
-        $handler = $container->get('errorHandler');
-        $request = $container->get('request');
-        $response = $container->get('response');
-
         /* @var ResponseInterface $response */
-        $response = call_user_func($handler, $request, $response, $exception);
+        $response = call_user_func(
+            $container->get('errorHandler'),
+            $container->get('request'),
+            $container->get('response'),
+            $exception
+        );
 
         $this->respond($response);
     }
@@ -125,6 +125,70 @@ trait HttpExceptionAwareTrait
             | E_STRICT;
 
         return ($error & $fatalErrors) !== 0;
+    }
+
+    /**
+     * Get exception from fatal error.
+     *
+     * @param array $error
+     *
+     * @return HttpException
+     */
+    private function getFatalException(array $error): HttpException
+    {
+        $message = explode("\n", $error['message']);
+        $message = preg_replace('/ in .+\.php(:\d+)?$/', '', $message[0]);
+
+        $exception = HttpExceptionFactory::internalServerError($message, '', $error['type']);
+
+        $trace = $this->getBackTrace();
+        if (count($trace)) {
+            $reflection = new \ReflectionProperty(\Exception::class, 'trace');
+            $reflection->setAccessible(true);
+            $reflection->setValue($exception, $trace);
+        }
+
+        return $exception;
+    }
+
+    /**
+     * Get execution backtrace.
+     *
+     * @return array
+     */
+    private function getBackTrace(): array
+    {
+        $trace = [];
+
+        if (function_exists('xdebug_get_function_stack')) {
+            $trace = xdebug_get_function_stack();
+
+            foreach ($trace as &$frame) {
+                if (!isset($frame['type'])) {
+                    // http://bugs.xdebug.org/view.php?id=695
+                    if (isset($frame['class'])) {
+                        $frame['type'] = '::';
+                    }
+                } elseif ('static' === $frame['type']) {
+                    $frame['type'] = '::';
+                } elseif ('dynamic' === $frame['type']) {
+                    $frame['type'] = '->';
+                }
+
+                if (isset($frame['params'])) {
+                    if (!isset($frame['args'])) {
+                        $frame['args'] = $frame['params'];
+                    }
+
+                    unset($frame['params']);
+                }
+            }
+            unset($frame);
+
+            $trace = array_reverse(array_slice($trace, 0, -3));
+        }
+
+        return $trace;
     }
 
     /**

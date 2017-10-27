@@ -38,7 +38,7 @@ class HttpExceptionAwareTraitTest extends TestCase
         register_shutdown_function([__CLASS__, 'shutDown']);
     }
 
-    public function testUnhandledError()
+    public function testIgnoredError()
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->getMock();
