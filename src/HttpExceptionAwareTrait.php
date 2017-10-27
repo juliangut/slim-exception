@@ -161,29 +161,31 @@ trait HttpExceptionAwareTrait
         $trace = [];
 
         if (function_exists('xdebug_get_function_stack')) {
-            $trace = xdebug_get_function_stack();
-
-            foreach ($trace as &$frame) {
-                if (!isset($frame['type'])) {
-                    // http://bugs.xdebug.org/view.php?id=695
-                    if (isset($frame['class'])) {
+            $trace = array_map(
+                function (array $frame): array {
+                    if (!isset($frame['type'])) {
+                        // http://bugs.xdebug.org/view.php?id=695
+                        if (isset($frame['class'])) {
+                            $frame['type'] = '::';
+                        }
+                    } elseif ('static' === $frame['type']) {
                         $frame['type'] = '::';
-                    }
-                } elseif ('static' === $frame['type']) {
-                    $frame['type'] = '::';
-                } elseif ('dynamic' === $frame['type']) {
-                    $frame['type'] = '->';
-                }
-
-                if (isset($frame['params'])) {
-                    if (!isset($frame['args'])) {
-                        $frame['args'] = $frame['params'];
+                    } elseif ('dynamic' === $frame['type']) {
+                        $frame['type'] = '->';
                     }
 
-                    unset($frame['params']);
-                }
-            }
-            unset($frame);
+                    if (isset($frame['params'])) {
+                        if (!isset($frame['args'])) {
+                            $frame['args'] = $frame['params'];
+                        }
+
+                        unset($frame['params']);
+                    }
+
+                    return $frame;
+                },
+                xdebug_get_function_stack()
+            );
 
             $trace = array_reverse(array_slice($trace, 0, -3));
         }
