@@ -20,7 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
-use Slim\Http\Body;
+use Slim\Http\Response;
 
 /**
  * HTTP exceptions manager.
@@ -146,13 +146,11 @@ class HttpExceptionManager implements LoggerAwareInterface
         $exception = HttpExceptionFactory::notFound();
 
         if ($request->getMethod() === RequestMethodInterface::METHOD_OPTIONS) {
-            $request = $request->withHeader('Accept', 'text/plain');
-            $exception = HttpExceptionFactory::create(
-                $exception->getMessage(),
-                $exception->getDescription(),
-                $exception->getCode(),
-                StatusCodeInterface::STATUS_OK
-            );
+            $optionsResponse = new Response(StatusCodeInterface::STATUS_OK);
+            $optionsResponse->getBody()->write($exception->getMessage());
+
+            return $optionsResponse->withProtocolVersion($response->getProtocolVersion())
+                ->withHeader('Content-Type', 'text/plain; charset=utf-8');
         }
 
         return $this->handleHttpException($request, $response, $exception);
@@ -177,27 +175,14 @@ class HttpExceptionManager implements LoggerAwareInterface
         );
 
         if ($request->getMethod() === RequestMethodInterface::METHOD_OPTIONS) {
-            $request = $request->withHeader('Accept', 'text/plain');
-            $exception = HttpExceptionFactory::create(
-                sprintf('Allowed methods: %s', implode(', ', $methods)),
-                $exception->getDescription(),
-                $exception->getCode(),
-                StatusCodeInterface::STATUS_OK
-            );
+            $optionsResponse = new Response(StatusCodeInterface::STATUS_OK);
+            $optionsResponse->getBody()->write(sprintf('Allowed methods: %s', implode(', ', $methods)));
+
+            return $optionsResponse->withProtocolVersion($response->getProtocolVersion())
+                ->withHeader('Content-Type', 'text/plain; charset=utf-8');
         }
 
-        $response = $this->handleHttpException($request, $response, $exception);
-
-        if ($request->getMethod() === RequestMethodInterface::METHOD_OPTIONS) {
-            $optionsBody = new Body(fopen('php://temp', 'wb+'));
-            $optionsBody->write(
-                preg_replace('/^\(.+\) Allowed methods: /', 'Allowed methods: ', (string) $response->getBody())
-            );
-
-            $response = $response->withBody($optionsBody);
-        }
-
-        return $response;
+        return $this->handleHttpException($request, $response, $exception);
     }
 
     /**

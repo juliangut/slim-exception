@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Handler;
 
+use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\HttpException;
 use Jgut\Slim\Exception\HttpExceptionFormatter;
 use Jgut\Slim\Exception\HttpExceptionHandler;
@@ -163,7 +164,7 @@ class ExceptionHandler implements HttpExceptionHandler
      */
     protected function getNewResponse(string $content): ResponseInterface
     {
-        $response = new Response(200);
+        $response = new Response(StatusCodeInterface::STATUS_OK);
         $response->getBody()->write($content);
 
         return $response;

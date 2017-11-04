@@ -176,19 +176,13 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock(['REQUEST_METHOD' => 'OPTIONS']));
 
-        $formatter = $this->getMockBuilder(Text::class)
-            ->getMock();
-        /* @var Text $formatter */
-
-        $handler = new HandlerStub($this->negotiator);
-        $handler->addFormatter($formatter, 'text/plain'); // Because OPTIONS response must be plain text
-
-        $manager = new HttpExceptionManager($handler);
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->notFoundHandler($request, new Response());
 
         self::assertEquals(StatusCodeInterface::STATUS_OK, $parsedResponse->getStatusCode());
+        self::assertEquals('text/plain; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
         self::assertEquals('Not found', (string) $parsedResponse->getBody());
     }
 
@@ -216,15 +210,13 @@ class HttpExceptionManagerTest extends TestCase
     {
         $request = Request::createFromEnvironment(Environment::mock(['REQUEST_METHOD' => 'OPTIONS']));
 
-        $handler = new ExceptionHandler($this->negotiator);
-        $handler->addFormatter(new Text(), 'text/plain'); // Because OPTIONS response must be plain text
-
-        $manager = new HttpExceptionManager($handler);
+        $manager = new HttpExceptionManager(new HandlerStub($this->negotiator));
 
         /* @var Response $parsedResponse */
         $parsedResponse = $manager->notAllowedHandler($request, new Response(), ['POST', 'PUT']);
 
         self::assertEquals(StatusCodeInterface::STATUS_OK, $parsedResponse->getStatusCode());
+        self::assertEquals('text/plain; charset=utf-8', $parsedResponse->getHeaderLine('Content-Type'));
         self::assertEquals('Allowed methods: POST, PUT', (string) $parsedResponse->getBody());
     }
 }
