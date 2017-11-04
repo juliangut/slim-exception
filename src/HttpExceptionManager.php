@@ -13,12 +13,14 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception;
 
+use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
+use Slim\Http\Body;
 
 /**
  * HTTP exceptions manager.
@@ -141,7 +143,19 @@ class HttpExceptionManager implements LoggerAwareInterface
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ResponseInterface {
-        return $this->handleHttpException($request, $response, HttpExceptionFactory::notFound());
+        $exception = HttpExceptionFactory::notFound();
+
+        if ($request->getMethod() === RequestMethodInterface::METHOD_OPTIONS) {
+            $request = $request->withHeader('Accept', 'text/plain');
+            $exception = HttpExceptionFactory::create(
+                $exception->getMessage(),
+                $exception->getDescription(),
+                $exception->getCode(),
+                StatusCodeInterface::STATUS_OK
+            );
+        }
+
+        return $this->handleHttpException($request, $response, $exception);
     }
 
     /**
@@ -158,13 +172,32 @@ class HttpExceptionManager implements LoggerAwareInterface
         ResponseInterface $response,
         array $methods = []
     ): ResponseInterface {
-        return $this->handleHttpException(
-            $request,
-            $response,
-            HttpExceptionFactory::methodNotAllowed(
-                sprintf('Method %s not allowed. Allowed methods: %s', $request->getMethod(), implode(', ', $methods))
-            )
+        $exception = HttpExceptionFactory::methodNotAllowed(
+            sprintf('Method %s not allowed. Must be one of: %s', $request->getMethod(), implode(', ', $methods))
         );
+
+        if ($request->getMethod() === RequestMethodInterface::METHOD_OPTIONS) {
+            $request = $request->withHeader('Accept', 'text/plain');
+            $exception = HttpExceptionFactory::create(
+                sprintf('Allowed methods: %s', implode(', ', $methods)),
+                $exception->getDescription(),
+                $exception->getCode(),
+                StatusCodeInterface::STATUS_OK
+            );
+        }
+
+        $response = $this->handleHttpException($request, $response, $exception);
+
+        if ($request->getMethod() === RequestMethodInterface::METHOD_OPTIONS) {
+            $optionsBody = new Body(fopen('php://temp', 'wb+'));
+            $optionsBody->write(
+                preg_replace('/^\(.+\) Allowed methods: /', 'Allowed methods: ', (string) $response->getBody())
+            );
+
+            $response = $response->withBody($optionsBody);
+        }
+
+        return $response;
     }
 
     /**
