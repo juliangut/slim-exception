@@ -100,7 +100,7 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
             $stackFrames
         );
 
-        return 'Stack trace:' . implode('', $stackTrace);
+        return "Stack trace:\n" . implode('', $stackTrace);
     }
 
     /**

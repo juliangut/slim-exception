@@ -241,7 +241,7 @@ class HttpExceptionManager implements LoggerAwareInterface
             'exception_id' => $exception->getIdentifier(),
             'http_method' => $request->getMethod(),
             'request_uri' => (string) $request->getUri(),
-            'level_name' => $logLevel,
+            'level_name' => strtoupper($logLevel),
             'stack_trace' => $this->getStackTrace($exception),
         ];
 
@@ -268,15 +268,7 @@ class HttpExceptionManager implements LoggerAwareInterface
         $exceptionParts = explode("\n", rtrim($formatter->generateResponse(), "\n"));
 
         if (count($exceptionParts) !== 1) {
-            $stackTrace = array_map(
-                function (string $stackLine): string {
-                    // Remove first three spaces (even from argument list)
-                    return substr($stackLine, 3);
-                },
-                array_splice($exceptionParts, 0, 2)
-            );
-
-            return implode("\n", $stackTrace);
+            return implode("\n", array_filter(array_splice($exceptionParts, 2)));
         }
 
         return '';
