@@ -15,6 +15,7 @@ namespace Jgut\Slim\Exception\Tests\Whoops\Handler;
 
 use Jgut\Slim\Exception\Formatter\Text;
 use Jgut\Slim\Exception\HttpExceptionFactory;
+use Jgut\Slim\Exception\Tests\Stubs\FormatterStub;
 use Jgut\Slim\Exception\Whoops\Formatter\Html;
 use Jgut\Slim\Exception\Whoops\Handler\ExceptionHandler;
 use Negotiation\Negotiator;
@@ -72,8 +73,7 @@ class ExceptionHandlerTest extends TestCase
         $exception = HttpExceptionFactory::badRequest();
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/html']));
 
-        $formatter = new Html();
-        $formatter->handleUnconditionally(true);
+        $formatter = new FormatterStub();
 
         $this->handler->addFormatter($formatter, 'text/html');
 

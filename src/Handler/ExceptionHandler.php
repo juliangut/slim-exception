@@ -71,7 +71,7 @@ class ExceptionHandler implements HttpExceptionHandler
 
         $contentTypes = array_filter(
             $contentTypes,
-            function ($contentType) {
+            function ($contentType): bool {
                 return is_string($contentType);
             }
         );

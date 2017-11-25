@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Whoops\Formatter;
 
 use Jgut\Slim\Exception\HttpExceptionFormatter;
-use Whoops\Exception\Inspector;
+use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Handler\Handler;
 use Whoops\Handler\XmlResponseHandler;
 
@@ -52,12 +52,14 @@ class Xml extends XmlResponseHandler implements HttpExceptionFormatter
     {
         /* @var \Jgut\Slim\Exception\HttpException $exception */
         $exception = $this->getException();
-        $this->setInspector(new Inspector($exception));
+
+        $inspector = new Inspector($exception);
+        $this->setInspector($inspector);
 
         /* @var bool $addTrace */
         $addTrace = $this->addTraceToOutput();
 
-        $error = $this->getExceptionData($this->getInspector(), $addTrace);
+        $error = $this->getExceptionData($inspector, $addTrace);
 
         echo $this->getFormattedXml($error);
 

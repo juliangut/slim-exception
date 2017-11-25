@@ -15,6 +15,7 @@ namespace Jgut\Slim\Exception;
 
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
+use Jgut\Slim\Exception\Whoops\Formatter\Text;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -34,7 +35,7 @@ class HttpExceptionManager implements LoggerAwareInterface
      *
      * @var array
      */
-    private $logLevelMap = [
+    private $errorToLogLevelMap = [
         E_ERROR => LogLevel::ALERT,
         E_WARNING => LogLevel::WARNING,
         E_PARSE => LogLevel::ALERT,
@@ -100,7 +101,7 @@ class HttpExceptionManager implements LoggerAwareInterface
 
         $statusCodes = array_filter(
             $statusCodes,
-            function ($statusCode) {
+            function ($statusCode): bool {
                 return is_int($statusCode);
             }
         );
@@ -235,12 +236,50 @@ class HttpExceptionManager implements LoggerAwareInterface
             return;
         }
 
+        $logLevel = $this->getLogLevel($exception);
         $logContext = [
             'exception_id' => $exception->getIdentifier(),
             'http_method' => $request->getMethod(),
             'request_uri' => (string) $request->getUri(),
+            'level_name' => $logLevel,
+            'stack_trace' => $this->getStackTrace($exception),
         ];
-        $this->logger->log($this->getLogLevel($exception), $exception->getMessage(), $logContext);
+
+        $this->logger->log($logLevel, $exception->getMessage(), $logContext);
+    }
+
+    /**
+     * Get exception stack trace.
+     *
+     * @param HttpException $exception
+     *
+     * @return string
+     */
+    protected function getStackTrace(HttpException $exception): string
+    {
+        if (!class_exists('Whoops\Run')) {
+            // @codeCoverageIgnoreStart
+            return $exception->getTraceAsString();
+            // @codeCoverageIgnoreEnd
+        }
+
+        $formatter = new Text();
+        $formatter->setException($exception);
+        $exceptionParts = explode("\n", rtrim($formatter->generateResponse(), "\n"));
+
+        if (count($exceptionParts) !== 1) {
+            $stackTrace = array_map(
+                function (string $stackLine): string {
+                    // Remove first three spaces (even from argument list)
+                    return substr($stackLine, 3);
+                },
+                array_splice($exceptionParts, 0, 2)
+            );
+
+            return implode("\n", $stackTrace);
+        }
+
+        return '';
     }
 
     /**
@@ -258,8 +297,10 @@ class HttpExceptionManager implements LoggerAwareInterface
             $exception = $exception->getPrevious();
         }
 
-        if ($exception instanceof \ErrorException && array_key_exists($exception->getSeverity(), $this->logLevelMap)) {
-            return $this->logLevelMap[$exception->getSeverity()];
+        if ($exception instanceof \ErrorException
+            && array_key_exists($exception->getSeverity(), $this->errorToLogLevelMap)
+        ) {
+            return $this->errorToLogLevelMap[$exception->getSeverity()];
         }
 
         return LogLevel::ERROR;

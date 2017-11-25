@@ -53,38 +53,31 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
     {
         /* @var \Jgut\Slim\Exception\HttpException $exception */
         $exception = $this->getException();
-        $this->setInspector(new Inspector($exception));
+
+        $inspector = new Inspector($exception);
+        $this->setInspector($inspector);
 
         /* @var bool $addTrace */
         $addTrace = $this->addTraceToOutput();
 
-        $error = $this->getExceptionData($this->getInspector(), $addTrace);
+        $error = $this->getExceptionData($inspector, $addTrace);
+        $stackTrace = $addTrace ? "\n" . $this->getStackTraceOutput($error['trace']) : '';
 
-        return sprintf(
-            "(%s) %s: %s%s\n",
-            $error['id'],
-            $error['type'],
-            $error['message'],
-            $this->getStack()
-        );
+        return sprintf("(%s) %s: %s%s\n", $error['id'], $error['type'], $error['message'], $stackTrace);
     }
 
     /**
-     * Get call stack.
+     * Get plain text stack trace.
+     *
+     * @param array $stackFrames
      *
      * @return string
      */
-    protected function getStack(): string
+    protected function getStackTraceOutput(array $stackFrames): string
     {
-        if (!$this->addTraceToOutput()) {
-            return '';
-        }
-
-        $argumentsDumper = [$this, 'getArguments'];
-
         $line = 1;
-        $stack = array_map(
-            function (array $stack) use ($argumentsDumper, &$line) {
+        $stackTrace = array_map(
+            function (array $stack) use (&$line): string {
                 $template = "\n%3d. %s->%s() %s:%d%s";
                 if (!$stack['class']) {
                     $template = "\n%3d. %s%s() %s:%d%s";
@@ -97,17 +90,17 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
                     $stack['function'],
                     $stack['file'],
                     $stack['line'],
-                    $argumentsDumper($stack['args'], $line)
+                    $this->getArguments($stack['args'], $line)
                 );
 
                 $line++;
 
                 return $trace;
             },
-            $this->getExceptionStack($this->getInspector())
+            $stackFrames
         );
 
-        return "\nStack trace:" . implode('', $stack);
+        return 'Stack trace:' . implode('', $stackTrace);
     }
 
     /**
@@ -127,11 +120,13 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
             // @codeCoverageIgnoreEnd
         }
 
+        $argsOutputLimit = $this->getTraceFunctionArgsOutputLimit();
+
         ob_start();
 
         var_dump($args);
 
-        if (ob_get_length() > $this->getTraceFunctionArgsOutputLimit()) {
+        if (ob_get_length() > $argsOutputLimit) {
             // The argument var_dump is to big.
             // Discarded to limit memory usage.
             ob_end_clean();
@@ -139,7 +134,7 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
             return sprintf(
                 "\n%sArguments dump length greater than %d Bytes. Discarded.",
                 parent::VAR_DUMP_PREFIX,
-                $this->getTraceFunctionArgsOutputLimit()
+                $argsOutputLimit
             );
         }
 

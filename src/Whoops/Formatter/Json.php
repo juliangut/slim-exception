@@ -52,12 +52,14 @@ class Json extends JsonResponseHandler implements HttpExceptionFormatter
     {
         /* @var \Jgut\Slim\Exception\HttpException $exception */
         $exception = $this->getException();
-        $this->setInspector(new Inspector($exception));
+
+        $inspector = new Inspector($exception);
+        $this->setInspector($inspector);
 
         /* @var bool $addTrace */
         $addTrace = $this->addTraceToOutput();
 
-        $error = $this->getExceptionData($this->getInspector(), $addTrace);
+        $error = $this->getExceptionData($inspector, $addTrace);
         $options = JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT;
 
         echo json_encode(['error' => $error], $options);

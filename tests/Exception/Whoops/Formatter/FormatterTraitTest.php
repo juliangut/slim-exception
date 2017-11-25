@@ -25,7 +25,7 @@ class FormatterTraitTest extends TestCase
 {
     /**
      * @expectedException \LogicException
-     * @expectedExceptionMessageRegExp /Calling .+::format is not possible/
+     * @expectedExceptionMessageRegExp /Calling .+::formatException is not possible/
      */
     public function testContentType()
     {

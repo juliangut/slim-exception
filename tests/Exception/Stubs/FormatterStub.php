@@ -13,18 +13,26 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Stubs;
 
-use Jgut\Slim\Exception\HttpExceptionFormatter;
-use Jgut\Slim\Exception\Whoops\Formatter\FormatterTrait;
+use Jgut\Slim\Exception\Whoops\Formatter\Html;
+use Whoops\Handler\Handler;
 
-class FormatterStub implements HttpExceptionFormatter
+class FormatterStub extends Html
 {
-    use FormatterTrait;
-
     /**
      * {@inheritdoc}
      */
     public function getContentTypes(): array
     {
         return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handle()
+    {
+        echo $this->getException()->getMessage();
+
+        return Handler::QUIT;
     }
 }

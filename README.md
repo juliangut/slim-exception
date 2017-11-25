@@ -170,13 +170,15 @@ There are four types of formatters bundled in the library but you can create you
 
 Development environment deserves a better, more informative error handling.
 
-[Whoops](https://github.com/filp/whoops) is a great tool for this purpose and its usage is contemplated by this package. There is an special Whoops HTTP exception handler which can be used as default exception handler for production
+[Whoops](https://github.com/filp/whoops) is a great tool for this purpose and its usage is contemplated by this package. There is an special Whoops HTTP exception handler which can be used as default exception handler for development
+
+**_Consider including Whoops and var-dumper in production as well to benefit from better and richer stack traces on logs_**
 
 For you to use this handler you'll need to require whoops first. Additionally symfony's var-dumper plays nice with whoops so require it too
 
 ```
-composer require --dev filp/whoops
-composer require --dev symfony/var-dumper
+composer require filp/whoops
+composer require symfony/var-dumper
 ```
 
 ```php
