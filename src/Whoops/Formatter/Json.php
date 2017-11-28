@@ -42,6 +42,7 @@ class Json extends JsonResponseHandler implements HttpExceptionFormatter
             'application/json',
             'text/json',
             'application/x-json',
+            'application/*+json',
         ];
     }
 

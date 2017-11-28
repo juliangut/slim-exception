@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Tests\Handler;
 
 use Jgut\Slim\Exception\Formatter\Html;
+use Jgut\Slim\Exception\Formatter\Json;
 use Jgut\Slim\Exception\Formatter\Text;
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
 use Jgut\Slim\Exception\HttpExceptionFactory;
@@ -102,6 +103,7 @@ class ExceptionHandlerTest extends TestCase
 
         $response = $this->handler->handleException($request, new Response(), $exception);
 
+        self::assertEquals('text/html; charset=utf-8', $response->getHeaderLine('Content-Type'));
         self::assertEquals('<h1>Exception</h1>', (string) $response->getBody());
     }
 
@@ -109,20 +111,21 @@ class ExceptionHandlerTest extends TestCase
     {
         $exception = HttpExceptionFactory::badRequest();
 
-        $formatter = $this->getMockBuilder(Text::class)
+        $formatter = $this->getMockBuilder(Json::class)
             ->getMock();
         $formatter->expects($this->once())
             ->method('formatException')
             ->with($exception)
             ->will($this->returnValue('Exception'));
-        /* @var Text $formatter */
+        /* @var Json $formatter */
 
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/html']));
 
-        $this->handler->addFormatter($formatter, 'text/plain');
+        $this->handler->addFormatter($formatter, ['application/*+json', 'application/json']);
 
         $response = $this->handler->handleException($request, new Response(), $exception);
 
+        self::assertEquals('application/json; charset=utf-8', $response->getHeaderLine('Content-Type'));
         self::assertEquals('Exception', (string) $response->getBody());
     }
 }

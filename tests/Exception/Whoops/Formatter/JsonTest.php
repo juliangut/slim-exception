@@ -42,6 +42,7 @@ class JsonTest extends TestCase
             'application/json',
             'text/json',
             'application/x-json',
+            'application/*+json',
         ];
 
         self::assertEquals($contentTypes, $this->formatter->getContentTypes());

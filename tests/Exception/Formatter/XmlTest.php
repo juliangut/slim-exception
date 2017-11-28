@@ -42,6 +42,7 @@ class XmlTest extends TestCase
             'application/xml',
             'text/xml',
             'application/x-xml',
+            'application/*+xml',
         ];
 
         self::assertEquals($contentTypes, $this->formatter->getContentTypes());

@@ -17,6 +17,7 @@ use Fig\Http\Message\StatusCodeInterface;
 use Jgut\Slim\Exception\HttpException;
 use Jgut\Slim\Exception\HttpExceptionFormatter;
 use Jgut\Slim\Exception\HttpExceptionHandler;
+use Negotiation\BaseAccept;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -117,16 +118,17 @@ class ExceptionHandler implements HttpExceptionHandler
             throw new \RuntimeException('No formatters defined');
         }
 
-        $contentType = trim($request->getHeaderLine('Accept'));
-        $acceptedTypes = array_keys($this->formatters);
+        $header = trim($request->getHeaderLine('Accept'));
+        $priorities = array_keys($this->formatters);
+        $contentType = $priorities[0];
 
-        if ($contentType !== '') {
+        if ($header !== '') {
             try {
-                /* @var \Negotiation\BaseAccept $best */
-                $best = $this->negotiator->getBest($contentType, $acceptedTypes);
+                /* @var BaseAccept $selected */
+                $selected = $this->negotiator->getBest($header, $priorities);
 
-                if ($best) {
-                    return $best->getValue();
+                if ($selected instanceof BaseAccept) {
+                    $contentType = $selected->getType();
                 }
                 // @codeCoverageIgnoreStart
             } catch (\Exception $exception) {
@@ -135,7 +137,11 @@ class ExceptionHandler implements HttpExceptionHandler
             // @codeCoverageIgnoreEnd
         }
 
-        return $acceptedTypes[0];
+        if (strpos($contentType, '/*+') !== false) {
+            $contentType = str_replace('/*+', '/', $contentType);
+        }
+
+        return $contentType;
     }
 
     /**

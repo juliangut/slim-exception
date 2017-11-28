@@ -31,6 +31,7 @@ class Xml implements HttpExceptionFormatter
             'application/xml',
             'text/xml',
             'application/x-xml',
+            'application/*+xml',
         ];
     }
 

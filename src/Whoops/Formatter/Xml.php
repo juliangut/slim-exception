@@ -42,6 +42,7 @@ class Xml extends XmlResponseHandler implements HttpExceptionFormatter
             'application/xml',
             'text/xml',
             'application/x-xml',
+            'application/*+xml',
         ];
     }
 
