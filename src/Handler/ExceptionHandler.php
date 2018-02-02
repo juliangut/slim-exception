@@ -77,7 +77,7 @@ class ExceptionHandler implements HttpExceptionHandler
             }
         );
 
-        if (!count($contentTypes)) {
+        if (count($contentTypes) === 0) {
             throw new \RuntimeException(sprintf('No content type defined for %s formatter', get_class($formatter)));
         }
 
@@ -124,7 +124,7 @@ class ExceptionHandler implements HttpExceptionHandler
 
         if ($header !== '') {
             try {
-                /* @var BaseAccept $selected */
+                /** @var BaseAccept $selected */
                 $selected = $this->negotiator->getBest($header, $priorities);
 
                 if ($selected instanceof BaseAccept) {

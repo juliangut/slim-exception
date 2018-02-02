@@ -85,7 +85,7 @@ trait HttpExceptionAwareTrait
     {
         $container = $this->getContainer();
 
-        /* @var ResponseInterface $response */
+        /** @var ResponseInterface $response */
         $response = call_user_func(
             $container->get('errorHandler'),
             $container->get('request'),

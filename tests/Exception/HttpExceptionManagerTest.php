@@ -107,7 +107,7 @@ class HttpExceptionManagerTest extends TestCase
         $manager->handleHttpException(
             $request,
             new Response(),
-            HttpExceptionFactory::internalServerError($exceptionMessage, null, null, $originalException)
+            HttpExceptionFactory::internalServerError($exceptionMessage, '', null, $originalException)
         );
     }
 

@@ -126,7 +126,7 @@ class HttpExceptionManager implements LoggerAwareInterface
         \Throwable $exception
     ): ResponseInterface {
         if (!$exception instanceof HttpException) {
-            $exception = HttpExceptionFactory::internalServerError(null, null, null, $exception);
+            $exception = HttpExceptionFactory::internalServerError('', '', null, $exception);
         }
 
         return $this->handleHttpException($request, $response, $exception);

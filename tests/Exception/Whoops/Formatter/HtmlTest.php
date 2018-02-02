@@ -49,7 +49,7 @@ class HtmlTest extends TestCase
 
     public function testOutput()
     {
-        $exception = HttpExceptionFactory::internalServerError('Impossible error', null, null, new \ErrorException());
+        $exception = HttpExceptionFactory::internalServerError('Impossible error', '', null, new \ErrorException());
         $inspector = new Inspector($exception);
         $whoops = new Whoops();
 

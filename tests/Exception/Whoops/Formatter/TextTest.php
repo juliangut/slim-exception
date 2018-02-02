@@ -64,7 +64,7 @@ class TextTest extends TestCase
     public function testOutput()
     {
         $originalException = new \ErrorException('Original exception');
-        $exception = HttpExceptionFactory::tooManyRequests(null, null, null, $originalException);
+        $exception = HttpExceptionFactory::tooManyRequests('', '', null, $originalException);
         $inspector = new Inspector($exception);
 
         $handler = new Text();

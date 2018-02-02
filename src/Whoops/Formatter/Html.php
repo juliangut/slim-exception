@@ -43,7 +43,7 @@ class Html extends PrettyPageHandler implements HttpExceptionFormatter
      */
     public function handle()
     {
-        /* @var \Jgut\Slim\Exception\HttpException $exception */
+        /** @var \Jgut\Slim\Exception\HttpException $exception */
         $exception = $this->getException();
         $this->setInspector(new Inspector($exception));
 
@@ -55,11 +55,11 @@ class Html extends PrettyPageHandler implements HttpExceptionFormatter
      */
     protected function getExceptionFrames(): FrameCollection
     {
-        /* @var Inspector $inspector */
+        /** @var Inspector $inspector */
         $inspector = $this->getInspector();
         $frames = $inspector->getTraceFrames();
 
-        if ($this->getApplicationPaths()) {
+        if (is_array($this->getApplicationPaths()) && count($this->getApplicationPaths()) > 0) {
             foreach ($frames as $frame) {
                 $filePath = $frame->getFile();
 

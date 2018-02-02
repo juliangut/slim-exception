@@ -51,13 +51,13 @@ class Json extends JsonResponseHandler implements HttpExceptionFormatter
      */
     public function handle(): int
     {
-        /* @var \Jgut\Slim\Exception\HttpException $exception */
+        /** @var \Jgut\Slim\Exception\HttpException $exception */
         $exception = $this->getException();
 
         $inspector = new Inspector($exception);
         $this->setInspector($inspector);
 
-        /* @var bool $addTrace */
+        /** @var bool $addTrace */
         $addTrace = $this->addTraceToOutput();
 
         $error = $this->getExceptionData($inspector, $addTrace);

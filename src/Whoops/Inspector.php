@@ -43,7 +43,7 @@ class Inspector extends BaseInspector
      */
     public function getTraceFrames(): FrameCollection
     {
-        /* @var \Whoops\Exception\Frame[] $frameList */
+        /** @var \Whoops\Exception\Frame[] $frameList */
         $frameList = $this->getFrames()->getArray();
         $firstNonInternal = $this->findFirstNonInternalFrame($frameList);
 

@@ -2,7 +2,6 @@
 composer.lock
 cghooks.lock
 vendor/
-.yo-rc.json
 *.cache
-humbuglog.*
+infection-log.*
 build/

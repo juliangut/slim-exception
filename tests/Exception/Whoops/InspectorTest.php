@@ -26,7 +26,7 @@ class InspectorTest extends TestCase
     public function testAssign()
     {
         $originalException = new \InvalidArgumentException();
-        $exception = HttpExceptionFactory::internalServerError(null, null, null, $originalException);
+        $exception = HttpExceptionFactory::internalServerError('', '', null, $originalException);
 
         $inspector = new Inspector($exception);
 
@@ -36,7 +36,7 @@ class InspectorTest extends TestCase
     public function testTraceFrames()
     {
         $originalException = new \InvalidArgumentException();
-        $exception = HttpExceptionFactory::internalServerError(null, null, null, $originalException);
+        $exception = HttpExceptionFactory::internalServerError('', '', null, $originalException);
 
         $inspector = new InspectorStub($exception);
 

@@ -44,7 +44,7 @@ trait FormatterTrait
      */
     protected function getExceptionData(Inspector $inspector, bool $addTrace = false): array
     {
-        /* @var \Jgut\Slim\Exception\HttpException $exception */
+        /** @var \Jgut\Slim\Exception\HttpException $exception */
         $exception = $inspector->getException();
 
         $error = [
@@ -73,8 +73,8 @@ trait FormatterTrait
         $frameList = $inspector->getTraceFrames();
 
         $stackFrames = [];
+        /** @var \Whoops\Exception\Frame $frame */
         foreach ($frameList as $frame) {
-            /* @var \Whoops\Exception\Frame $frame */
             $stackFrames[] = [
                 'file' => $frame->getFile(true),
                 'line' => $frame->getLine(),
