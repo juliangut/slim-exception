@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Formatter;
 
-use Jgut\Slim\Exception\HttpException;
-use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\HttpException\HttpException;
+use Jgut\Slim\Exception\ExceptionFormatter;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Plain text HTTP exception formatter.
  */
-class Text implements HttpExceptionFormatter
+class Text implements ExceptionFormatter
 {
     /**
      * {@inheritdoc}
@@ -37,6 +37,6 @@ class Text implements HttpExceptionFormatter
      */
     public function formatException(HttpException $exception, ServerRequestInterface $request): string
     {
-        return sprintf('(%s) %s', $exception->getIdentifier(), $exception->getMessage());
+        return \sprintf('(%s) %s', $exception->getIdentifier(), $exception->getMessage());
     }
 }

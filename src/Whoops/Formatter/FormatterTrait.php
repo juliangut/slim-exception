@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpException;
+use Jgut\HttpException\HttpException;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -31,7 +31,7 @@ trait FormatterTrait
      */
     public function formatException(HttpException $exception, ServerRequestInterface $request): string
     {
-        throw new \LogicException(sprintf('Calling %s::formatException is not possible', __CLASS__));
+        throw new \LogicException(\sprintf('Calling %s::formatException is not possible', __CLASS__));
     }
 
     /**
@@ -44,12 +44,12 @@ trait FormatterTrait
      */
     protected function getExceptionData(Inspector $inspector, bool $addTrace = false): array
     {
-        /** @var \Jgut\Slim\Exception\HttpException $exception */
+        /** @var \Jgut\HttpException\HttpException $exception */
         $exception = $inspector->getException();
 
         $error = [
             'id' => $exception->getIdentifier(),
-            'type' => get_class($exception),
+            'type' => \get_class($exception),
             'message' => $exception->getMessage(),
             'description' => $exception->getDescription(),
         ];

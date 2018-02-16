@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Handler;
 
+use Jgut\HttpException\HttpException;
+use Jgut\Slim\Exception\ExceptionFormatter;
 use Jgut\Slim\Exception\Handler\ExceptionHandler as BaseExceptionHandler;
-use Jgut\Slim\Exception\HttpException;
-use Jgut\Slim\Exception\HttpExceptionFormatter;
 use Jgut\Slim\Exception\Whoops\Formatter\Html;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ServerRequestInterface;
@@ -59,18 +59,18 @@ class ExceptionHandler extends BaseExceptionHandler
     /**
      * Add exception formatter.
      *
-     * @param HttpExceptionFormatter $formatter
-     * @param string|string[]|null   $contentTypes
+     * @param ExceptionFormatter   $formatter
+     * @param string|string[]|null $contentTypes
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function addFormatter(HttpExceptionFormatter $formatter, $contentTypes = null)
+    public function addFormatter(ExceptionFormatter $formatter, $contentTypes = null)
     {
         if (!$formatter instanceof HandlerInterface) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'Formatter %s for Whoops handler does not implement %s',
-                get_class($formatter),
+                \get_class($formatter),
                 HandlerInterface::class
             ));
         }
@@ -87,7 +87,7 @@ class ExceptionHandler extends BaseExceptionHandler
         ServerRequestInterface $request
     ): string {
         $formatter = $this->formatters[$contentType];
-        if ($formatter instanceof Html || is_subclass_of($formatter, Html::class)) {
+        if ($formatter instanceof Html || \is_subclass_of($formatter, Html::class)) {
             $formatter = $this->addRequestData($formatter, $request);
         }
 

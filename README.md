@@ -16,7 +16,7 @@ HTTP aware exceptions and exception handling for Slim Framework
 
 Default Slim's error handlers customization of exceptions response is cumbersome to say the least, error handlers are quite simple, doesn't really provide any useful information during development and at the same time are ugly when on production.
 
-This package aims to unify error handling into a simpler and more extensible OOP API by providing an HTTP aware exception class and handling those depending on what HTTP status code they should produce.
+This package aims to unify error handling into a simpler and more extensible OOP API by providing an HTTP aware exception handling mechanism.
 
 ## Installation
 
@@ -34,13 +34,16 @@ Require composer autoload file
 require './vendor/autoload.php';
 
 use Fig\Http\Message\StatusCodeInterface;
+use Jgut\HttpException\MethodNotAllowedHttpException;
+use Jgut\HttpException\NotFoundHttpException;
 use Jgut\Slim\Exception\Formatter\Html;
 use Jgut\Slim\Exception\Formatter\Json;
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
-use Jgut\Slim\Exception\HttpExceptionManager;
+use Jgut\Slim\Exception\ExceptionManager;
 use Negotiation\Negotiator;
+use Slim\App;
 
-// Create Slim App
+$app = new App();
 
 $contentNegotiator = new Negotiator();
 
@@ -50,75 +53,41 @@ $defaultHandler->addFormatter(new Json());
 $defaultHandler->addFormatter(new Html());
 
 // Create manager with default handler
-$exceptionManager = new HttpExceptionManager($defaultHandler);
+$exceptionManager = new ExceptionManager($defaultHandler);
+$exceptionManager->setLogger(new \Psr3LoggerInstance());
 
 // Add handler for 404 "Not found" HTTP exceptions
 $notFoundHandler = new ExceptionHandler($contentNegotiator);
 $notFoundHandler->addFormatter(new Json());
 $notFoundHandler->addFormatter(new Html('Not found', 'The requested page could not be found'));
-$exceptionManager->addHandler(StatusCodeInterface::STATUS_NOT_FOUND, $notFoundHandler);
+$exceptionManager->addHandler(NotFoundHttpException::class, $notFoundHandler);
 
 // Add handler for 405 "Method not allowed" HTTP exceptions
 $notAllowedHandler = new ExceptionHandler($contentNegotiator);
 $notAllowedHandler->addFormatter(new Json());
 $notAllowedHandler->addFormatter(new Html('Method not allowed', 'The requested method is not allowed'));
-$exceptionManager->addHandler(StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED, $notAllowedHandler);
-
-$exceptionManager->setLogger(new Psr3LoggerInstance());
+$exceptionManager->addHandler(MethodNotAllowedHttpException::class, $notAllowedHandler);
 
 $container = $app->getContainer();
 
-$container['errorHandler'] = $container['phpErrorHandler'] = [$manager, 'errorHandler'];
-$container['notFoundHandler'] =  [$manager, 'notFoundHandler'];
-$container['notAllowedHandler'] = [$manager, 'notAllowedHandler'];
+$container['errorHandler'] = $container['phpErrorHandler'] = [$exceptionManager, 'errorHandler'];
+$container['notFoundHandler'] =  [$exceptionManager, 'notFoundHandler'];
+$container['notAllowedHandler'] = [$exceptionManager, 'notAllowedHandler'];
 
 // ...
 
 $app->run();
 ```
 
-Original Slim's error handling is bypassed by the HTTP exception manager forcing that any unhandled exception thrown during application execution will be ultimately transformed into an `HttpException` and handed over to `HttpExceptionManager::handleHttpException`
+Original Slim's error handling is bypassed by the HTTP exception manager forcing that any unhandled exception thrown during application execution will be ultimately transformed into an `\Jgut\HttpException\InternalServerErrorHttpException` and handed over to `ExceptionManager::handleHttpException`
 
-Non HttpExceptions (for example an exception thrown by a third party library) will be automatically transformed into a 500 HttpException, alternatively you can use `HttpExceptionFactory` to throw HTTP exceptions yourself. Those exceptions will be handled to their corresponding handler depending on their "status code" or by the default handler in case no handler is defined for the specific status code
+Non HttpExceptions (for example an exception thrown by a third party library) will be automatically transformed into a 500 InternalServerErrorHttpException, alternatively you can throw HTTP exceptions yourself. Exceptions will be handled by associated handler or by default handler in case no handler is defined for the specific status code
 
-In the above example if you `throw HttpExceptionFactory::unauthorized()` during the execution of the application it'll be captured by the manager hand handed over to the default handler due to no handler has been specified for HTTP error 401
-
-### HTTP exceptions
-
-The base of this error handling are the HTTP exceptions. This exceptions carry an HTTP status code which is used by the manager to hand the exception to corresponding handler apart from being used as response status code
-
-```php
-use Jgut\Slim\Exception\HttpException;
-
-$exceptionMessage = 'You shall not pass!';
-$exceptionDescription = 'You do not have permission';
-$exceptionCode = 1001; // Internal code
-$httpStatusCode = 401; // Unauthorized
-$exception = new HttpException($exceptionMessage, $exceptionDescription, $exceptionCode, $httpStatusCode);
-
-$exception->getStatusCode(); // 401 Unauthorized
-```
-
-Additionally exceptions have a description and a unique identifier which can be used for logging exceptions and displaying for example on APIs, allowing you to have more information over the erroneous situation when addressed
-
-```php
-$exception->getDescription();
-$exception->getIdentifier();
-```
-
-#### Factory
-
-In order to simplify HTTP exception creation and assure correct HTTP status code selection there are several shortcut creation methods
-
-```php
-throw HttpExceptionFactory::unauthorized('You shall not pass!', 'You do not have permission', 1001);
-throw HttpExceptionFactory::notAcceptable('Throughput reached', 'Too much', 1002);
-throw HttpExceptionFactory::unprocessableEntity('Already exists', 'Entity already exists', 1030);
-``` 
+In the above example if you `throw new \Jgut\HttpException\UnauthorizedHttpException()` during the execution of the application it'll be captured by the manager hand handed over to the default handler due to no handler has been specified for that type of HTTP exception
 
 ### Handlers
 
-HttpExceptionManager hands control to handlers based on the status code of the exception being treated
+ExceptionManager hands control to handlers based on the HTTP exception mapping
 
 Only one default handler is mandatory (set on manager construction). This default manager will be responsible of handling exceptions which don't have an specific associated handler. This handler serves the same purpose as Slim's 'errorHandler' and 'phpErrorHandler'
 
@@ -129,7 +98,7 @@ Out of the box two handlers are provided
 
 #### Custom handlers
 
-By implementing `HttpExceptionHandler` interface (or extending `Jgut\Slim\Exception\Handler\ExceptionHandler`) you can create your custom exception handlers and assign them to the status code you want
+By implementing `ExceptionHandler` interface (or extending `Jgut\Slim\Exception\Handler\ExceptionHandler`) you can create your custom exception handlers and assign them to the HTTP exception you want
 
 ```php
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
@@ -141,8 +110,10 @@ class MyCustomHandler extends ExceptionHandler
 ``` 
 
 ```php
+use Jgut\HttpException\MethodNotAllowedHttpException;
+use Jgut\HttpException\NotFoundHttpException;
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
-use Jgut\Slim\Exception\HttpExceptionManager;
+use Jgut\Slim\Exception\ExceptionManager;
 use Negotiation\Negotiator;
 
 $defaultHandler = new ExceptionHandler(new Negotiator());
@@ -151,8 +122,17 @@ $defaultHandler = new ExceptionHandler(new Negotiator());
 $customHandler = new MyCustomHandler(new Negotiator());
 // Add exception formatters
 
-$exceptionManager = new HttpExceptionManager($defaultHandler);
-$exceptionManager->addHandler([400, 401, 403, 406, 409], new MyCustomHandler();
+$exceptionManager = new ExceptionManager($defaultHandler);
+$exceptionManager->addHandler(
+    [
+        BadRequestHttpException::class,
+        UnauthorizedHttpException::class,
+        MethodNotAllowedHttpException::class,
+        NotAcceptableHttpException::class,
+        ConflictHttpException::class
+    ], 
+    new MyCustomHandler()
+);
 ``` 
 
 ### Formatters
@@ -196,6 +176,12 @@ $whoopsHandler->addFormatter(new Json());
 
 // Set Whoops handler as default for development
 $exceptionManager = new HttpExceptionManager($whoopsHandler);
+
+$container = $app->getContainer();
+
+$container['errorHandler'] = $container['phpErrorHandler'] = [$exceptionManager, 'errorHandler'];
+$container['notFoundHandler'] =  [$exceptionManager, 'notFoundHandler'];
+$container['notAllowedHandler'] = [$exceptionManager, 'notAllowedHandler'];
 ```
 
 ## Handle all errors

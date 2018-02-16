@@ -13,12 +13,13 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception;
 
+use Jgut\HttpException\HttpException;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * HTTP exception formatter interface.
  */
-interface HttpExceptionFormatter
+interface ExceptionFormatter
 {
     /**
      * Get supported content types.

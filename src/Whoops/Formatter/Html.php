@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\ExceptionFormatter;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Exception\FrameCollection;
 use Whoops\Handler\PrettyPageHandler;
@@ -23,7 +23,7 @@ use Whoops\Handler\PrettyPageHandler;
  *
  * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
  */
-class Html extends PrettyPageHandler implements HttpExceptionFormatter
+class Html extends PrettyPageHandler implements ExceptionFormatter
 {
     use FormatterTrait;
 
@@ -43,7 +43,7 @@ class Html extends PrettyPageHandler implements HttpExceptionFormatter
      */
     public function handle()
     {
-        /** @var \Jgut\Slim\Exception\HttpException $exception */
+        /** @var \Jgut\HttpException\HttpException $exception */
         $exception = $this->getException();
         $this->setInspector(new Inspector($exception));
 
@@ -59,12 +59,12 @@ class Html extends PrettyPageHandler implements HttpExceptionFormatter
         $inspector = $this->getInspector();
         $frames = $inspector->getTraceFrames();
 
-        if (is_array($this->getApplicationPaths()) && count($this->getApplicationPaths()) > 0) {
+        if (\is_array($this->getApplicationPaths()) && \count($this->getApplicationPaths()) > 0) {
             foreach ($frames as $frame) {
                 $filePath = $frame->getFile();
 
                 foreach ($this->getApplicationPaths() as $path) {
-                    if (strpos($filePath, $path) === 0) {
+                    if (\strpos($filePath, $path) === 0) {
                         $frame->setApplication(true);
                         break;
                     }

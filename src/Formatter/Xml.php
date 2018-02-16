@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Formatter;
 
-use Jgut\Slim\Exception\HttpException;
-use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\HttpException\HttpException;
+use Jgut\Slim\Exception\ExceptionFormatter;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * XML HTTP exception formatter.
  */
-class Xml implements HttpExceptionFormatter
+class Xml implements ExceptionFormatter
 {
     /**
      * {@inheritdoc}
@@ -40,7 +40,7 @@ class Xml implements HttpExceptionFormatter
      */
     public function formatException(HttpException $exception, ServerRequestInterface $request): string
     {
-        return sprintf(
+        return \sprintf(
             '<?xml version="1.0" encoding="utf-8"?><root>' .
             '<error><id>%s</id><message>%s</message></error>' .
             '</root>',

@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Handler;
 
+use Jgut\HttpException\BadRequestHttpException;
 use Jgut\Slim\Exception\Formatter\Html;
 use Jgut\Slim\Exception\Formatter\Json;
 use Jgut\Slim\Exception\Formatter\Text;
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
-use Jgut\Slim\Exception\HttpExceptionFactory;
 use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
@@ -74,7 +74,7 @@ class ExceptionHandlerTest extends TestCase
      */
     public function testNoFormatters()
     {
-        $exception = HttpExceptionFactory::badRequest();
+        $exception = new BadRequestHttpException();
         $request = Request::createFromEnvironment(Environment::mock());
 
         $this->handler->handleException($request, new Response(), $exception);
@@ -82,7 +82,7 @@ class ExceptionHandlerTest extends TestCase
 
     public function testHandle()
     {
-        $exception = HttpExceptionFactory::badRequest();
+        $exception = new BadRequestHttpException();
 
         $textFormatter = $this->getMockBuilder(Text::class)
             ->getMock();
@@ -109,7 +109,7 @@ class ExceptionHandlerTest extends TestCase
 
     public function testDefaultHandle()
     {
-        $exception = HttpExceptionFactory::badRequest();
+        $exception = new BadRequestHttpException();
 
         $formatter = $this->getMockBuilder(Json::class)
             ->getMock();

@@ -60,7 +60,7 @@ class AppStub
      */
     protected function getLastError(): array
     {
-        if (count($this->lastError)) {
+        if (\count($this->lastError)) {
             return $this->lastError;
         }
 

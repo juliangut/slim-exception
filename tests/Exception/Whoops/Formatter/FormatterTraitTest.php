@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpExceptionFactory;
+use Jgut\HttpException\UnsupportedMediaTypeHttpException;
 use Jgut\Slim\Exception\Tests\Stubs\FormatterStub;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Request;
@@ -34,6 +34,6 @@ class FormatterTraitTest extends TestCase
 
         $formatter = new FormatterStub();
 
-        $formatter->formatException(HttpExceptionFactory::unsupportedMediaType(), $request);
+        $formatter->formatException(new UnsupportedMediaTypeHttpException(), $request);
     }
 }

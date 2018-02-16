@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Stubs;
 
+use Jgut\HttpException\HttpException;
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
-use Jgut\Slim\Exception\HttpException;
 use Psr\Http\Message\ServerRequestInterface;
 
 class HandlerStub extends ExceptionHandler

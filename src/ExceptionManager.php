@@ -15,6 +15,10 @@ namespace Jgut\Slim\Exception;
 
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
+use Jgut\HttpException\HttpException;
+use Jgut\HttpException\InternalServerErrorHttpException;
+use Jgut\HttpException\MethodNotAllowedHttpException;
+use Jgut\HttpException\NotFoundHttpException;
 use Jgut\Slim\Exception\Whoops\Formatter\Text;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,8 +29,10 @@ use Slim\Http\Response;
 
 /**
  * HTTP exceptions manager.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class HttpExceptionManager implements LoggerAwareInterface
+class ExceptionManager implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -54,25 +60,25 @@ class HttpExceptionManager implements LoggerAwareInterface
     ];
 
     /**
-     * List of HTTP status code handlers.
+     * List of HTTP exception handlers.
      *
-     * @var HttpExceptionHandler[]
+     * @var ExceptionHandler[]
      */
     protected $handlers = [];
 
     /**
      * Default HTTP status code handler.
      *
-     * @var HttpExceptionHandler
+     * @var ExceptionHandler
      */
     protected $defaultHandler;
 
     /**
      * HttpExceptionManager constructor.
      *
-     * @param HttpExceptionHandler $defaultHandler
+     * @param ExceptionHandler $defaultHandler
      */
-    public function __construct(HttpExceptionHandler $defaultHandler)
+    public function __construct(ExceptionHandler $defaultHandler)
     {
         $this->setDefaultHandler($defaultHandler);
     }
@@ -80,33 +86,33 @@ class HttpExceptionManager implements LoggerAwareInterface
     /**
      * Set default HTTP status code handler.
      *
-     * @param HttpExceptionHandler $defaultHandler
+     * @param ExceptionHandler $defaultHandler
      */
-    public function setDefaultHandler(HttpExceptionHandler $defaultHandler)
+    public function setDefaultHandler(ExceptionHandler $defaultHandler)
     {
         $this->defaultHandler = $defaultHandler;
     }
 
     /**
-     * Add HTTP status code handler.
+     * Add HTTP exception handler.
      *
-     * @param int|array            $statusCodes
-     * @param HttpExceptionHandler $handler
+     * @param string|array     $exceptionTypes
+     * @param ExceptionHandler $handler
      */
-    public function addHandler($statusCodes, HttpExceptionHandler $handler)
+    public function addHandler($exceptionTypes, ExceptionHandler $handler)
     {
-        if (!is_array($statusCodes)) {
-            $statusCodes = [$statusCodes];
+        if (!\is_array($exceptionTypes)) {
+            $exceptionTypes = [$exceptionTypes];
         }
 
-        $statusCodes = array_filter(
-            $statusCodes,
-            function ($statusCode): bool {
-                return is_int($statusCode);
+        $exceptionTypes = \array_filter(
+            $exceptionTypes,
+            function ($exceptionType): bool {
+                return \is_string($exceptionType);
             }
         );
 
-        foreach ($statusCodes as $statusCode) {
+        foreach ($exceptionTypes as $statusCode) {
             $this->handlers[$statusCode] = $handler;
         }
     }
@@ -126,7 +132,12 @@ class HttpExceptionManager implements LoggerAwareInterface
         \Throwable $exception
     ): ResponseInterface {
         if (!$exception instanceof HttpException) {
-            $exception = HttpExceptionFactory::internalServerError('', '', null, $exception);
+            $exception = new InternalServerErrorHttpException(
+                'Internal Server Error',
+                '',
+                StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
+                $exception
+            );
         }
 
         return $this->handleHttpException($request, $response, $exception);
@@ -144,7 +155,7 @@ class HttpExceptionManager implements LoggerAwareInterface
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ResponseInterface {
-        $exception = HttpExceptionFactory::notFound();
+        $exception = new NotFoundHttpException();
 
         if ($request->getMethod() === RequestMethodInterface::METHOD_OPTIONS) {
             $optionsResponse = new Response(StatusCodeInterface::STATUS_OK);
@@ -173,15 +184,16 @@ class HttpExceptionManager implements LoggerAwareInterface
     ): ResponseInterface {
         if ($request->getMethod() === RequestMethodInterface::METHOD_OPTIONS) {
             $optionsResponse = new Response(StatusCodeInterface::STATUS_OK);
-            $optionsResponse->getBody()->write(sprintf('Allowed methods: %s', implode(', ', $methods)));
+            $optionsResponse->getBody()->write(\sprintf('Allowed methods: %s', \implode(', ', $methods)));
 
             return $optionsResponse->withProtocolVersion($response->getProtocolVersion())
                 ->withHeader('Content-Type', 'text/plain; charset=utf-8');
         }
 
-        $exception = HttpExceptionFactory::methodNotAllowed(
-            sprintf('Method %s not allowed. Must be one of: %s', $request->getMethod(), implode(', ', $methods))
+        $exception = new MethodNotAllowedHttpException(
+            \sprintf('Method %s not allowed. Must be one of: %s', $request->getMethod(), \implode(', ', $methods))
         );
+        $exception->setValidMethods($methods);
 
         return $this->handleHttpException($request, $response, $exception);
     }
@@ -204,14 +216,17 @@ class HttpExceptionManager implements LoggerAwareInterface
             $request = $request->withHeader('Accept', 'text/plain');
         }
 
-        $handler = $this->defaultHandler;
+        $exceptionHandler = $this->defaultHandler;
 
-        $statusCode = $exception->getStatusCode();
-        if (array_key_exists($statusCode, $this->handlers)) {
-            $handler = $this->handlers[$statusCode];
+        foreach ($this->handlers as $exceptionType => $handler) {
+            if (\is_a($exception, $exceptionType)) {
+                $exceptionHandler = $handler;
+
+                break;
+            }
         }
 
-        return $handler->handleException($request, $response, $exception);
+        return $exceptionHandler->handleException($request, $response, $exception);
     }
 
     /**
@@ -241,7 +256,7 @@ class HttpExceptionManager implements LoggerAwareInterface
             'exception_id' => $exception->getIdentifier(),
             'http_method' => $request->getMethod(),
             'request_uri' => (string) $request->getUri(),
-            'level_name' => strtoupper($logLevel),
+            'level_name' => \strtoupper($logLevel),
             'stack_trace' => $this->getStackTrace($exception),
         ];
 
@@ -257,7 +272,7 @@ class HttpExceptionManager implements LoggerAwareInterface
      */
     protected function getStackTrace(HttpException $exception): string
     {
-        if (!class_exists('Whoops\Run')) {
+        if (!\class_exists('Whoops\Run')) {
             // @codeCoverageIgnoreStart
             return $exception->getTraceAsString();
             // @codeCoverageIgnoreEnd
@@ -265,10 +280,10 @@ class HttpExceptionManager implements LoggerAwareInterface
 
         $formatter = new Text();
         $formatter->setException($exception);
-        $exceptionParts = explode("\n", rtrim($formatter->generateResponse(), "\n"));
+        $exceptionParts = \explode("\n", \rtrim($formatter->generateResponse(), "\n"));
 
-        if (count($exceptionParts) !== 1) {
-            return implode("\n", array_filter(array_splice($exceptionParts, 2)));
+        if (\count($exceptionParts) !== 1) {
+            return \implode("\n", \array_filter(\array_splice($exceptionParts, 2)));
         }
 
         return '';
@@ -290,7 +305,7 @@ class HttpExceptionManager implements LoggerAwareInterface
         }
 
         if ($exception instanceof \ErrorException
-            && array_key_exists($exception->getSeverity(), $this->errorToLogLevelMap)
+            && \array_key_exists($exception->getSeverity(), $this->errorToLogLevelMap)
         ) {
             return $this->errorToLogLevelMap[$exception->getSeverity()];
         }

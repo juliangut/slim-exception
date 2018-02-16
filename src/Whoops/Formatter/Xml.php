@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\ExceptionFormatter;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Handler\Handler;
 use Whoops\Handler\XmlResponseHandler;
@@ -21,7 +21,7 @@ use Whoops\Handler\XmlResponseHandler;
 /**
  * Whoops custom XML HTTP exception formatter.
  */
-class Xml extends XmlResponseHandler implements HttpExceptionFormatter
+class Xml extends XmlResponseHandler implements ExceptionFormatter
 {
     use FormatterTrait;
 
@@ -51,7 +51,7 @@ class Xml extends XmlResponseHandler implements HttpExceptionFormatter
      */
     public function handle(): int
     {
-        /** @var \Jgut\Slim\Exception\HttpException $exception */
+        /** @var \Jgut\HttpException\HttpException $exception */
         $exception = $this->getException();
 
         $inspector = new Inspector($exception);
@@ -76,10 +76,10 @@ class Xml extends XmlResponseHandler implements HttpExceptionFormatter
      */
     protected function getFormattedXml(array $data): string
     {
-        $root = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?><root />');
+        $root = \simplexml_load_string('<?xml version="1.0" encoding="utf-8"?><root />');
         $this->addDataNodes($root->addChild('error'), $data, 'exception');
 
-        $dom = dom_import_simplexml($root)->ownerDocument;
+        $dom = \dom_import_simplexml($root)->ownerDocument;
         $dom->formatOutput = true;
 
         return $dom->saveXML();
@@ -97,21 +97,21 @@ class Xml extends XmlResponseHandler implements HttpExceptionFormatter
     protected function addDataNodes(\SimpleXMLElement $node, array $data, string $nodeKey = null): \SimpleXMLElement
     {
         foreach ($data as $key => $value) {
-            if (is_numeric($key)) {
+            if (\is_numeric($key)) {
                 $key = $nodeKey . '_' . (string) $key;
             }
-            $key = preg_replace('/[^a-z0-9\-\_\.\:]/i', '_', $key);
+            $key = \preg_replace('/[^a-z0-9\-\_\.\:]/i', '_', $key);
 
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $this->addDataNodes($node->addChild($key), $value, $key);
             } else {
-                if (is_object($value)) {
-                    $value = get_class($value);
-                } elseif (!is_scalar($value)) {
-                    $value = gettype($value);
+                if (\is_object($value)) {
+                    $value = \get_class($value);
+                } elseif (!\is_scalar($value)) {
+                    $value = \gettype($value);
                 }
 
-                $node->addChild($key, str_replace('&', '&amp;', print_r($value, true)));
+                $node->addChild($key, \str_replace('&', '&amp;', \print_r($value, true)));
             }
         }
 

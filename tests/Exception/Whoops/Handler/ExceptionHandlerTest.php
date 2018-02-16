@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Handler;
 
+use Jgut\HttpException\BadRequestHttpException;
 use Jgut\Slim\Exception\Formatter\Text;
-use Jgut\Slim\Exception\HttpExceptionFactory;
 use Jgut\Slim\Exception\Tests\Stubs\FormatterStub;
 use Jgut\Slim\Exception\Whoops\Formatter\Html;
 use Jgut\Slim\Exception\Whoops\Handler\ExceptionHandler;
@@ -62,7 +62,7 @@ class ExceptionHandlerTest extends TestCase
      */
     public function testNoFormatters()
     {
-        $exception = HttpExceptionFactory::badRequest();
+        $exception = new BadRequestHttpException();
         $request = Request::createFromEnvironment(Environment::mock());
 
         $this->handler->handleException($request, new Response(), $exception);
@@ -70,7 +70,7 @@ class ExceptionHandlerTest extends TestCase
 
     public function testHandle()
     {
-        $exception = HttpExceptionFactory::badRequest();
+        $exception = new BadRequestHttpException();
         $request = Request::createFromEnvironment(Environment::mock(['HTTP_ACCEPT' => 'text/html']));
 
         $formatter = new FormatterStub();
@@ -79,6 +79,6 @@ class ExceptionHandlerTest extends TestCase
 
         $response = $this->handler->handleException($request, new Response(), $exception);
 
-        self::assertContains('Bad request', (string) $response->getBody());
+        self::assertContains('Bad Request', (string) $response->getBody());
     }
 }

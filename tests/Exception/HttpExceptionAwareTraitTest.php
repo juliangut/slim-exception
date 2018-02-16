@@ -35,7 +35,7 @@ class HttpExceptionAwareTraitTest extends TestCase
      */
     public static function setUpBeforeClass()
     {
-        register_shutdown_function([__CLASS__, 'shutDown']);
+        \register_shutdown_function([__CLASS__, 'shutDown']);
     }
 
     public function testIgnoredError()
@@ -46,15 +46,15 @@ class HttpExceptionAwareTraitTest extends TestCase
 
         $app = new AppStub($container);
 
-        error_reporting(E_USER_ERROR);
+        \error_reporting(E_USER_ERROR);
 
         $app->errorHandler(E_USER_NOTICE, 'Custom notice', __FILE__, __LINE__);
 
-        ob_start();
+        \ob_start();
 
         $app->shutdownHandler();
 
-        self::assertEquals('', ob_get_clean());
+        self::assertEquals('', \ob_get_clean());
     }
 
     public function testHandleExceptionFromError()
@@ -74,16 +74,16 @@ class HttpExceptionAwareTraitTest extends TestCase
 
         $app = new AppStub($container);
 
-        error_reporting(E_ALL);
+        \error_reporting(E_ALL);
 
         try {
             $app->errorHandler(E_PARSE, 'Parse error', __FILE__, __LINE__);
         } catch (\Exception $exception) {
-            ob_start();
+            \ob_start();
 
             $app->exceptionHandler($exception);
 
-            self::assertContains('Internal server error', ob_get_clean());
+            self::assertContains('Internal server error', \ob_get_clean());
         }
     }
 
@@ -111,11 +111,11 @@ class HttpExceptionAwareTraitTest extends TestCase
 
         $app = new AppStub($container, $error);
 
-        ob_start();
+        \ob_start();
 
         $app->shutdownHandler();
 
-        self::assertContains('Internal server error', ob_get_clean());
+        self::assertContains('Internal server error', \ob_get_clean());
 
         static::$exitShutDown = true;
     }

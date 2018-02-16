@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Handler;
 
 use Fig\Http\Message\StatusCodeInterface;
-use Jgut\Slim\Exception\HttpException;
-use Jgut\Slim\Exception\HttpExceptionFormatter;
-use Jgut\Slim\Exception\HttpExceptionHandler;
+use Jgut\HttpException\HttpException;
+use Jgut\Slim\Exception\ExceptionFormatter;
+use Jgut\Slim\Exception\ExceptionHandler as ExceptionHandlerInterface;
 use Negotiation\BaseAccept;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseInterface;
@@ -26,7 +26,7 @@ use Slim\Http\Response;
 /**
  * HTTP exception handler.
  */
-class ExceptionHandler implements HttpExceptionHandler
+class ExceptionHandler implements ExceptionHandlerInterface
 {
     /**
      * Content type negotiator.
@@ -38,7 +38,7 @@ class ExceptionHandler implements HttpExceptionHandler
     /**
      * Formatter list.
      *
-     * @var HttpExceptionFormatter[]
+     * @var ExceptionFormatter[]
      */
     protected $formatters = [];
 
@@ -55,30 +55,30 @@ class ExceptionHandler implements HttpExceptionHandler
     /**
      * Add exception formatter.
      *
-     * @param HttpExceptionFormatter $formatter
-     * @param string|string[]|null   $contentTypes
+     * @param ExceptionFormatter   $formatter
+     * @param string|string[]|null $contentTypes
      *
      * @throws \RuntimeException
      */
-    public function addFormatter(HttpExceptionFormatter $formatter, $contentTypes = null)
+    public function addFormatter(ExceptionFormatter $formatter, $contentTypes = null)
     {
         if ($contentTypes === null) {
             $contentTypes = $formatter->getContentTypes();
         }
 
-        if (!is_array($contentTypes)) {
+        if (!\is_array($contentTypes)) {
             $contentTypes = [$contentTypes];
         }
 
-        $contentTypes = array_filter(
+        $contentTypes = \array_filter(
             $contentTypes,
             function ($contentType): bool {
-                return is_string($contentType);
+                return \is_string($contentType);
             }
         );
 
-        if (count($contentTypes) === 0) {
-            throw new \RuntimeException(sprintf('No content type defined for %s formatter', get_class($formatter)));
+        if (\count($contentTypes) === 0) {
+            throw new \RuntimeException(\sprintf('No content type defined for %s formatter', \get_class($formatter)));
         }
 
         foreach ($contentTypes as $contentType) {
@@ -114,12 +114,12 @@ class ExceptionHandler implements HttpExceptionHandler
      */
     protected function getContentType(ServerRequestInterface $request): string
     {
-        if (count($this->formatters) === 0) {
+        if (\count($this->formatters) === 0) {
             throw new \RuntimeException('No formatters defined');
         }
 
-        $header = trim($request->getHeaderLine('Accept'));
-        $priorities = array_keys($this->formatters);
+        $header = \trim($request->getHeaderLine('Accept'));
+        $priorities = \array_keys($this->formatters);
         $contentType = $priorities[0];
 
         if ($header !== '') {
@@ -137,8 +137,8 @@ class ExceptionHandler implements HttpExceptionHandler
             // @codeCoverageIgnoreEnd
         }
 
-        if (strpos($contentType, '/*+') !== false) {
-            $contentType = str_replace('/*+', '/', $contentType);
+        if (\strpos($contentType, '/*+') !== false) {
+            $contentType = \str_replace('/*+', '/', $contentType);
         }
 
         return $contentType;

@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Formatter;
 
+use Jgut\HttpException\ForbiddenHttpException;
 use Jgut\Slim\Exception\Formatter\Html;
-use Jgut\Slim\Exception\HttpExceptionFactory;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Request;
 
@@ -50,7 +50,7 @@ class HtmlTest extends TestCase
     {
         /* @var \Psr\Http\Message\ServerRequestInterface $request */
         $request = $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock();
-        $exception = HttpExceptionFactory::forbidden('Forbidden');
+        $exception = new ForbiddenHttpException();
 
         $output = $this->formatter->formatException($exception, $request);
 

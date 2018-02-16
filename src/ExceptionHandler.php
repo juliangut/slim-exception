@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception;
 
+use Jgut\HttpException\HttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * HTTP exception handler interface.
  */
-interface HttpExceptionHandler
+interface ExceptionHandler
 {
     /**
      * Handle HTTP exception.

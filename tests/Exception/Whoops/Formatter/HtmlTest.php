@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpExceptionFactory;
+use Fig\Http\Message\StatusCodeInterface;
+use Jgut\HttpException\InternalServerErrorHttpException;
 use Jgut\Slim\Exception\Whoops\Formatter\Html;
 use PHPUnit\Framework\TestCase;
 use Whoops\Exception\Inspector;
@@ -49,7 +50,12 @@ class HtmlTest extends TestCase
 
     public function testOutput()
     {
-        $exception = HttpExceptionFactory::internalServerError('Impossible error', '', null, new \ErrorException());
+        $exception = new InternalServerErrorHttpException(
+            'Impossible error',
+            '',
+            StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
+            new \ErrorException()
+        );
         $inspector = new Inspector($exception);
         $whoops = new Whoops();
 
@@ -58,15 +64,15 @@ class HtmlTest extends TestCase
         $this->formatter->setInspector($inspector);
         $this->formatter->setRun($whoops);
         $this->formatter->setApplicationPaths([
-            dirname(__DIR__, 4) . '/src/Exception/HttpExceptionFactory.php',
+            \dirname(__DIR__, 4) . '/src/Exception/HttpExceptionFactory.php',
             __FILE__,
         ]);
 
-        ob_start();
+        \ob_start();
         $this->formatter->handle();
-        $output = ob_get_clean();
+        $output = \ob_get_clean();
 
-        self::assertContains('Jgut\\Slim\\Exception\\HttpException', $output);
+        self::assertContains(InternalServerErrorHttpException::class, $output);
         self::assertContains('Impossible error', $output);
     }
 }

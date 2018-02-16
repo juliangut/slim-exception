@@ -28,12 +28,12 @@ class InspectorStub extends Inspector
     public function getFrames()
     {
         $frames = new FrameCollection([]);
-        $frames->prependFrames(array_filter(
+        $frames->prependFrames(\array_filter(
             parent::getFrames()->getArray(),
             function (Frame $frame): bool {
                 // Filter out PHPUnit from stack trace
-                return strpos($frame->getClass(), 'PHPUnit\\') !== 0
-                    && strpos($frame->getFile(), '/phpunit/phpunit') === false;
+                return \strpos($frame->getClass(), 'PHPUnit\\') !== 0
+                    && \strpos($frame->getFile(), '/phpunit/phpunit') === false;
             }
         ));
 

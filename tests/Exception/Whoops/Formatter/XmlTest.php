@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpExceptionFactory;
+use Jgut\HttpException\ForbiddenHttpException;
 use Jgut\Slim\Exception\Whoops\Formatter\Xml;
 use PHPUnit\Framework\TestCase;
 use Whoops\Exception\Inspector;
@@ -50,16 +50,16 @@ class XmlTest extends TestCase
 
     public function testXmlOutput()
     {
-        $exception = HttpExceptionFactory::forbidden('Forbidden');
+        $exception = new ForbiddenHttpException('Forbidden');
         $inspector = new Inspector($exception);
 
         $this->formatter->addTraceToOutput(true);
         $this->formatter->setException($exception);
         $this->formatter->setInspector($inspector);
 
-        ob_start();
+        \ob_start();
         $this->formatter->handle();
-        $output = ob_get_clean();
+        $output = \ob_get_clean();
 
         self::assertRegExp('!<id>.+</id>!', $output);
         self::assertRegExp('!<message>Forbidden</message>!', $output);

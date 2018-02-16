@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpExceptionFactory;
+use Fig\Http\Message\StatusCodeInterface;
+use Jgut\HttpException\TooManyRequestsHttpException;
 use Jgut\Slim\Exception\Whoops\Formatter\Text;
 use PHPUnit\Framework\TestCase;
 use Whoops\Exception\Inspector;
@@ -47,16 +48,16 @@ class TextTest extends TestCase
 
     public function testNoTraceOutput()
     {
-        $exception = HttpExceptionFactory::tooManyRequests();
+        $exception = new TooManyRequestsHttpException();
         $inspector = new Inspector($exception);
 
         $this->formatter->addTraceToOutput(false);
         $this->formatter->setException($exception);
         $this->formatter->setInspector($inspector);
 
-        ob_start();
+        \ob_start();
         $this->formatter->handle();
-        $output = ob_get_clean();
+        $output = \ob_get_clean();
 
         self::assertNotRegExp('/Stack trace:/', $output);
     }
@@ -64,7 +65,12 @@ class TextTest extends TestCase
     public function testOutput()
     {
         $originalException = new \ErrorException('Original exception');
-        $exception = HttpExceptionFactory::tooManyRequests('', '', null, $originalException);
+        $exception = new TooManyRequestsHttpException(
+            '',
+            '',
+            StatusCodeInterface::STATUS_TOO_MANY_REQUESTS,
+            $originalException
+        );
         $inspector = new Inspector($exception);
 
         $handler = new Text();
@@ -72,11 +78,11 @@ class TextTest extends TestCase
         $handler->setException($exception);
         $handler->setInspector($inspector);
 
-        ob_start();
+        \ob_start();
         $handler->handle();
-        $output = ob_get_clean();
+        $output = \ob_get_clean();
 
-        self::assertRegExp('/^\(.+\) Jgut\\\\Slim\\\\Exception\\\\HttpException/', $output);
+        self::assertRegExp('/^\(.+\) Jgut\\\\HttpException\\\\TooManyRequestsHttpException/', $output);
         self::assertRegExp('/Stack trace:/', $output);
     }
 }

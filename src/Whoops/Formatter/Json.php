@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\ExceptionFormatter;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Handler\Handler;
 use Whoops\Handler\JsonResponseHandler;
@@ -21,7 +21,7 @@ use Whoops\Handler\JsonResponseHandler;
 /**
  * Whoops custom JSON HTTP exception formatter.
  */
-class Json extends JsonResponseHandler implements HttpExceptionFormatter
+class Json extends JsonResponseHandler implements ExceptionFormatter
 {
     use FormatterTrait;
 
@@ -51,7 +51,7 @@ class Json extends JsonResponseHandler implements HttpExceptionFormatter
      */
     public function handle(): int
     {
-        /** @var \Jgut\Slim\Exception\HttpException $exception */
+        /** @var \Jgut\HttpException\HttpException $exception */
         $exception = $this->getException();
 
         $inspector = new Inspector($exception);
@@ -63,7 +63,7 @@ class Json extends JsonResponseHandler implements HttpExceptionFormatter
         $error = $this->getExceptionData($inspector, $addTrace);
         $options = JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT;
 
-        echo json_encode(['error' => $error], $options);
+        echo \json_encode(['error' => $error], $options);
 
         return Handler::QUIT;
     }

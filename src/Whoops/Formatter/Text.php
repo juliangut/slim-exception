@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Formatter;
 
-use Jgut\Slim\Exception\HttpExceptionFormatter;
+use Jgut\Slim\Exception\ExceptionFormatter;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Handler\PlainTextHandler;
 
 /**
  * Whoops custom plain text HTTP exception formatter.
  */
-class Text extends PlainTextHandler implements HttpExceptionFormatter
+class Text extends PlainTextHandler implements ExceptionFormatter
 {
     use FormatterTrait;
 
@@ -51,7 +51,7 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
      */
     public function generateResponse(): string
     {
-        /** @var \Jgut\Slim\Exception\HttpException $exception */
+        /** @var \Jgut\HttpException\HttpException $exception */
         $exception = $this->getException();
 
         $inspector = new Inspector($exception);
@@ -63,7 +63,7 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
         $error = $this->getExceptionData($inspector, $addTrace);
         $stackTrace = $addTrace ? "\n" . $this->getStackTraceOutput($error['trace']) : '';
 
-        return sprintf("(%s) %s: %s%s\n", $error['id'], $error['type'], $error['message'], $stackTrace);
+        return \sprintf("(%s) %s: %s%s\n", $error['id'], $error['type'], $error['message'], $stackTrace);
     }
 
     /**
@@ -76,14 +76,14 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
     protected function getStackTraceOutput(array $stackFrames): string
     {
         $line = 1;
-        $stackTrace = array_map(
+        $stackTrace = \array_map(
             function (array $stack) use (&$line): string {
                 $template = "\n%3d. %s->%s() %s:%d%s";
                 if (!$stack['class']) {
                     $template = "\n%3d. %s%s() %s:%d%s";
                 }
 
-                $trace = sprintf(
+                $trace = \sprintf(
                     $template,
                     $line,
                     $stack['class'],
@@ -100,7 +100,7 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
             $stackFrames
         );
 
-        return "Stack trace:\n" . implode('', $stackTrace);
+        return "Stack trace:\n" . \implode('', $stackTrace);
     }
 
     /**
@@ -122,25 +122,25 @@ class Text extends PlainTextHandler implements HttpExceptionFormatter
 
         $argsOutputLimit = $this->getTraceFunctionArgsOutputLimit();
 
-        ob_start();
+        \ob_start();
 
-        var_dump($args);
+        \var_dump($args);
 
-        if (ob_get_length() > $argsOutputLimit) {
+        if (\ob_get_length() > $argsOutputLimit) {
             // The argument var_dump is to big.
             // Discarded to limit memory usage.
-            ob_end_clean();
+            \ob_end_clean();
 
-            return sprintf(
+            return \sprintf(
                 "\n%sArguments dump length greater than %d Bytes. Discarded.",
                 parent::VAR_DUMP_PREFIX,
                 $argsOutputLimit
             );
         }
 
-        return sprintf(
+        return \sprintf(
             "\n%s",
-            preg_replace('/^/m', parent::VAR_DUMP_PREFIX, ob_get_clean())
+            \preg_replace('/^/m', parent::VAR_DUMP_PREFIX, \ob_get_clean())
         );
     }
 }

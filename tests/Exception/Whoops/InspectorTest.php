@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops;
 
-use Jgut\Slim\Exception\HttpExceptionFactory;
+use Fig\Http\Message\StatusCodeInterface;
+use Jgut\HttpException\InternalServerErrorHttpException;
 use Jgut\Slim\Exception\Tests\Stubs\InspectorStub;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +27,12 @@ class InspectorTest extends TestCase
     public function testAssign()
     {
         $originalException = new \InvalidArgumentException();
-        $exception = HttpExceptionFactory::internalServerError('', '', null, $originalException);
+        $exception = new InternalServerErrorHttpException(
+            '',
+            '',
+            StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
+            $originalException
+        );
 
         $inspector = new Inspector($exception);
 
@@ -36,15 +42,18 @@ class InspectorTest extends TestCase
     public function testTraceFrames()
     {
         $originalException = new \InvalidArgumentException();
-        $exception = HttpExceptionFactory::internalServerError('', '', null, $originalException);
+        $exception = new InternalServerErrorHttpException(
+            '',
+            '',
+            StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
+            $originalException
+        );
 
         $inspector = new InspectorStub($exception);
 
         $frames = $inspector->getTraceFrames();
 
-        self::assertEquals(HttpExceptionFactory::class, $frames[0]->getClass());
-        self::assertEquals('internalServerError', $frames[0]->getFunction());
-        self::assertEquals(__CLASS__, $frames[count($frames) - 1]->getClass());
-        self::assertEquals(__FUNCTION__, $frames[count($frames) - 1]->getFunction());
+        self::assertEquals(__CLASS__, $frames[\count($frames) - 1]->getClass());
+        self::assertEquals(__FUNCTION__, $frames[\count($frames) - 1]->getFunction());
     }
 }

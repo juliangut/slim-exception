@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception;
 
+use Jgut\HttpException\HttpException;
+use Jgut\HttpException\InternalServerErrorHttpException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -25,13 +27,13 @@ trait HttpExceptionAwareTrait
      */
     protected function registerPhpErrorHandling()
     {
-        set_error_handler([$this, 'errorHandler']);
-        register_shutdown_function([$this, 'shutdownHandler']);
-        set_exception_handler([$this, 'exceptionHandler']);
+        \set_error_handler([$this, 'errorHandler']);
+        \register_shutdown_function([$this, 'shutdownHandler']);
+        \set_exception_handler([$this, 'exceptionHandler']);
 
-        ini_set('display_errors', 'off');
+        \ini_set('display_errors', 'off');
 
-        error_reporting(-1);
+        \error_reporting(-1);
     }
 
     /**
@@ -49,7 +51,7 @@ trait HttpExceptionAwareTrait
      */
     public function errorHandler(int $severity, string $message, string $file = null, int $line = null): bool
     {
-        if (error_reporting() & $severity) {
+        if (\error_reporting() & $severity) {
             throw new \ErrorException($message, 0, $severity, $file, $line);
         }
 
@@ -65,11 +67,11 @@ trait HttpExceptionAwareTrait
     {
         $error = $this->getLastError();
 
-        if (count($error) && $this->isFatalError($error['type'])) {
+        if (\count($error) && $this->isFatalError($error['type'])) {
             $this->exceptionHandler($this->getFatalException($error));
 
             // @codeCoverageIgnoreStart
-            if (!defined('PHPUNIT_TEST')) {
+            if (!\defined('PHPUNIT_TEST')) {
                 exit;
             }
             // @codeCoverageIgnoreEnd
@@ -86,7 +88,7 @@ trait HttpExceptionAwareTrait
         $container = $this->getContainer();
 
         /** @var ResponseInterface $response */
-        $response = call_user_func(
+        $response = \call_user_func(
             $container->get('errorHandler'),
             $container->get('request'),
             $container->get('response'),
@@ -103,7 +105,7 @@ trait HttpExceptionAwareTrait
      */
     protected function getLastError(): array
     {
-        return error_get_last() ?? [];
+        return \error_get_last() ?? [];
     }
 
     /**
@@ -136,13 +138,13 @@ trait HttpExceptionAwareTrait
      */
     private function getFatalException(array $error): HttpException
     {
-        $message = explode("\n", $error['message']);
-        $message = preg_replace('/ in .+\.php(:\d+)?$/', '', $message[0]);
+        $message = \explode("\n", $error['message']);
+        $message = \preg_replace('/ in .+\.php(:\d+)?$/', '', $message[0]);
 
-        $exception = HttpExceptionFactory::internalServerError($message, '', $error['type']);
+        $exception = new InternalServerErrorHttpException($message, '', $error['type']);
 
         $trace = $this->getBackTrace();
-        if (count($trace)) {
+        if (\count($trace)) {
             $reflection = new \ReflectionProperty(\Exception::class, 'trace');
             $reflection->setAccessible(true);
             $reflection->setValue($exception, $trace);
@@ -160,8 +162,8 @@ trait HttpExceptionAwareTrait
     {
         $trace = [];
 
-        if (function_exists('xdebug_get_function_stack')) {
-            $trace = array_map(
+        if (\function_exists('xdebug_get_function_stack')) {
+            $trace = \array_map(
                 function (array $frame): array {
                     if (!isset($frame['type'])) {
                         // http://bugs.xdebug.org/view.php?id=695
@@ -184,10 +186,10 @@ trait HttpExceptionAwareTrait
 
                     return $frame;
                 },
-                xdebug_get_function_stack()
+                \xdebug_get_function_stack()
             );
 
-            $trace = array_reverse(array_slice($trace, 0, -3));
+            $trace = \array_reverse(\array_slice($trace, 0, -3));
         }
 
         return $trace;
