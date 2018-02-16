@@ -15,10 +15,12 @@ namespace Jgut\Slim\Exception;
 
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
+use Jgut\HttpException\ForbiddenHttpException;
 use Jgut\HttpException\HttpException;
 use Jgut\HttpException\InternalServerErrorHttpException;
 use Jgut\HttpException\MethodNotAllowedHttpException;
 use Jgut\HttpException\NotFoundHttpException;
+use Jgut\HttpException\UnauthorizedHttpException;
 use Jgut\Slim\Exception\Whoops\Formatter\Text;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -112,9 +114,49 @@ class ExceptionManager implements LoggerAwareInterface
             }
         );
 
-        foreach ($exceptionTypes as $statusCode) {
-            $this->handlers[$statusCode] = $handler;
+        foreach ($exceptionTypes as $exceptionType) {
+            $this->handlers[$exceptionType] = $handler;
         }
+    }
+
+    /**
+     * Add Unauthorized exception handler.
+     *
+     * @param ExceptionHandler $handler
+     */
+    public function addUnauthorizedHandler(ExceptionHandler $handler)
+    {
+        $this->handlers[UnauthorizedHttpException::class] = $handler;
+    }
+
+    /**
+     * Add Forbidden exception handler.
+     *
+     * @param ExceptionHandler $handler
+     */
+    public function addForbiddenHandler(ExceptionHandler $handler)
+    {
+        $this->handlers[ForbiddenHttpException::class] = $handler;
+    }
+
+    /**
+     * Add Not Found exception handler.
+     *
+     * @param ExceptionHandler $handler
+     */
+    public function addNotFoundHandler(ExceptionHandler $handler)
+    {
+        $this->handlers[NotFoundHttpException::class] = $handler;
+    }
+
+    /**
+     * Add Method Not Allowed exception handler.
+     *
+     * @param ExceptionHandler $handler
+     */
+    public function addMethodNotAllowedHandler(ExceptionHandler $handler)
+    {
+        $this->handlers[MethodNotAllowedHttpException::class] = $handler;
     }
 
     /**
