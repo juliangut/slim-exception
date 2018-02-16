@@ -174,12 +174,7 @@ class ExceptionManager implements LoggerAwareInterface
         \Throwable $exception
     ): ResponseInterface {
         if (!$exception instanceof HttpException) {
-            $exception = new InternalServerErrorHttpException(
-                'Internal Server Error',
-                '',
-                StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
-                $exception
-            );
+            $exception = new InternalServerErrorHttpException(null, null, null, $exception);
         }
 
         return $this->handleHttpException($request, $response, $exception);

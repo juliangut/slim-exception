@@ -141,7 +141,7 @@ trait HttpExceptionAwareTrait
         $message = \explode("\n", $error['message']);
         $message = \preg_replace('/ in .+\.php(:\d+)?$/', '', $message[0]);
 
-        $exception = new InternalServerErrorHttpException($message, '', $error['type']);
+        $exception = new InternalServerErrorHttpException($message, null, $error['type']);
 
         $trace = $this->getBackTrace();
         if (\count($trace)) {

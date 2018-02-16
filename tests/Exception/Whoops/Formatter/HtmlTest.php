@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Formatter;
 
-use Fig\Http\Message\StatusCodeInterface;
 use Jgut\HttpException\InternalServerErrorHttpException;
 use Jgut\Slim\Exception\Whoops\Formatter\Html;
 use PHPUnit\Framework\TestCase;
@@ -50,12 +49,7 @@ class HtmlTest extends TestCase
 
     public function testOutput()
     {
-        $exception = new InternalServerErrorHttpException(
-            'Impossible error',
-            '',
-            StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
-            new \ErrorException()
-        );
+        $exception = new InternalServerErrorHttpException('Impossible error', null, null, new \ErrorException());
         $inspector = new Inspector($exception);
         $whoops = new Whoops();
 

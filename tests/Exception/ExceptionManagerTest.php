@@ -113,12 +113,7 @@ class ExceptionManagerTest extends TestCase
         $manager->handleHttpException(
             $request,
             new Response(),
-            new InternalServerErrorHttpException(
-                $exceptionMessage,
-                '',
-                StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
-                $originalException
-            )
+            new InternalServerErrorHttpException($exceptionMessage, null, null, $originalException)
         );
     }
 

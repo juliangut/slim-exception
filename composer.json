@@ -24,7 +24,7 @@
   "prefer-stable": true,
   "require": {
     "php": "^7.0",
-    "juliangut/http-exception": "~0.1",
+    "juliangut/http-exception": "^0.1",
     "psr/log": "^1.0",
     "slim/slim": "^3.5",
     "willdurand/negotiation": "^2.0"

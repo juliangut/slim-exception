@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops;
 
-use Fig\Http\Message\StatusCodeInterface;
 use Jgut\HttpException\InternalServerErrorHttpException;
 use Jgut\Slim\Exception\Tests\Stubs\InspectorStub;
 use Jgut\Slim\Exception\Whoops\Inspector;
@@ -27,12 +26,7 @@ class InspectorTest extends TestCase
     public function testAssign()
     {
         $originalException = new \InvalidArgumentException();
-        $exception = new InternalServerErrorHttpException(
-            '',
-            '',
-            StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
-            $originalException
-        );
+        $exception = new InternalServerErrorHttpException(null, null, null, $originalException);
 
         $inspector = new Inspector($exception);
 
@@ -42,12 +36,7 @@ class InspectorTest extends TestCase
     public function testTraceFrames()
     {
         $originalException = new \InvalidArgumentException();
-        $exception = new InternalServerErrorHttpException(
-            '',
-            '',
-            StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
-            $originalException
-        );
+        $exception = new InternalServerErrorHttpException(null, null, null, $originalException);
 
         $inspector = new InspectorStub($exception);
 
