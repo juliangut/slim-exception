@@ -15,7 +15,12 @@ namespace Jgut\Slim\Exception\Tests;
 
 use Fig\Http\Message\StatusCodeInterface;
 use Jgut\HttpException\BadRequestHttpException;
+use Jgut\HttpException\ForbiddenHttpException;
 use Jgut\HttpException\InternalServerErrorHttpException;
+use Jgut\HttpException\MethodNotAllowedHttpException;
+use Jgut\HttpException\NotFoundHttpException;
+use Jgut\HttpException\TooManyRequestsHttpException;
+use Jgut\HttpException\UnauthorizedHttpException;
 use Jgut\Slim\Exception\ExceptionManager;
 use Jgut\Slim\Exception\Formatter\Text;
 use Jgut\Slim\Exception\Handler\ExceptionHandler;
@@ -117,7 +122,7 @@ class ExceptionManagerTest extends TestCase
         );
     }
 
-    public function testErrorHandler()
+    public function testDefaultErrorHandler()
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
@@ -137,7 +142,7 @@ class ExceptionManagerTest extends TestCase
         self::assertEquals('Internal Server Error', (string) $parsedResponse->getBody());
     }
 
-    public function testErrorHandlerByHandler()
+    public function testAddUnauthorizedHandler()
     {
         $request = Request::createFromEnvironment(Environment::mock());
 
@@ -149,13 +154,92 @@ class ExceptionManagerTest extends TestCase
         $handler->addFormatter($formatter, 'text/plain'); // Because it's being tested on CLI
 
         $manager = new ExceptionManager(new ExceptionHandler($this->negotiator));
-        $manager->addHandler(BadRequestHttpException::class, $handler);
+        $manager->addUnauthorizedHandler($handler);
 
         /* @var Response $parsedResponse */
-        $parsedResponse = $manager->errorHandler($request, new Response(), new BadRequestHttpException());
+        $parsedResponse = $manager->errorHandler($request, new Response(), new UnauthorizedHttpException());
 
-        self::assertEquals(StatusCodeInterface::STATUS_BAD_REQUEST, $parsedResponse->getStatusCode());
-        self::assertEquals('Bad Request', (string) $parsedResponse->getBody());
+        self::assertEquals(StatusCodeInterface::STATUS_UNAUTHORIZED, $parsedResponse->getStatusCode());
+    }
+
+    public function testAddForbiddenHandler()
+    {
+        $request = Request::createFromEnvironment(Environment::mock());
+
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain'); // Because it's being tested on CLI
+
+        $manager = new ExceptionManager(new ExceptionHandler($this->negotiator));
+        $manager->addForbiddenHandler($handler);
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $manager->errorHandler($request, new Response(), new ForbiddenHttpException());
+
+        self::assertEquals(StatusCodeInterface::STATUS_FORBIDDEN, $parsedResponse->getStatusCode());
+    }
+
+    public function testAddNotFoundHandler()
+    {
+        $request = Request::createFromEnvironment(Environment::mock());
+
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain'); // Because it's being tested on CLI
+
+        $manager = new ExceptionManager(new ExceptionHandler($this->negotiator));
+        $manager->addNotFoundHandler($handler);
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $manager->errorHandler($request, new Response(), new NotFoundHttpException());
+
+        self::assertEquals(StatusCodeInterface::STATUS_NOT_FOUND, $parsedResponse->getStatusCode());
+    }
+
+    public function testAddMethodNotAllowedHandler()
+    {
+        $request = Request::createFromEnvironment(Environment::mock());
+
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain'); // Because it's being tested on CLI
+
+        $manager = new ExceptionManager(new ExceptionHandler($this->negotiator));
+        $manager->addMethodNotAllowedHandler($handler);
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $manager->errorHandler($request, new Response(), new MethodNotAllowedHttpException());
+
+        self::assertEquals(StatusCodeInterface::STATUS_METHOD_NOT_ALLOWED, $parsedResponse->getStatusCode());
+    }
+
+    public function testCustomErrorHandler()
+    {
+        $request = Request::createFromEnvironment(Environment::mock());
+
+        $formatter = $this->getMockBuilder(Text::class)
+            ->getMock();
+        /* @var Text $formatter */
+
+        $handler = new HandlerStub($this->negotiator);
+        $handler->addFormatter($formatter, 'text/plain'); // Because it's being tested on CLI
+
+        $manager = new ExceptionManager(new ExceptionHandler($this->negotiator));
+        $manager->addHandler(TooManyRequestsHttpException::class, $handler);
+
+        /* @var Response $parsedResponse */
+        $parsedResponse = $manager->errorHandler($request, new Response(), new TooManyRequestsHttpException());
+
+        self::assertEquals(StatusCodeInterface::STATUS_TOO_MANY_REQUESTS, $parsedResponse->getStatusCode());
     }
 
     public function testNotFoundErrorHandler()
