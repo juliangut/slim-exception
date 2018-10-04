@@ -16,7 +16,6 @@ namespace Jgut\Slim\Exception\Tests\Whoops\Handler;
 use Jgut\HttpException\BadRequestHttpException;
 use Jgut\Slim\Exception\Formatter\Text;
 use Jgut\Slim\Exception\Tests\Stubs\FormatterStub;
-use Jgut\Slim\Exception\Whoops\Formatter\Html;
 use Jgut\Slim\Exception\Whoops\Handler\ExceptionHandler;
 use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
