@@ -107,12 +107,7 @@ class ExceptionManager implements LoggerAwareInterface
             $exceptionTypes = [$exceptionTypes];
         }
 
-        $exceptionTypes = \array_filter(
-            $exceptionTypes,
-            function ($exceptionType): bool {
-                return \is_string($exceptionType);
-            }
-        );
+        $exceptionTypes = \array_filter($exceptionTypes, '\is_string');
 
         foreach ($exceptionTypes as $exceptionType) {
             $this->handlers[$exceptionType] = $handler;

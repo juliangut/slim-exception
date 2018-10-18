@@ -70,12 +70,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
             $contentTypes = [$contentTypes];
         }
 
-        $contentTypes = \array_filter(
-            $contentTypes,
-            function ($contentType): bool {
-                return \is_string($contentType);
-            }
-        );
+        $contentTypes = \array_filter($contentTypes, '\is_string');
 
         if (\count($contentTypes) === 0) {
             throw new \RuntimeException(\sprintf('No content type defined for %s formatter', \get_class($formatter)));

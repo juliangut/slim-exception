@@ -98,9 +98,9 @@ class Xml extends XmlResponseHandler implements ExceptionFormatter
     {
         foreach ($data as $key => $value) {
             if (\is_numeric($key)) {
-                $key = $nodeKey . '_' . (string) $key;
+                $key = $nodeKey . '_' . $key;
             }
-            $key = \preg_replace('/[^a-z0-9\-\_\.\:]/i', '_', $key);
+            $key = \preg_replace('/[^a-z0-9\-_.:]/i', '_', $key);
 
             if (\is_array($value)) {
                 $this->addDataNodes($node->addChild($key), $value, $key);

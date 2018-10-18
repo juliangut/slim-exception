@@ -15,6 +15,7 @@ namespace Jgut\Slim\Exception;
 
 use Jgut\HttpException\HttpException;
 use Jgut\HttpException\InternalServerErrorHttpException;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -117,14 +118,14 @@ trait HttpExceptionAwareTrait
      */
     private function isFatalError(int $error): bool
     {
-        $fatalErrors = E_ERROR
-            | E_PARSE
-            | E_CORE_ERROR
-            | E_CORE_WARNING
-            | E_COMPILE_ERROR
-            | E_COMPILE_WARNING
-            | E_USER_ERROR
-            | E_STRICT;
+        $fatalErrors = \E_ERROR
+            | \E_PARSE
+            | \E_CORE_ERROR
+            | \E_CORE_WARNING
+            | \E_COMPILE_ERROR
+            | \E_COMPILE_WARNING
+            | \E_USER_ERROR
+            | \E_STRICT;
 
         return ($error & $fatalErrors) !== 0;
     }
@@ -198,9 +199,9 @@ trait HttpExceptionAwareTrait
     /**
      * Enable access to the DI container by consumers of $app.
      *
-     * @return \Psr\Container\ContainerInterface
+     * @return ContainerInterface
      */
-    abstract public function getContainer();
+    abstract public function getContainer(): ContainerInterface;
 
     /**
      * Send the response the client.

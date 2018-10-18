@@ -24,7 +24,9 @@
   "prefer-stable": true,
   "require": {
     "php": "^7.0",
+    "ext-dom": "*",
     "ext-json": "*",
+    "ext-simplexml": "*",
     "juliangut/http-exception": "^0.1.1",
     "psr/log": "^1.0",
     "slim/slim": "^3.5",
