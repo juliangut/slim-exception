@@ -201,7 +201,7 @@ trait HttpExceptionAwareTrait
      *
      * @return ContainerInterface
      */
-    abstract public function getContainer(): ContainerInterface;
+    abstract public function getContainer();
 
     /**
      * Send the response the client.

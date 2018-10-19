@@ -50,7 +50,7 @@ class AppStub
     /**
      * {@inheritdoc}
      */
-    public function getContainer(): ContainerInterface
+    public function getContainer()
     {
         return $this->container;
     }
