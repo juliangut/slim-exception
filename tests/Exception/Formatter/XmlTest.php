@@ -52,11 +52,11 @@ class XmlTest extends TestCase
     {
         /* @var \Psr\Http\Message\ServerRequestInterface $request */
         $request = $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock();
-        $exception = new ForbiddenHttpException('Forbidden');
+        $exception = new ForbiddenHttpException('Forbidden "action"');
 
         $output = $this->formatter->formatException($exception, $request);
 
         self::assertRegExp('!<id>.+</id>!', $output);
-        self::assertRegExp('!<message>Forbidden</message>!', $output);
+        self::assertRegExp('!<message>Forbidden &quot;action&quot;</message>!', $output);
     }
 }

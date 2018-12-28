@@ -45,7 +45,7 @@ class Xml implements ExceptionFormatter
             '<error><id>%s</id><message>%s</message></error>' .
             '</root>',
             $exception->getIdentifier(),
-            $exception->getMessage()
+            \htmlspecialchars($exception->getMessage(), \ENT_QUOTES)
         );
     }
 }

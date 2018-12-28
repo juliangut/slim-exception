@@ -40,10 +40,14 @@ class Json implements ExceptionFormatter
      */
     public function formatException(HttpException $exception, ServerRequestInterface $request): string
     {
-        return \sprintf(
-            '{"error":{"id":"%s","message":"%s"}}',
-            $exception->getIdentifier(),
-            $exception->getMessage()
+        return \json_encode(
+            [
+                'error' => [
+                    'id' => $exception->getIdentifier(),
+                    'message' => $exception->getMessage(),
+                ],
+            ],
+            \JSON_UNESCAPED_UNICODE
         );
     }
 }
