@@ -35,12 +35,12 @@ class ErrorHandler extends BaseErrorHandler
      * @var string[]
      */
     protected $errorRenderers = [
+        'text/html' => HtmlRenderer::class,
+        'application/xhtml+xml' => HtmlRenderer::class,
         'application/json' => JsonRenderer::class,
         'text/json' => JsonRenderer::class,
         'application/x-json' => JsonRenderer::class,
         'application/*+json' => JsonRenderer::class,
-        'text/html' => HtmlRenderer::class,
-        'application/xhtml+xml' => HtmlRenderer::class,
         'application/xml' => XmlRenderer::class,
         'text/xml' => XmlRenderer::class,
         'application/x-xml' => XmlRenderer::class,
