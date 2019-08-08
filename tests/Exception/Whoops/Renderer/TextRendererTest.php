@@ -37,24 +37,6 @@ class TextRendererTest extends TestCase
         $this->renderer = new TextRenderer();
     }
 
-    public function testNoTraceOutput()
-    {
-        /* @var ServerRequestInterface $request */
-        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $exception = new HttpNotImplementedException($request);
-        $inspector = new Inspector($exception);
-
-        $this->renderer->addTraceToOutput(false);
-        $this->renderer->setException($exception);
-        $this->renderer->setInspector($inspector);
-
-        \ob_start();
-        $this->renderer->handle();
-        $output = \ob_get_clean();
-
-        self::assertNotRegExp('/Stack trace:/', $output);
-    }
-
     public function testOutput()
     {
         /* @var ServerRequestInterface $request */
@@ -72,7 +54,26 @@ class TextRendererTest extends TestCase
         $handler->handle();
         $output = \ob_get_clean();
 
-        self::assertRegExp('/^\(.+\) Slim\\\\Exception\\\\HttpNotImplementedException/', $output);
-        self::assertRegExp('/Stack trace:/', $output);
+        self::assertContains('Slim\\Exception\\HttpNotImplementedException: Not implemented', $output);
+        self::assertContains('Stack trace:', $output);
+    }
+
+    public function testNoTraceOutput()
+    {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpNotImplementedException($request);
+        $inspector = new Inspector($exception);
+
+        $this->renderer->addTraceToOutput(false);
+        $this->renderer->setException($exception);
+        $this->renderer->setInspector($inspector);
+
+        \ob_start();
+        $this->renderer->handle();
+        $output = \ob_get_clean();
+
+        self::assertContains('Not implemented', $output);
+        self::assertNotContains('Stack trace:', $output);
     }
 }

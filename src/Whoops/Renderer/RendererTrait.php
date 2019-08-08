@@ -36,12 +36,11 @@ trait RendererTrait
         $exception = $inspector->getException();
 
         $error = [
-            'id' => 0, // TODO $exception->getIdentifier(),
-            'type' => \get_class($exception),
             'message' => $exception->getMessage(),
         ];
 
         if ($addTrace) {
+            $error['type'] = \get_class($exception);
             $error['trace'] = $this->getExceptionStack($inspector);
         }
 

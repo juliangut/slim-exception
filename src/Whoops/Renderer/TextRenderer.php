@@ -51,7 +51,9 @@ class TextRenderer extends PlainTextHandler
         $error = $this->getExceptionData($inspector, $addTrace);
         $stackTrace = $addTrace ? "\n" . $this->getStackTraceOutput($error['trace']) : '';
 
-        return \sprintf("(%s) %s: %s%s\n", $error['id'], $error['type'], $error['message'], $stackTrace);
+        $type = $addTrace ? $error['type'] . ': ' : '';
+
+        return \sprintf("%s%s%s\n", $type, $error['message'], $stackTrace);
     }
 
     /**

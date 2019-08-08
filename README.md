@@ -12,7 +12,7 @@
 
 # slim-exception
 
-Alternative Slim error handling with better response format negotiation and development support
+Alternative Slim error handling with better response format negotiation and better development support
 
 ## Installation
 

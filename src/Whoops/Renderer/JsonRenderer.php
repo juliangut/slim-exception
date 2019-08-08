@@ -61,7 +61,7 @@ class JsonRenderer extends JsonResponseHandler
 
         $error = $this->getExceptionData($inspector, $addTrace);
 
-        echo \json_encode(['error' => $error], static::JSON_ENCODE_OPTIONS);
+        echo \json_encode($error, static::JSON_ENCODE_OPTIONS);
 
         return Handler::QUIT;
     }

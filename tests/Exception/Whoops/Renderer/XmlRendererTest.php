@@ -37,7 +37,7 @@ class XmlRendererTest extends TestCase
         $this->renderer = new XmlRenderer();
     }
 
-    public function testXmlOutput()
+    public function testOutput()
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
@@ -52,7 +52,26 @@ class XmlRendererTest extends TestCase
         $this->renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertRegExp('!<id>.+</id>!', $output);
-        self::assertRegExp('!<message>Forbidden</message>!', $output);
+        self::assertContains('<message>Forbidden</message>', $output);
+        self::assertContains('<trace>', $output);
+    }
+
+    public function testNoTraceOutput()
+    {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden');
+        $inspector = new Inspector($exception);
+
+        $this->renderer->addTraceToOutput(false);
+        $this->renderer->setException($exception);
+        $this->renderer->setInspector($inspector);
+
+        \ob_start();
+        $this->renderer->handle();
+        $output = \ob_get_clean();
+
+        self::assertContains('<message>Forbidden</message>', $output);
+        self::assertNotContains('<trace>', $output);
     }
 }
