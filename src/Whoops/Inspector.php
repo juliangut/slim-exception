@@ -13,9 +13,6 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops;
 
-use Jgut\HttpException\HttpException;
-use Jgut\Slim\Exception\ExceptionManager;
-use Slim\App;
 use Whoops\Exception\FrameCollection;
 use Whoops\Exception\Inspector as BaseInspector;
 
@@ -27,9 +24,9 @@ class Inspector extends BaseInspector
     /**
      * HTTP Exception inspector constructor.
      *
-     * @param HttpException $exception
+     * @param \Throwable $exception
      */
-    public function __construct(HttpException $exception)
+    public function __construct(\Throwable $exception)
     {
         parent::__construct($exception);
     }
@@ -43,69 +40,35 @@ class Inspector extends BaseInspector
      */
     public function getTraceFrames(): FrameCollection
     {
-        /** @var \Whoops\Exception\Frame[] $frameList */
-        $frameList = $this->getFrames()->getArray();
-        $firstNonInternal = $this->findFirstNonInternalFrame($frameList);
-
         $frames = new FrameCollection([]);
-        $frames->prependFrames(\array_values(\array_slice($frameList, $firstNonInternal)));
+        $frames->prependFrames($this->filterTraceFrames());
 
         return $frames;
     }
 
     /**
-     * Find position of the first non internal frame.
+     * Filter stack frame list.
+     * Remove internal frames.
      *
-     * @param \Whoops\Exception\Frame[] $frames
-     *
-     * @return int
+     * @return \Whoops\Exception\Frame[]
      */
-    protected function findFirstNonInternalFrame(array $frames): int
+    protected function filterTraceFrames(): array
     {
+        /** @var \Whoops\Exception\Frame[] $frameList */
+        $frameList = $this->getFrames()->getArray();
+
         $excludedPathRegex = \sprintf('!^%s/.+\.php$!', \dirname(__DIR__));
-        $excludedClosureRegex = \sprintf(
-            '!^%s::(error|notFound|notAllowed)Handler$!',
-            \str_replace('\\', '\\\\', ExceptionManager::class)
-        );
 
         $firstFrame = 0;
-        for ($i = 0, $length = \count($frames); $i < $length; $i++) {
-            $frame = $frames[$i];
-            $frameCallback = \sprintf('%s::%s', $frame->getClass(), $frame->getFunction());
-
-            if (\preg_match($excludedClosureRegex, $frameCallback)
-                || \preg_match($excludedPathRegex, $frame->getFile())
-            ) {
+        for ($i = 0, $length = \count($frameList); $i < $length; $i++) {
+            if (\preg_match($excludedPathRegex, $frameList[$i]->getFile() ?? '') === 1) {
                 continue;
-            }
-
-            if ($frameCallback === App::class . '::__invoke') {
-                // notFoundHandler/notAllowedHandler directly called by \Slim\App::__invoke. Display manager handling
-                $firstFrame = $i - 1;
-                break;
-            }
-
-            if ($frame->getFile() === '[internal]') {
-                // \Error or triggered errors (transformed into \ErrorException)
-                $firstFrame = $i + 1;
-                break;
-            }
-
-            if (isset($frames[$i + 1])) {
-                $nextFrame = $frames[$i + 1];
-                $nextFrameCallback = \sprintf('%s::%s', $nextFrame->getClass(), $nextFrame->getFunction());
-
-                if ($nextFrameCallback === App::class . '::handleException') {
-                    // Exception captured by \Slim\App::handleException. Skip Slim's handling
-                    $firstFrame = $i + 2;
-                    break;
-                }
             }
 
             $firstFrame = $i;
             break;
         }
 
-        return $firstFrame;
+        return \array_values(\array_slice($frameList, $firstFrame));
     }
 }

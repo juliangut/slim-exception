@@ -1,6 +1,7 @@
-includes:
-  - vendor/phpstan/phpstan-strict-rules/rules.neon
 parameters:
+  level: max
+  paths:
+    - src
   ignoreErrors:
-    - '/Parameter \#1 \$formatter of method Jgut\\Slim\\Exception\\Whoops\\Handler\\ExceptionHandler::addRequestData\(\) expects Jgut\\Slim\\Exception\\Whoops\\Formatter\\Html, Jgut\\Slim\\Exception\\ExceptionFormatter given/'
-    - '/Parameter \#1 \$handler of method Whoops\\Run::pushHandler\(\) expects callable\|Whoops\\Handler\\HandlerInterface, Jgut\\Slim\\Exception\\ExceptionFormatter given/'
+    - '/^In method "Jgut\\Slim\\Exception\\Handler\\ErrorHandler::determineContentType", caught "Exception" must be rethrown\./'
+    - '/^Parameter #(4|5) \$.+ of class ErrorException constructor expects (string|int), (string|int)\|null given\.$/'

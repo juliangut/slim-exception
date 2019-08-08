@@ -13,10 +13,11 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops;
 
-use Jgut\HttpException\InternalServerErrorHttpException;
 use Jgut\Slim\Exception\Tests\Stubs\InspectorStub;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Exception\HttpInternalServerErrorException;
 
 /**
  * Custom Whoops inspector tests.
@@ -25,18 +26,22 @@ class InspectorTest extends TestCase
 {
     public function testAssign()
     {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $originalException = new \InvalidArgumentException();
-        $exception = new InternalServerErrorHttpException(null, null, null, $originalException);
+        $exception = new HttpInternalServerErrorException($request, null, $originalException);
 
         $inspector = new Inspector($exception);
 
         self::assertEquals($exception, $inspector->getException());
     }
 
-    public function testTraceFrames()
+    public function testStackTraceFrames()
     {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $originalException = new \InvalidArgumentException();
-        $exception = new InternalServerErrorHttpException(null, null, null, $originalException);
+        $exception = new HttpInternalServerErrorException($request, null, $originalException);
 
         $inspector = new InspectorStub($exception);
 
