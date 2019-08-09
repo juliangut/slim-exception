@@ -46,8 +46,8 @@
     "roave/security-advisories": "dev-master",
     "sebastian/phpcpd": "^4.0",
     "squizlabs/php_codesniffer": "^2.0",
-    "symfony/var-dumper": "^3.0",
-    "thecodingmachine/phpstan-strict-rules": "~0.11.1",
+    "symfony/var-dumper": "^3.2",
+    "thecodingmachine/phpstan-strict-rules": "~0.11.2",
     "zendframework/zend-diactoros": "^2.1"
   },
   "suggest": {
