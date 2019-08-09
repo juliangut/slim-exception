@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -18,7 +18,7 @@ use Whoops\Handler\Handler;
 use Whoops\Handler\JsonResponseHandler;
 
 /**
- * Whoops custom JSON HTTP exception renderer.
+ * Whoops custom JSON exception renderer.
  */
 class JsonRenderer extends JsonResponseHandler
 {

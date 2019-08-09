@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -17,12 +17,12 @@ use Whoops\Exception\FrameCollection;
 use Whoops\Exception\Inspector as BaseInspector;
 
 /**
- * Custom Whoops HTTP Exception inspector.
+ * Custom Whoops exception inspector.
  */
 class Inspector extends BaseInspector
 {
     /**
-     * HTTP Exception inspector constructor.
+     * exception inspector constructor.
      *
      * @param \Throwable $exception
      */

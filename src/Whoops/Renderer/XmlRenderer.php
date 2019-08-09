@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -18,7 +18,7 @@ use Whoops\Handler\Handler;
 use Whoops\Handler\XmlResponseHandler;
 
 /**
- * Whoops custom XML HTTP exception renderer.
+ * Whoops custom XML exception renderer.
  */
 class XmlRenderer extends XmlResponseHandler
 {

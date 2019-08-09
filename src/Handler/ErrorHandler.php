@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -15,9 +15,9 @@ namespace Jgut\Slim\Exception\Handler;
 
 use Jgut\Slim\Exception\Renderer\HtmlRenderer;
 use Jgut\Slim\Exception\Renderer\JsonRenderer;
-use Jgut\Slim\Exception\Renderer\TextRenderer;
+use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
 use Jgut\Slim\Exception\Renderer\XmlRenderer;
-use Jgut\Slim\Exception\Whoops\Renderer\TextRenderer as WhoopsTextRenderer;
+use Jgut\Slim\Exception\Whoops\Renderer\PlainTextRenderer as WhoopsTextRenderer;
 use Negotiation\BaseAccept;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -29,7 +29,7 @@ use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Slim\Interfaces\CallableResolverInterface;
 
 /**
- * HTTP exception handler.
+ * exception handler.
  */
 class ErrorHandler extends SlimErrorHandler
 {
@@ -79,7 +79,7 @@ class ErrorHandler extends SlimErrorHandler
         'text/xml' => XmlRenderer::class,
         'application/x-xml' => XmlRenderer::class,
         'application/*+xml' => XmlRenderer::class,
-        'text/plain' => TextRenderer::class,
+        'text/plain' => PlainTextRenderer::class,
     ];
 
     /**

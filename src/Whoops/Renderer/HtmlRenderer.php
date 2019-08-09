@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -18,13 +18,25 @@ use Whoops\Exception\FrameCollection;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
- * Whoops custom HTML HTTP exception renderer.
+ * Whoops custom HTML exception renderer.
  *
  * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
  */
 class HtmlRenderer extends PrettyPageHandler
 {
     use RendererTrait;
+
+    /**
+     * HtmlRenderer constructor.
+     *
+     * @param string $title
+     */
+    public function __construct(string $title = 'Application error')
+    {
+        parent::__construct();
+
+        $this->setPageTitle($title);
+    }
 
     /**
      * {@inheritdoc}

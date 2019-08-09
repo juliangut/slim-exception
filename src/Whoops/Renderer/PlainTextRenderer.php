@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -17,9 +17,9 @@ use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Handler\PlainTextHandler;
 
 /**
- * Whoops custom plain text HTTP exception renderer.
+ * Whoops custom plain text exception renderer.
  */
-class TextRenderer extends PlainTextHandler
+class PlainTextRenderer extends PlainTextHandler
 {
     use RendererTrait;
 

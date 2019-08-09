@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -15,7 +15,7 @@ namespace Jgut\Slim\Exception\Tests\Handler;
 
 use Jgut\Slim\Exception\Handler\ErrorHandler;
 use Jgut\Slim\Exception\Renderer\HtmlRenderer;
-use Jgut\Slim\Exception\Renderer\TextRenderer;
+use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
 use Jgut\Slim\Exception\Tests\Stubs\ErrorHandlerStub;
 use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
@@ -40,15 +40,15 @@ class ErrorHandlerTest extends TestCase
             ->getMock();
         $callableResolver->expects($this->once())
             ->method('resolve')
-            ->with(TextRenderer::class)
-            ->will($this->returnValue(new TextRenderer()));
+            ->with(PlainTextRenderer::class)
+            ->will($this->returnValue(new PlainTextRenderer()));
         /* @var CallableResolverInterface $callableResolver */
         $handler = new ErrorHandler($callableResolver, new ResponseFactory(), new Negotiator());
 
-        $response = $handler($request, $exception, true, false, true);
+        $response = $handler($request, $exception, false, false, true);
 
         self::assertEquals('text/plain', $response->getHeaderLine('Content-Type'));
-        self::assertEquals('(0) Bad request.', (string) $response->getBody());
+        self::assertEquals('Application error: Bad request.', (string) $response->getBody());
     }
 
     public function testDefaultHandle()
@@ -69,7 +69,10 @@ class ErrorHandlerTest extends TestCase
         $response = $handler($request, $exception, false, false, true);
 
         self::assertEquals('text/html', $response->getHeaderLine('Content-Type'));
-        self::assertContains('An application error has occurred', (string) $response->getBody());
+        self::assertContains(
+            '<p>An application error has occurred. Sorry for the temporary inconvenience</p>',
+            (string) $response->getBody()
+        );
     }
 
     public function testLoggingError()

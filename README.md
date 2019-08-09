@@ -12,7 +12,7 @@
 
 # slim-exception
 
-Alternative Slim error handling with better response format negotiation and better development support
+Alternative Slim error handling with better response format negotiation, better exception logging and better development support
 
 ## Installation
 
@@ -48,30 +48,24 @@ $errorHandler = $inDevelopment
     : new ErrorHandler($callableResolver, $responseFactory, new Negotiator());
 
 // Add Error Middleware
-$errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, false, false);
+$errorMiddleware = $app->addErrorMiddleware($inDevelopment, true, true);
 $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 // ...
 
 $app->run();
 ```
-
-### Renderers
-
-* `Html` responds to text/html and application/xhtml+xml content types
-* `Json` responds to application/json, text/json and application/x-json content types
-* `Text` responds to text/plain content type
-* `Xml` responds to application/xml, text/xml and application/x-xml content types
-
 ### Whoops
 
-Development environment deserves a better, more informative error handling.
+Developers deserve a better and more informative error handling while in development environment
 
 [Whoops](https://github.com/filp/whoops) is a great tool for this purpose and its usage is integrated in this package. There is an special Whoops error handler which can be used as default exception handler for development
 
+Given Whoops renderers are meant for development displayErrorDetails argument on `Slim\Interfaces\ErrorRendererInterface::__invoke` won't be considered and stacktrace will always be displayed
+
 The example of how to include Whoops error handler is in the code above
 
-**_Consider requiring Whoops and var-dumper in production as well to benefit from better and richer stack traces in logs_**
+_Consider requiring Whoops and var-dumper in production as well to benefit from better and richer stack traces inside logs_
 
 For you to use this handler you'll need to require whoops first. Additionally symfony's var-dumper plays nice with whoops so require it too
 
@@ -94,7 +88,7 @@ $app = AppFactory::create();
 // ...
 // Create and register $errorHandler in error middleware
 
-$request = Psr17ServerRequestCreatorFactoryImplementation::create();
+$request = Psr17ServerRequestFactoryInterface::createServerRequest();
 
 $exceptionHandler = new ExceptionHandler($request, $errorHandler, $inDevelopment, true, true);
 $exceptionHandler->registerHandling();
@@ -109,8 +103,11 @@ trigger_error('This is embarrasing', \E_USER_ERROR);
 
 ## Upgrade from 1.x
 
+Overall usage has been drastically simplified due to Slim 4 migration to exception based error handling, basically what slim-exception was doing in 1.x.
+
 * Minimum Slim version is now 4.0
-* Slim 4 has migrated to Exception based error handling, basically what 1.x was doing already, so several parts of slim-exception have been dropped
+* ExceptionManager has been removed as its functionality is now integrated into Slim
+* Exceptions no longer uses juliangut/http-exception and thus they have no identifier
 * Global error/exception handling has been moved from a trait (meant for App) to its own class ExceptionHandler
 
 ## Contributing

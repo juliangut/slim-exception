@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -19,10 +19,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpForbiddenException;
 
 /**
- * JSON HTTP exception renderer tests.
+ * JSON exception renderer tests.
  */
 class JsonRendererTest extends TestCase
 {
+    /**
+     * @var HttpForbiddenException
+     */
+    protected $exception;
+
     /**
      * @var JsonRenderer
      */
@@ -33,17 +38,25 @@ class JsonRendererTest extends TestCase
      */
     public function setUp()
     {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $this->exception = new HttpForbiddenException($request, 'Forbidden action');
         $this->renderer = new JsonRenderer();
     }
 
     public function testOutput()
     {
-        /* @var ServerRequestInterface $request */
-        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $exception = new HttpForbiddenException($request, 'Forbidden "action"');
+        $output = ($this->renderer)($this->exception, false);
 
-        $output = ($this->renderer)($exception, false);
+        self::assertContains('"message": "Forbidden action"', $output);
+        self::assertNotContains('"trace": [', $output);
+    }
 
-        self::assertRegExp('/"message":"Forbidden \\\"action\\\""/', $output);
+    public function testOutputWithTrace()
+    {
+        $output = ($this->renderer)($this->exception, true);
+
+        self::assertContains('"message": "Forbidden action"', $output);
+        self::assertContains('"trace": [', $output);
     }
 }

@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -21,7 +21,7 @@ use Whoops\Exception\Inspector;
 use Whoops\Run as Whoops;
 
 /**
- * Whoops custom HTML HTTP exception renderer tests.
+ * Whoops custom HTML exception renderer tests.
  */
 class HtmlRendererTest extends TestCase
 {
@@ -60,6 +60,8 @@ class HtmlRendererTest extends TestCase
         $output = \ob_get_clean();
 
         self::assertContains(HttpInternalServerErrorException::class, $output);
-        self::assertContains('Impossible error', $output);
+        self::assertContains('<title>Application error</title>', $output);
+        self::assertContains('<span class="exc-title-primary">HttpInternalServerErrorException</span>', $output);
+        self::assertContains('<span>Impossible error</span>', $output);
     }
 }

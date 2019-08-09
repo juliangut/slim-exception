@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -13,19 +13,19 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Renderer;
 
-use Jgut\Slim\Exception\Whoops\Renderer\TextRenderer;
+use Jgut\Slim\Exception\Whoops\Renderer\PlainTextRenderer;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpNotImplementedException;
 use Whoops\Exception\Inspector;
 
 /**
- * Whoops custom plain text HTTP exception renderer tests.
+ * Whoops custom plain text exception renderer tests.
  */
-class TextRendererTest extends TestCase
+class PlainTextRendererTest extends TestCase
 {
     /**
-     * @var TextRenderer
+     * @var PlainTextRenderer
      */
     protected $renderer;
 
@@ -34,7 +34,7 @@ class TextRendererTest extends TestCase
      */
     public function setUp()
     {
-        $this->renderer = new TextRenderer();
+        $this->renderer = new PlainTextRenderer();
     }
 
     public function testOutput()
@@ -45,7 +45,7 @@ class TextRendererTest extends TestCase
         $exception = new HttpNotImplementedException($request, null, $originalException);
         $inspector = new Inspector($exception);
 
-        $handler = new TextRenderer();
+        $handler = new PlainTextRenderer();
         $handler->addTraceFunctionArgsToOutput(true);
         $handler->setException($exception);
         $handler->setInspector($inspector);

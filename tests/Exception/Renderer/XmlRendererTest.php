@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -19,10 +19,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpForbiddenException;
 
 /**
- * XML HTTP exception renderer tests.
+ * XML exception renderer tests.
  */
 class XmlRendererTest extends TestCase
 {
+    /**
+     * @var HttpForbiddenException
+     */
+    protected $exception;
+
     /**
      * @var XmlRenderer
      */
@@ -33,18 +38,25 @@ class XmlRendererTest extends TestCase
      */
     public function setUp()
     {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $this->exception = new HttpForbiddenException($request, 'Forbidden action');
         $this->renderer = new XmlRenderer();
     }
 
     public function testOutput()
     {
-        /* @var ServerRequestInterface $request */
-        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $exception = new HttpForbiddenException($request, 'Forbidden "action"');
+        $output = ($this->renderer)($this->exception, false);
 
-        $output = ($this->renderer)($exception, false);
+        self::assertContains('<message><![CDATA[Forbidden action]]></message>', $output);
+        self::assertNotContains('<trace>', $output);
+    }
 
-        self::assertRegExp('!<id>.+</id>!', $output);
-        self::assertRegExp('!<message>Forbidden &quot;action&quot;</message>!', $output);
+    public function testOutputWithTrace()
+    {
+        $output = ($this->renderer)($this->exception, true);
+
+        self::assertContains('<message><![CDATA[Forbidden action]]></message>', $output);
+        self::assertContains('<trace>', $output);
     }
 }

@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Renderer;
 
-use Jgut\Slim\Exception\Renderer\HtmlRenderer;
+use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpForbiddenException;
 
 /**
- * HTML exception renderer tests.
+ * Plain text exception renderer tests.
  */
-class HtmlRendererTest extends TestCase
+class PlainTextRendererTest extends TestCase
 {
     /**
      * @var HttpForbiddenException
@@ -29,7 +29,7 @@ class HtmlRendererTest extends TestCase
     protected $exception;
 
     /**
-     * @var HtmlRenderer
+     * @var PlainTextRenderer
      */
     protected $renderer;
 
@@ -40,33 +40,21 @@ class HtmlRendererTest extends TestCase
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $this->exception = new HttpForbiddenException($request);
-        $this->renderer = new HtmlRenderer();
+        $this->exception = new HttpForbiddenException($request, 'Forbidden action');
+        $this->renderer = new PlainTextRenderer();
     }
 
     public function testOutput()
     {
         $output = ($this->renderer)($this->exception, false);
 
-        self::assertContains('<title>Application error</title>', $output);
-        self::assertContains('<h1>Application error</h1>', $output);
-        self::assertContains(
-            '<p>An application error has occurred. Sorry for the temporary inconvenience</p>',
-            $output
-        );
-        self::assertNotContains('<h3>Trace</h3>', $output);
+        self::assertEquals('Application error: Forbidden action', $output);
     }
 
     public function testOutputWithTrace()
     {
         $output = ($this->renderer)($this->exception, true);
 
-        self::assertContains('<title>Application error</title>', $output);
-        self::assertContains('<h1>Application error</h1>', $output);
-        self::assertNotContains(
-            '<p>An application error has occurred. Sorry for the temporary inconvenience</p>',
-            $output
-        );
-        self::assertContains('<h3>Trace</h3>', $output);
+        self::assertContains("Application error: Forbidden action\nTrace", $output);
     }
 }

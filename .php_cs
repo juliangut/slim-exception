@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -14,7 +14,7 @@ use PhpCsFixer\Finder;
 
 $header = <<<'HEADER'
 slim-exception (https://github.com/juliangut/slim-exception).
-Slim HTTP exceptions and exception handling.
+Slim exception handling.
 
 @license BSD-3-Clause
 @link https://github.com/juliangut/slim-exception

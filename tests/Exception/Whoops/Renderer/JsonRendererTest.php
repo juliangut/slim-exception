@@ -2,7 +2,7 @@
 
 /*
  * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim HTTP exceptions and exception handling.
+ * Slim exception handling.
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -20,7 +20,7 @@ use Slim\Exception\HttpForbiddenException;
 use Whoops\Exception\Inspector;
 
 /**
- * Whoops custom JSON HTTP exception renderer tests.
+ * Whoops custom JSON exception renderer tests.
  */
 class JsonRendererTest extends TestCase
 {
