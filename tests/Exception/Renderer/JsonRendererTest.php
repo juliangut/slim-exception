@@ -36,7 +36,7 @@ class JsonRendererTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();

@@ -57,7 +57,7 @@ class Inspector extends BaseInspector
         /** @var \Whoops\Exception\Frame[] $frameList */
         $frameList = $this->getFrames()->getArray();
 
-        $excludedPathRegex = \sprintf('!^%s/.+\.php$!', \dirname(__DIR__));
+        $excludedPathRegex = \sprintf('!^%s/.+\.php$!', \dirname(__DIR__, 2));
 
         $firstFrame = 0;
         for ($i = 0, $length = \count($frameList); $i < $length; $i++) {

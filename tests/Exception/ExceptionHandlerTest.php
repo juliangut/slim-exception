@@ -34,7 +34,7 @@ class ExceptionHandlerTest extends TestCase
      *
      * Hack to prevent shutdown function to be triggered after PHPUnit has finished.
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         \register_shutdown_function([__CLASS__, 'shutDown']);
     }

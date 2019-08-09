@@ -94,6 +94,6 @@ class ErrorHandlerTest extends TestCase
         $response = $handler($request, $exception, false, false, true);
 
         self::assertEquals('text/html', $response->getHeaderLine('Content-Type'));
-        self::assertContains('Bad request---', (string) $response->getBody());
+        self::assertContains('Bad request', (string) $response->getBody());
     }
 }

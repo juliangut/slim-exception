@@ -179,7 +179,7 @@ class ExceptionHandler
     /**
      * Get exception from fatal error.
      *
-     * @param string[] $error
+     * @param mixed[] $error
      *
      * @return HttpException
      */
