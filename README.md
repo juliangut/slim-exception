@@ -55,6 +55,24 @@ $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 $app->run();
 ```
+
+### Renderers
+
+Custom error renderers are configured when using slim-exception error handlers. Fear not, ErrorHandler is a direct drop-in to change default Slim's ErrorHandler
+
+You can register your error renderers or completely change them
+
+```php
+$errorHandler = new ErrorHandler($callableResolver, $responseFactory, new Negotiator());
+
+// Completely replace error renderers
+$errorHandler->setErrorRenderers(['text/html' => MyCustomHtmlRenderer::class]);
+
+// Register new error renderer
+$errorHandler->registerErrorRenderer('application/xhtml+xml', MyCustomHtmlRenderer::class);
+
+``` 
+
 ### Whoops
 
 Developers deserve a better and more informative error handling while in development environment

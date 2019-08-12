@@ -27,6 +27,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Slim\Interfaces\CallableResolverInterface;
+use Slim\Interfaces\ErrorRendererInterface;
 
 /**
  * exception handler.
@@ -66,7 +67,7 @@ class ErrorHandler extends SlimErrorHandler
     protected $negotiator;
 
     /**
-     * @var string[]
+     * @var array<string, string|ErrorRendererInterface>
      */
     protected $errorRenderers = [
         'text/html' => HtmlRenderer::class,
@@ -154,6 +155,16 @@ class ErrorHandler extends SlimErrorHandler
         }
 
         return $contentType;
+    }
+
+    /**
+     * Set error renderers.
+     *
+     * @param array<string, string|ErrorRendererInterface> $errorRenderers
+     */
+    public function setErrorRenderers(array $errorRenderers): void
+    {
+        $this->errorRenderers = $errorRenderers;
     }
 
     /**

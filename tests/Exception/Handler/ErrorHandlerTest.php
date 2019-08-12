@@ -44,6 +44,7 @@ class ErrorHandlerTest extends TestCase
             ->will($this->returnValue(new PlainTextRenderer()));
         /* @var CallableResolverInterface $callableResolver */
         $handler = new ErrorHandler($callableResolver, new ResponseFactory(), new Negotiator());
+        $handler->setErrorRenderers(['text/plain' => PlainTextRenderer::class]);
 
         $response = $handler($request, $exception, false, false, true);
 
