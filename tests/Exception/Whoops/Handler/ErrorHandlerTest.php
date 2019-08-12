@@ -33,7 +33,7 @@ class ErrorHandlerTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessageRegExp /^Renderer ".+" for Whoops error handler does not implement .+/
      */
-    public function testInvalidHandler()
+    public function testInvalidHandler(): void
     {
         $request = (new ServerRequest())
             ->withHeader('Accept', 'application/*+json');
@@ -45,7 +45,7 @@ class ErrorHandlerTest extends TestCase
         $callableResolver->expects($this->once())
             ->method('resolve')
             ->with(JsonRenderer::class)
-            ->will($this->returnValue(function () {
+            ->will($this->returnValue(function (): void {
                 // noop
             }));
         /* @var CallableResolverInterface $callableResolver */
@@ -54,7 +54,7 @@ class ErrorHandlerTest extends TestCase
         $response = $handler($request, $exception, false, false, true);
     }
 
-    public function testHandle()
+    public function testHandle(): void
     {
         $request = (new ServerRequest())
             ->withHeader('Accept', 'application/json');
@@ -76,7 +76,7 @@ class ErrorHandlerTest extends TestCase
         self::assertContains('"type": "Slim\\\Exception\\\HttpBadRequestException"', (string) $response->getBody());
     }
 
-    public function testDefaultHandle()
+    public function testDefaultHandle(): void
     {
         $request = new ServerRequest();
         $exception = new HttpBadRequestException($request);

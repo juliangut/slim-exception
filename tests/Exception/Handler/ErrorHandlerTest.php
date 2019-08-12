@@ -30,7 +30,7 @@ use Zend\Diactoros\ServerRequest;
  */
 class ErrorHandlerTest extends TestCase
 {
-    public function testHandle()
+    public function testHandle(): void
     {
         $request = new ServerRequest();
         $exception = new HttpBadRequestException($request);
@@ -52,7 +52,7 @@ class ErrorHandlerTest extends TestCase
         self::assertEquals('Application error: Bad request.', (string) $response->getBody());
     }
 
-    public function testDefaultHandle()
+    public function testDefaultHandle(): void
     {
         $request = new ServerRequest();
         $exception = new HttpBadRequestException($request);
@@ -76,7 +76,7 @@ class ErrorHandlerTest extends TestCase
         );
     }
 
-    public function testLoggingError()
+    public function testLoggingError(): void
     {
         $exception = new \ErrorException('Custom error', 0, \E_USER_WARNING);
 
@@ -101,7 +101,7 @@ class ErrorHandlerTest extends TestCase
         $handler(new ServerRequest(), $exception, false, true, true);
     }
 
-    public function testLoggingHttpError()
+    public function testLoggingHttpError(): void
     {
         $request = new ServerRequest();
         $exception = new HttpBadRequestException($request);

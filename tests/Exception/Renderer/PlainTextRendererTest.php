@@ -44,14 +44,14 @@ class PlainTextRendererTest extends TestCase
         $this->renderer = new PlainTextRenderer();
     }
 
-    public function testOutput()
+    public function testOutput(): void
     {
         $output = ($this->renderer)($this->exception, false);
 
         self::assertEquals('Application error: Forbidden action', $output);
     }
 
-    public function testOutputWithTrace()
+    public function testOutputWithTrace(): void
     {
         $output = ($this->renderer)($this->exception, true);
 

@@ -37,7 +37,7 @@ class JsonRendererTest extends TestCase
         $this->renderer = new JsonRenderer();
     }
 
-    public function testOutput()
+    public function testOutput(): void
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
@@ -56,7 +56,7 @@ class JsonRendererTest extends TestCase
         self::assertContains('"trace": ', $output);
     }
 
-    public function testNoTraceOutput()
+    public function testNoTraceOutput(): void
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();

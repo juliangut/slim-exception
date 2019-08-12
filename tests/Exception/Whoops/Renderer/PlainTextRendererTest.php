@@ -37,7 +37,7 @@ class PlainTextRendererTest extends TestCase
         $this->renderer = new PlainTextRenderer();
     }
 
-    public function testOutput()
+    public function testOutput(): void
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
@@ -58,7 +58,7 @@ class PlainTextRendererTest extends TestCase
         self::assertContains('Stack trace:', $output);
     }
 
-    public function testNoTraceOutput()
+    public function testNoTraceOutput(): void
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();

@@ -44,7 +44,7 @@ class HtmlRendererTest extends TestCase
         $this->renderer = new HtmlRenderer();
     }
 
-    public function testOutput()
+    public function testOutput(): void
     {
         $output = ($this->renderer)($this->exception, false);
 
@@ -57,7 +57,7 @@ class HtmlRendererTest extends TestCase
         self::assertNotContains('<h3>Trace</h3>', $output);
     }
 
-    public function testOutputWithTrace()
+    public function testOutputWithTrace(): void
     {
         $output = ($this->renderer)($this->exception, true);
 

@@ -38,7 +38,7 @@ class HtmlRendererTest extends TestCase
         $this->renderer = new HtmlRenderer();
     }
 
-    public function testOutput()
+    public function testOutput(): void
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();

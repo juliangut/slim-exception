@@ -44,7 +44,7 @@ class XmlRendererTest extends TestCase
         $this->renderer = new XmlRenderer();
     }
 
-    public function testOutput()
+    public function testOutput(): void
     {
         $output = ($this->renderer)($this->exception, false);
 
@@ -52,7 +52,7 @@ class XmlRendererTest extends TestCase
         self::assertNotContains('<trace>', $output);
     }
 
-    public function testOutputWithTrace()
+    public function testOutputWithTrace(): void
     {
         $output = ($this->renderer)($this->exception, true);
 

@@ -39,7 +39,7 @@ class ExceptionHandlerTest extends TestCase
         \register_shutdown_function([__CLASS__, 'shutDown']);
     }
 
-    public function testIgnoredError()
+    public function testIgnoredError(): void
     {
         $errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)
             ->disableOriginalConstructor()
@@ -59,7 +59,7 @@ class ExceptionHandlerTest extends TestCase
         self::assertEquals('', \ob_get_clean());
     }
 
-    public function testHandleExceptionFromError()
+    public function testHandleExceptionFromError(): void
     {
         $response = (new ResponseFactory())->createResponse();
         $response->getBody()->write('Exception!');
@@ -88,7 +88,7 @@ class ExceptionHandlerTest extends TestCase
         }
     }
 
-    public function testFatalError()
+    public function testFatalError(): void
     {
         $error = [
             'type' => \E_USER_ERROR,
@@ -122,7 +122,7 @@ class ExceptionHandlerTest extends TestCase
     /**
      * Hack to prevent shutdown function to be triggered after PHPUnit has finished.
      */
-    public static function shutDown()
+    public static function shutDown(): void
     {
         if (static::$exitShutDown) {
             exit;

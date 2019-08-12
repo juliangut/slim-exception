@@ -24,7 +24,7 @@ use Slim\Exception\HttpInternalServerErrorException;
  */
 class InspectorTest extends TestCase
 {
-    public function testAssign()
+    public function testAssign(): void
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
@@ -36,7 +36,7 @@ class InspectorTest extends TestCase
         self::assertEquals($exception, $inspector->getException());
     }
 
-    public function testStackTraceFrames()
+    public function testStackTraceFrames(): void
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
