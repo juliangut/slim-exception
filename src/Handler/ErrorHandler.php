@@ -180,7 +180,6 @@ class ErrorHandler extends SlimErrorHandler
 
         $logLevel = $this->getLogLevel();
         $logContext = [
-            // TODO 'exception_id' => $this->exception->getIdentifier(),
             'http_method' => $this->request->getMethod(),
             'request_uri' => (string) $this->request->getUri(),
             'level_name' => \strtoupper($logLevel),
