@@ -29,12 +29,11 @@ use Zend\Diactoros\ServerRequest;
  */
 class ErrorHandlerTest extends TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp /^Renderer ".+" for Whoops error handler does not implement .+/
-     */
     public function testInvalidHandler(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('/^Renderer ".+" for Whoops error handler does not implement .+/');
+
         $request = (new ServerRequest())
             ->withHeader('Accept', 'application/*+json');
         $exception = new HttpBadRequestException($request);
@@ -42,7 +41,7 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects($this->once())
+        $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(JsonRenderer::class)
             ->will($this->returnValue(function (): void {
@@ -63,7 +62,7 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects($this->once())
+        $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(JsonRenderer::class)
             ->will($this->returnValue(new JsonRenderer()));
@@ -84,7 +83,7 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects($this->once())
+        $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(HtmlRenderer::class)
             ->will($this->returnValue(new HtmlRenderer()));

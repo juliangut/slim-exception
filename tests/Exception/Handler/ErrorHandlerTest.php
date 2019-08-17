@@ -38,7 +38,7 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects($this->once())
+        $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(PlainTextRenderer::class)
             ->will($this->returnValue(new PlainTextRenderer()));
@@ -60,7 +60,7 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects($this->once())
+        $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(HtmlRenderer::class)
             ->will($this->returnValue(new HtmlRenderer()));
@@ -83,7 +83,7 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects($this->once())
+        $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(HtmlRenderer::class)
             ->will($this->returnValue(new HtmlRenderer()));
@@ -93,7 +93,7 @@ class ErrorHandlerTest extends TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $logger->expects($this->once())
+        $logger->expects(static::once())
             ->method('log');
         /* @var LoggerInterface $logger */
         $handler->setLogger($logger);
@@ -109,7 +109,7 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects($this->once())
+        $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(HtmlRenderer::class)
             ->will($this->returnValue(new HtmlRenderer()));
@@ -119,7 +119,7 @@ class ErrorHandlerTest extends TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $logger->expects($this->once())
+        $logger->expects(static::once())
             ->method('log');
         /* @var LoggerInterface $logger */
         $handler->setLogger($logger);

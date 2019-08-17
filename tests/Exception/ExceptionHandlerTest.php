@@ -67,7 +67,7 @@ class ExceptionHandlerTest extends TestCase
         $errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $errorHandler->expects($this->once())
+        $errorHandler->expects(static::once())
             ->method('__invoke')
             ->will($this->returnValue($response));
         /* @var ErrorHandlerInterface $errorHandler */
@@ -102,7 +102,7 @@ class ExceptionHandlerTest extends TestCase
         $errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $errorHandler->expects($this->once())
+        $errorHandler->expects(static::once())
             ->method('__invoke')
             ->will($this->returnValue($response));
         /* @var ErrorHandlerInterface $errorHandler */
