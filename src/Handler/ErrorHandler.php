@@ -186,7 +186,13 @@ class ErrorHandler extends SlimErrorHandler
             'stacktrace' => $this->getStackTrace(),
         ];
 
-        $this->logger->log($logLevel, $this->exception->getMessage(), $logContext);
+        $message = $this->exception->getMessage();
+        if (!$this->displayErrorDetails) {
+            $message .= "\nTips: To display error details in HTTP response ";
+            $message .= 'set "displayErrorDetails" to true in the ErrorHandler constructor.';
+        }
+
+        $this->logger->log($logLevel, $message, $logContext);
     }
 
     /**
