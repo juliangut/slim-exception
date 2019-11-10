@@ -90,4 +90,24 @@ trait RendererTrait
 
         return $this->handle() ?? Handler::DONE;
     }
+
+    /**
+     * @param \Throwable $exception
+     */
+    abstract public function setException($exception);
+
+    /**
+     * @param WhoopsInspector $inspector
+     */
+    abstract public function setInspector(WhoopsInspector $inspector);
+
+    /**
+     * @param RunInterface $run
+     */
+    abstract public function setRun(RunInterface $run);
+
+    /**
+     * @return int
+     */
+    abstract public function handle();
 }

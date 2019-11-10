@@ -6,3 +6,4 @@ parameters:
     - '/^Strict comparison using !== between (string|int) and null will always evaluate to true\./'
     - '/^In method "Jgut\\Slim\\Exception\\Handler\\ErrorHandler::determineContentType", caught "Exception" must be rethrown\./'
     - '/^Parameter #(4|5) \$.+ of class ErrorException constructor expects (string|int), (string|int)\|null given\.$/'
+    - '/^Method Whoops\\Handler\\Handler::set(Exception|Inspector|Run)\(\) has no return typehint specified\.$/'
