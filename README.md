@@ -58,19 +58,18 @@ $app->run();
 
 ### Renderers
 
-Custom error renderers are configured when using slim-exception error handlers. Fear not, ErrorHandler is a direct drop-in to change default Slim's ErrorHandler
+Custom error renderers are configured when using slim-exception error handlers. Fear not, out of the box ErrorHandler is a direct drop-in to change default Slim's ErrorHandler
 
 You can register your error renderers or completely change them
 
 ```php
 $errorHandler = new ErrorHandler($callableResolver, $responseFactory, new Negotiator());
 
+// Set single error renderer
+$errorHandler->setErrorRenderer('application/xhtml+xml', MyCustomHtmlRenderer::class);
+
 // Completely replace error renderers
 $errorHandler->setErrorRenderers(['text/html' => MyCustomHtmlRenderer::class]);
-
-// Register new error renderer
-$errorHandler->registerErrorRenderer('application/xhtml+xml', MyCustomHtmlRenderer::class);
-
 ``` 
 
 ### Whoops
@@ -83,14 +82,14 @@ Given Whoops renderers are meant for development displayErrorDetails argument on
 
 The example of how to include Whoops error handler is in the code above
 
-_Consider requiring Whoops and var-dumper in production as well to benefit from better and richer stack traces inside logs_
-
 For you to use this handler you'll need to require whoops first. Additionally symfony's var-dumper plays nice with whoops so require it too
 
 ```
 composer require filp/whoops
 composer require symfony/var-dumper
 ```
+
+_To benefit from better and richer stack traces inside logs ErrorHandler uses Whoops if present so consider requiring Whoops in production as well, but **do not use Whoops's ErrorHandler in production**_
 
 ## Handle all errors/exceptions
 

@@ -101,6 +101,31 @@ class ErrorHandler extends SlimErrorHandler
     }
 
     /**
+     * Set error renderers.
+     *
+     * @param array<string, string|ErrorRendererInterface> $errorRenderers
+     */
+    public function setErrorRenderers(array $errorRenderers): void
+    {
+        $this->errorRenderers = [];
+
+        foreach ($errorRenderers as $contentType => $errorRenderer) {
+            $this->setErrorRenderer($contentType, $errorRenderer);
+        }
+    }
+
+    /**
+     * Set error renderer.
+     *
+     * @param string                        $contentType
+     * @param string|ErrorRendererInterface $errorRenderer
+     */
+    public function setErrorRenderer(string $contentType, $errorRenderer): void
+    {
+        $this->errorRenderers[$contentType] = $errorRenderer;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function __invoke(
@@ -155,16 +180,6 @@ class ErrorHandler extends SlimErrorHandler
         }
 
         return $contentType;
-    }
-
-    /**
-     * Set error renderers.
-     *
-     * @param array<string, string|ErrorRendererInterface> $errorRenderers
-     */
-    public function setErrorRenderers(array $errorRenderers): void
-    {
-        $this->errorRenderers = $errorRenderers;
     }
 
     /**
