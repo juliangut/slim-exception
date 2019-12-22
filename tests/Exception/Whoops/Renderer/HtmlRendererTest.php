@@ -60,7 +60,7 @@ class HtmlRendererTest extends TestCase
         $output = \ob_get_clean();
 
         self::assertContains(HttpInternalServerErrorException::class, $output);
-        self::assertContains('<title>Application error</title>', $output);
+        self::assertContains('<title>Slim Application error</title>', $output);
         self::assertContains('<span class="exc-title-primary">HttpInternalServerErrorException</span>', $output);
         self::assertContains('<span>Impossible error</span>', $output);
     }

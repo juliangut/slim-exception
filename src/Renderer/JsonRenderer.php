@@ -13,12 +13,10 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Renderer;
 
-use Slim\Interfaces\ErrorRendererInterface;
-
 /**
  * JSON exception renderer.
  */
-class JsonRenderer implements ErrorRendererInterface
+class JsonRenderer extends AbstractRenderer
 {
     /**
      * JSON encoding options.
@@ -39,13 +37,13 @@ class JsonRenderer implements ErrorRendererInterface
      */
     public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
     {
-        $output = ['message' => $exception->getMessage()];
+        $output = ['message' => $this->getErrorTitle($exception)];
 
         if ($displayErrorDetails) {
-            $output['trace'] = [];
+            $output['exception'] = [];
 
             do {
-                $output['trace'][] = $this->renderException($exception);
+                $output['exception'][] = $this->formatException($exception);
             } while ($exception = $exception->getPrevious());
         }
 
@@ -57,7 +55,7 @@ class JsonRenderer implements ErrorRendererInterface
      *
      * @return mixed[]
      */
-    private function renderException(\Throwable $exception): array
+    private function formatException(\Throwable $exception): array
     {
         return [
             'type' => \get_class($exception),

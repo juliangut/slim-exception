@@ -48,13 +48,14 @@ class PlainTextRendererTest extends TestCase
     {
         $output = ($this->renderer)($this->exception, false);
 
-        self::assertEquals('Application error: Forbidden action', $output);
+        self::assertEquals('403 Forbidden', $output);
     }
 
     public function testOutputWithTrace(): void
     {
         $output = ($this->renderer)($this->exception, true);
 
-        self::assertContains("Application error: Forbidden action\nTrace", $output);
+        self::assertContains('403 Forbidden', $output);
+        self::assertContains('Trace', $output);
     }
 }

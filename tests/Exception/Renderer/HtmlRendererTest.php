@@ -48,25 +48,17 @@ class HtmlRendererTest extends TestCase
     {
         $output = ($this->renderer)($this->exception, false);
 
-        self::assertContains('<title>Application error</title>', $output);
-        self::assertContains('<h1>Application error</h1>', $output);
-        self::assertContains(
-            '<p>An application error has occurred. Sorry for the temporary inconvenience</p>',
-            $output
-        );
-        self::assertNotContains('<h3>Trace</h3>', $output);
+        self::assertContains('<title>403 Forbidden</title>', $output);
+        self::assertContains('<h1>403 Forbidden</h1>', $output);
+        self::assertNotContains('<h2>Details</h2>', $output);
     }
 
     public function testOutputWithTrace(): void
     {
         $output = ($this->renderer)($this->exception, true);
 
-        self::assertContains('<title>Application error</title>', $output);
-        self::assertContains('<h1>Application error</h1>', $output);
-        self::assertNotContains(
-            '<p>An application error has occurred. Sorry for the temporary inconvenience</p>',
-            $output
-        );
-        self::assertContains('<h3>Trace</h3>', $output);
+        self::assertContains('<title>403 Forbidden</title>', $output);
+        self::assertContains('<h1>403 Forbidden</h1>', $output);
+        self::assertContains('<h2>Details</h2>', $output);
     }
 }

@@ -48,15 +48,15 @@ class XmlRendererTest extends TestCase
     {
         $output = ($this->renderer)($this->exception, false);
 
-        self::assertContains('<message><![CDATA[Forbidden action]]></message>', $output);
-        self::assertNotContains('<trace>', $output);
+        self::assertContains('<message><![CDATA[403 Forbidden]]></message>', $output);
+        self::assertNotContains('<exception>', $output);
     }
 
     public function testOutputWithTrace(): void
     {
         $output = ($this->renderer)($this->exception, true);
 
-        self::assertContains('<message><![CDATA[Forbidden action]]></message>', $output);
-        self::assertContains('<trace>', $output);
+        self::assertContains('<message><![CDATA[403 Forbidden]]></message>', $output);
+        self::assertContains('<exception>', $output);
     }
 }

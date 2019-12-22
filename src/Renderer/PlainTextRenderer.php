@@ -13,41 +13,25 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Renderer;
 
-use Slim\Interfaces\ErrorRendererInterface;
-
 /**
  * Plain text exception renderer.
  */
-class PlainTextRenderer implements ErrorRendererInterface
+class PlainTextRenderer extends AbstractRenderer
 {
-    /**
-     * @var string
-     */
-    protected $title = '';
-
-    /**
-     * Plain text exception renderer constructor.
-     *
-     * @param string $title
-     */
-    public function __construct(string $title = 'Application error')
-    {
-        $this->title = $title;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
     {
-        $output = $this->title . ': ' . $exception->getMessage();
+        $output = $this->getErrorTitle($exception);
 
         if ($displayErrorDetails) {
-            $output .= "\nTrace:";
+            $output .= $this->formatException($exception);
 
-            do {
-                $output .= "\n" . $this->renderException($exception);
-            } while ($exception = $exception->getPrevious());
+            while ($exception = $exception->getPrevious()) {
+                $output .= "\nPrevious Error:\n";
+                $output .= $this->formatException($exception);
+            }
         }
 
         return $output;
@@ -58,35 +42,35 @@ class PlainTextRenderer implements ErrorRendererInterface
      *
      * @return string
      */
-    private function renderException(\Throwable $exception): string
+    private function formatException(\Throwable $exception): string
     {
-        $text = \sprintf("Type: %s\n", \get_class($exception));
+        $output = \sprintf("Type: %s\n", \get_class($exception));
 
         $code = $exception->getCode();
         if ($code !== null) {
-            $text .= \sprintf("Code: %s\n", $code);
+            $output .= \sprintf("Code: %s\n", $code);
         }
 
         $message = $exception->getMessage();
         if ($message !== null) {
-            $text .= \sprintf("Message: %s\n", \htmlentities($message));
+            $output .= \sprintf("Message: %s\n", \htmlentities($message));
         }
 
         $file = $exception->getFile();
         if ($file !== null) {
-            $text .= \sprintf("File: %s\n", $file);
+            $output .= \sprintf("File: %s\n", $file);
         }
 
         $line = $exception->getLine();
         if ($line !== null) {
-            $text .= \sprintf("Line: %s\n", $line);
+            $output .= \sprintf("Line: %s\n", $line);
         }
 
         $trace = $exception->getTraceAsString();
         if ($trace !== null) {
-            $text .= \sprintf('Trace: %s', $trace);
+            $output .= \sprintf('Trace: %s', $trace);
         }
 
-        return $text;
+        return $output;
     }
 }

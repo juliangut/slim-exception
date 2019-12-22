@@ -48,8 +48,8 @@ class JsonRendererTest extends TestCase
     {
         $output = ($this->renderer)($this->exception, false);
 
-        self::assertContains('"message": "Forbidden action"', $output);
-        self::assertNotContains('"trace": [', $output);
+        self::assertContains('"message": "403 Forbidden"', $output);
+        self::assertNotContains('"exception": [', $output);
     }
 
     public function testOutputWithTrace(): void
@@ -57,6 +57,6 @@ class JsonRendererTest extends TestCase
         $output = ($this->renderer)($this->exception, true);
 
         self::assertContains('"message": "Forbidden action"', $output);
-        self::assertContains('"trace": [', $output);
+        self::assertContains('"exception": [', $output);
     }
 }

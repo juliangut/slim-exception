@@ -49,7 +49,7 @@ class ErrorHandlerTest extends TestCase
         $response = $handler($request, $exception, false, false, true);
 
         self::assertEquals('text/plain', $response->getHeaderLine('Content-Type'));
-        self::assertEquals('Application error: Bad request.', (string) $response->getBody());
+        self::assertEquals('400 Bad Request', (string) $response->getBody());
     }
 
     public function testDefaultHandle(): void
@@ -70,10 +70,7 @@ class ErrorHandlerTest extends TestCase
         $response = $handler($request, $exception, false, false, true);
 
         self::assertEquals('text/html', $response->getHeaderLine('Content-Type'));
-        self::assertContains(
-            '<p>An application error has occurred. Sorry for the temporary inconvenience</p>',
-            (string) $response->getBody()
-        );
+        self::assertContains('<h1>400 Bad Request</h1>', (string) $response->getBody());
     }
 
     public function testLoggingError(): void

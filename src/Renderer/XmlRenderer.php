@@ -13,12 +13,10 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Renderer;
 
-use Slim\Interfaces\ErrorRendererInterface;
-
 /**
  * XML exception renderer.
  */
-class XmlRenderer implements ErrorRendererInterface
+class XmlRenderer extends AbstractRenderer
 {
     /**
      * {@inheritdoc}
@@ -26,22 +24,20 @@ class XmlRenderer implements ErrorRendererInterface
     public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
     {
         $output = '<' . '?xml version="1.0" encoding="UTF-8" standalone="yes"?' . ">\n";
-        $output .= "<error>\n  <message>" . $this->createCdataSection($exception->getMessage()) . "</message>\n";
+        $output .= "<error>\n  <message>"
+            . $this->createCdataSection($this->getErrorTitle($exception))
+            . "</message>\n";
 
         if ($displayErrorDetails) {
-            $output .= "  <trace>\n";
-
             do {
-                $output .= "    <exception>\n";
-                $output .= '      <type>' . \get_class($exception) . "</type>\n";
-                $output .= '      <code>' . $exception->getCode() . "</code>\n";
-                $output .= '      <message>' . $this->createCdataSection($exception->getMessage()) . "</message>\n";
-                $output .= '      <file>' . $exception->getFile() . "</file>\n";
-                $output .= '      <line>' . $exception->getLine() . "</line>\n";
-                $output .= "    </exception>\n";
+                $output .= "  <exception>\n";
+                $output .= '    <type>' . \get_class($exception) . "</type>\n";
+                $output .= '    <code>' . $exception->getCode() . "</code>\n";
+                $output .= '    <message>' . $this->createCdataSection($exception->getMessage()) . "</message>\n";
+                $output .= '    <file>' . $exception->getFile() . "</file>\n";
+                $output .= '    <line>' . $exception->getLine() . "</line>\n";
+                $output .= "  </exception>\n";
             } while ($exception = $exception->getPrevious());
-
-            $output .= "  </trace>\n";
         }
 
         $output .= '</error>';

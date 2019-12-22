@@ -31,7 +31,7 @@ class HtmlRenderer extends PrettyPageHandler
      *
      * @param string $title
      */
-    public function __construct(string $title = 'Application error')
+    public function __construct(string $title = 'Slim Application error')
     {
         parent::__construct();
 
