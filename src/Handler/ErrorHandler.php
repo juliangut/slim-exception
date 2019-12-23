@@ -21,7 +21,6 @@ use Jgut\Slim\Exception\Whoops\Renderer\PlainTextRenderer as WhoopsTextRenderer;
 use Negotiation\BaseAccept;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
@@ -128,35 +127,12 @@ class ErrorHandler extends SlimErrorHandler
     /**
      * {@inheritdoc}
      */
-    public function __invoke(
-        ServerRequestInterface $request,
-        \Throwable $exception,
-        bool $displayErrorDetails,
-        bool $logErrors,
-        bool $logErrorDetails
-    ): ResponseInterface {
-        if ($this->inCli()) {
-            $request = $request->withHeader('Accept', 'text/plain');
-        }
-
-        return parent::__invoke($request, $exception, $displayErrorDetails, $logErrors, $logErrorDetails);
-    }
-
-    /**
-     * Check if running in CLI.
-     *
-     * @return bool
-     */
-    protected function inCli(): bool
-    {
-        return \PHP_SAPI === 'cli';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function determineContentType(ServerRequestInterface $request): ?string
     {
+        if ($this->inCli()) {
+            return 'text/plain';
+        }
+
         $header = \trim($request->getHeaderLine('Accept'));
         $priorities = \array_keys($this->errorRenderers);
         $contentType = $this->defaultErrorRendererContentType;
@@ -180,6 +156,16 @@ class ErrorHandler extends SlimErrorHandler
         }
 
         return $contentType;
+    }
+
+    /**
+     * Check if running in CLI.
+     *
+     * @return bool
+     */
+    protected function inCli(): bool
+    {
+        return \PHP_SAPI === 'cli';
     }
 
     /**
