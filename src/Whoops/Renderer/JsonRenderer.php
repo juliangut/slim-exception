@@ -35,7 +35,6 @@ class JsonRenderer extends JsonResponseHandler
         | \JSON_HEX_APOS
         | \JSON_HEX_QUOT
         | \JSON_HEX_TAG
-        | \JSON_PARTIAL_OUTPUT_ON_ERROR
         | \JSON_PRETTY_PRINT;
 
     /**
@@ -61,7 +60,10 @@ class JsonRenderer extends JsonResponseHandler
 
         $error = $this->getExceptionData($inspector, $addTrace);
 
-        echo \json_encode($error, static::JSON_ENCODE_OPTIONS);
+        $jsonEncodeOptions = static::JSON_ENCODE_OPTIONS
+            | (\PHP_VERSION_ID >= 70400 ? \JSON_THROW_ON_ERROR : \JSON_PARTIAL_OUTPUT_ON_ERROR);
+
+        echo \json_encode($error, $jsonEncodeOptions);
 
         return Handler::QUIT;
     }

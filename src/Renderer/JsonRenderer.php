@@ -29,7 +29,6 @@ class JsonRenderer extends AbstractRenderer
         | \JSON_HEX_APOS
         | \JSON_HEX_QUOT
         | \JSON_HEX_TAG
-        | \JSON_PARTIAL_OUTPUT_ON_ERROR
         | \JSON_PRETTY_PRINT;
 
     /**
@@ -47,7 +46,10 @@ class JsonRenderer extends AbstractRenderer
             } while ($exception = $exception->getPrevious());
         }
 
-        return (string) \json_encode(['error' => $output], static::JSON_ENCODE_OPTIONS);
+        $jsonEncodeOptions = static::JSON_ENCODE_OPTIONS
+            | (\PHP_VERSION_ID >= 70400 ? \JSON_THROW_ON_ERROR : \JSON_PARTIAL_OUTPUT_ON_ERROR);
+
+        return (string) \json_encode(['error' => $output], $jsonEncodeOptions);
     }
 
     /**
