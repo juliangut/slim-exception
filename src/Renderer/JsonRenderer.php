@@ -32,7 +32,27 @@ class JsonRenderer extends AbstractRenderer
         | \JSON_PRETTY_PRINT;
 
     /**
+     * List of JSON error messages.
+     *
+     * @var array<int, string>
+     */
+    protected const JSON_ERROR_MESSAGES = [
+        \JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
+        \JSON_ERROR_STATE_MISMATCH => 'Underflow or the modes mismatch',
+        \JSON_ERROR_CTRL_CHAR => 'Unexpected control character found',
+        \JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON',
+        \JSON_ERROR_UTF8 => 'Malformed UTF-8 characters, possibly incorrectly encoded',
+        \JSON_ERROR_RECURSION => 'One or more recursive references in the value to be encoded',
+        \JSON_ERROR_INF_OR_NAN => 'One or more NAN or INF values in the value to be encoded',
+        \JSON_ERROR_UNSUPPORTED_TYPE => 'A value of a type that cannot be encoded was given',
+        \JSON_ERROR_INVALID_PROPERTY_NAME => 'A property name that cannot be encoded was given',
+        \JSON_ERROR_UTF16 => 'Malformed UTF-16 characters, possibly incorrectly encoded',
+    ];
+
+    /**
      * {@inheritdoc}
+     *
+     * @throws \RuntimeException
      */
     public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
     {
@@ -46,10 +66,14 @@ class JsonRenderer extends AbstractRenderer
             } while ($exception = $exception->getPrevious());
         }
 
-        $jsonEncodeOptions = static::JSON_ENCODE_OPTIONS
-            | (\PHP_VERSION_ID >= 70400 ? \JSON_THROW_ON_ERROR : \JSON_PARTIAL_OUTPUT_ON_ERROR);
+        $json = \json_encode(['error' => $output], static::JSON_ENCODE_OPTIONS);
+        if ($json === false) {
+            // @codeCoverageIgnoreStart
+            throw new \RuntimeException(self::JSON_ERROR_MESSAGES[\json_last_error()] ?? 'Unknown error');
+            // @codeCoverageIgnoreEnd
+        }
 
-        return (string) \json_encode(['error' => $output], $jsonEncodeOptions);
+        return $json;
     }
 
     /**
