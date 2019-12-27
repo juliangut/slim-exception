@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Whoops\Renderer;
 
 use Jgut\Slim\Exception\Whoops\Inspector;
+use Slim\Exception\HttpException;
 use Whoops\Exception\Inspector as WhoopsInspector;
 use Whoops\Handler\Handler;
 use Whoops\RunInterface;
@@ -23,6 +24,11 @@ use Whoops\RunInterface;
  */
 trait RendererTrait
 {
+    /**
+     * @var string
+     */
+    protected $defaultTitle;
+
     /**
      * Get array data from exception.
      *
@@ -36,7 +42,7 @@ trait RendererTrait
         $exception = $inspector->getException();
 
         $error = [
-            'message' => $exception->getMessage(),
+            'message' => $exception instanceof HttpException ? $exception->getTitle() : $this->defaultTitle,
         ];
 
         if ($addTrace) {

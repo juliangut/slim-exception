@@ -54,11 +54,7 @@ abstract class AbstractRenderer implements ErrorRendererInterface
      */
     protected function getErrorTitle(\Throwable $exception): string
     {
-        if ($exception instanceof HttpException) {
-            return $exception->getTitle();
-        }
-
-        return $this->defaultTitle;
+        return $exception instanceof HttpException ? $exception->getTitle() : $this->defaultTitle;
     }
 
     /**
@@ -70,10 +66,6 @@ abstract class AbstractRenderer implements ErrorRendererInterface
      */
     protected function getErrorDescription(\Throwable $exception): string
     {
-        if ($exception instanceof HttpException) {
-            return $exception->getDescription();
-        }
-
-        return $this->defaultDescription;
+        return $exception instanceof HttpException ? $exception->getDescription() : $this->defaultDescription;
     }
 }

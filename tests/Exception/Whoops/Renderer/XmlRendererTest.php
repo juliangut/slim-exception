@@ -41,7 +41,7 @@ class XmlRendererTest extends TestCase
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $exception = new HttpForbiddenException($request, 'Forbidden');
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
         $inspector = new Inspector($exception);
 
         $this->renderer->addTraceToOutput(true);
@@ -52,7 +52,7 @@ class XmlRendererTest extends TestCase
         $this->renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('<message>Forbidden</message>', $output);
+        self::assertContains('<message>403 Forbidden</message>', $output);
         self::assertContains('<trace>', $output);
     }
 
@@ -60,7 +60,7 @@ class XmlRendererTest extends TestCase
     {
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $exception = new HttpForbiddenException($request, 'Forbidden');
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
         $inspector = new Inspector($exception);
 
         $this->renderer->addTraceToOutput(false);
@@ -71,7 +71,7 @@ class XmlRendererTest extends TestCase
         $this->renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('<message>Forbidden</message>', $output);
+        self::assertContains('<message>403 Forbidden</message>', $output);
         self::assertNotContains('<trace>', $output);
     }
 }

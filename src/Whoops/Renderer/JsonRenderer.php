@@ -39,9 +39,13 @@ class JsonRenderer extends JsonResponseHandler
 
     /**
      * JsonHandler constructor.
+     *
+     * @param string $defaultTitle
      */
-    public function __construct()
+    public function __construct(string $defaultTitle = 'Slim Application error')
     {
+        $this->defaultTitle = $defaultTitle;
+
         $this->addTraceToOutput(true);
     }
 

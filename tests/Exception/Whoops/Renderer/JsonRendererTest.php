@@ -52,7 +52,7 @@ class JsonRendererTest extends TestCase
         $this->renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('"message": "Forbidden"', $output);
+        self::assertContains('"message": "403 Forbidden"', $output);
         self::assertContains('"trace": ', $output);
     }
 
@@ -71,7 +71,7 @@ class JsonRendererTest extends TestCase
         $this->renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('"message": "Forbidden"', $output);
+        self::assertContains('"message": "403 Forbidden"', $output);
         self::assertNotContains('"trace": ', $output);
     }
 }

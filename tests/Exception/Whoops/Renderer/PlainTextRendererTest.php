@@ -54,7 +54,7 @@ class PlainTextRendererTest extends TestCase
         $handler->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('Slim\\Exception\\HttpNotImplementedException: Not implemented', $output);
+        self::assertContains('Slim\\Exception\\HttpNotImplementedException: 501 Not Implemented', $output);
         self::assertContains('Stack trace:', $output);
     }
 
@@ -73,7 +73,7 @@ class PlainTextRendererTest extends TestCase
         $this->renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('Not implemented', $output);
+        self::assertContains('501 Not Implemented', $output);
         self::assertNotContains('Stack trace:', $output);
     }
 }

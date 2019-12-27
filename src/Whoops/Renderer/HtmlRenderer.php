@@ -29,13 +29,14 @@ class HtmlRenderer extends PrettyPageHandler
     /**
      * HtmlRenderer constructor.
      *
-     * @param string $title
+     * @param string $defaultTitle
      */
-    public function __construct(string $title = 'Slim Application error')
+    public function __construct(string $defaultTitle = 'Slim Application error')
     {
         parent::__construct();
 
-        $this->setPageTitle($title);
+        $this->defaultTitle = $defaultTitle;
+        $this->setPageTitle($defaultTitle);
     }
 
     /**

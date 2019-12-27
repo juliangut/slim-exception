@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Whoops\Renderer;
 
 use Jgut\Slim\Exception\Whoops\Inspector;
+use Psr\Log\LoggerInterface;
 use Whoops\Handler\PlainTextHandler;
 
 /**
@@ -25,10 +26,15 @@ class PlainTextRenderer extends PlainTextHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @param string               $defaultTitle
+     * @param LoggerInterface|null $logger
      */
-    public function __construct($logger = null)
+    public function __construct(string $defaultTitle = 'Slim Application error', $logger = null)
     {
         parent::__construct($logger);
+
+        $this->defaultTitle = $defaultTitle;
 
         $this->addTraceFunctionArgsToOutput(true);
     }
