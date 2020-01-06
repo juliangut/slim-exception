@@ -87,6 +87,7 @@ class ErrorHandler extends BaseErrorHandler
      */
     protected function determineRenderer(): callable
     {
+        /** @var mixed $renderer */
         $renderer = parent::determineRenderer();
 
         if (!$renderer instanceof WhoopsHandler) {
@@ -101,7 +102,7 @@ class ErrorHandler extends BaseErrorHandler
             $renderer = $this->addRequestData($renderer);
         }
 
-        return function (\Throwable $exception) use ($renderer) {
+        return function (\Throwable $exception) use ($renderer): string {
             if ($renderer instanceof HtmlRenderer) {
                 $renderer->handleUnconditionally(true);
             }
@@ -127,13 +128,17 @@ class ErrorHandler extends BaseErrorHandler
     {
         $extra = $renderer->getDataTables(self::REQUEST_DATA_TABLE_LABEL);
         if (\is_array($extra) && \count($extra) === 0) {
+            $acceptHeader = $this->request->getHeader('Accept');
+            $contentTypeHeader = $this->request->getHeader('Content-Type');
+            $queryString = $this->request->getUri()->getQuery();
+
             $renderer->addDataTable(
                 self::REQUEST_DATA_TABLE_LABEL,
                 [
-                    'Accept Charset' => $this->request->getHeader('Accept') ?: '<none>',
-                    'Content Charset' => $this->request->getHeader('Content-Type') ?: '<none>',
+                    'Accept Charset' => \count($acceptHeader) !== 0 ? $acceptHeader : '<none>',
+                    'Content Charset' => \count($contentTypeHeader) !== 0 ? $contentTypeHeader : '<none>',
                     'Path' => $this->request->getUri()->getPath(),
-                    'Query String' => $this->request->getUri()->getQuery() ?: '<none>',
+                    'Query String' => $queryString !== '' ? $queryString : '<none>',
                     'HTTP Method' => $this->request->getMethod(),
                     'Base URL' => (string) $this->request->getUri(),
                     'Scheme' => $this->request->getUri()->getScheme(),
