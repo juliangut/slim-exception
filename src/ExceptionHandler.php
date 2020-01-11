@@ -82,7 +82,6 @@ class ExceptionHandler
         \register_shutdown_function([$this, 'handleShutdown']);
 
         \ini_set('display_errors', 'off');
-        \error_reporting(-1);
     }
 
     /**
@@ -120,7 +119,7 @@ class ExceptionHandler
     public function handleError(int $severity, string $message, string $file = null, int $line = null): bool
     {
         if ((\error_reporting() & $severity) !== 0) {
-            throw new \ErrorException($message, 0, $severity, $file, $line);
+            throw new \ErrorException($message, $severity, $severity, $file, $line);
         }
 
         return false;
