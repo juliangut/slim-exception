@@ -145,7 +145,7 @@ class ErrorHandler extends SlimErrorHandler
                     $contentType = $selected->getType();
                 }
                 // @codeCoverageIgnoreStart
-            } catch (\Exception $exception) {
+            } catch (\Throwable $exception) {
                 // @ignoreException
             }
             // @codeCoverageIgnoreEnd
