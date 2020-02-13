@@ -82,9 +82,9 @@ trait RendererTrait
     /**
      * Callable wrapper.
      *
-     * @param \Throwable   $exception
-     * @param Inspector    $inspector
-     * @param RunInterface $run
+     * @param \Throwable      $exception
+     * @param WhoopsInspector $inspector
+     * @param RunInterface    $run
      *
      * @return int
      */

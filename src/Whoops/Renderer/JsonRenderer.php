@@ -28,7 +28,7 @@ class JsonRenderer extends JsonResponseHandler
      * JSON encoding options.
      * Preserve float values and encode &, ', ", < and > characters in the resulting JSON.
      */
-    const JSON_ENCODE_OPTIONS = \JSON_UNESCAPED_UNICODE
+    protected const JSON_ENCODE_OPTIONS = \JSON_UNESCAPED_UNICODE
         | \JSON_UNESCAPED_SLASHES
         | \JSON_PRESERVE_ZERO_FRACTION
         | \JSON_HEX_AMP

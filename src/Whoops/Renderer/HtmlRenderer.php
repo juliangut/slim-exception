@@ -15,6 +15,7 @@ namespace Jgut\Slim\Exception\Whoops\Renderer;
 
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Exception\FrameCollection;
+use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
@@ -42,12 +43,12 @@ class HtmlRenderer extends PrettyPageHandler
     /**
      * {@inheritdoc}
      */
-    public function handle()
+    public function handle(): int
     {
         $exception = $this->getException();
         $this->setInspector(new Inspector($exception));
 
-        return parent::handle();
+        return parent::handle() ?? Handler::QUIT;
     }
 
     /**

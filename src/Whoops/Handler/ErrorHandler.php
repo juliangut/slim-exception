@@ -29,7 +29,7 @@ use Whoops\Run as Whoops;
  */
 class ErrorHandler extends BaseErrorHandler
 {
-    const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
+    protected const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
 
     /**
      * @var string[]
