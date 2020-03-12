@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Tests;
 
 use Jgut\Slim\Exception\Tests\Stubs\ExceptionHandlerStub;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\ErrorHandlerInterface;
-use Zend\Diactoros\ResponseFactory;
-use Zend\Diactoros\ServerRequest;
 
 /**
  * Exception handling tests.

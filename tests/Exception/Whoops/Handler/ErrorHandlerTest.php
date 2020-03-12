@@ -16,13 +16,13 @@ namespace Jgut\Slim\Exception\Tests\Whoops\Handler;
 use Jgut\Slim\Exception\Tests\Stubs\WhoopsErrorHandlerStub;
 use Jgut\Slim\Exception\Whoops\Renderer\HtmlRenderer;
 use Jgut\Slim\Exception\Whoops\Renderer\JsonRenderer;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequest;
 use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\CallableResolverInterface;
 use Whoops\Run as Whoops;
-use Zend\Diactoros\ResponseFactory;
-use Zend\Diactoros\ServerRequest;
 
 /**
  * Whoops error handler tests.

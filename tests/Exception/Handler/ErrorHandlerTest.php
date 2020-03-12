@@ -17,13 +17,13 @@ use Jgut\Slim\Exception\Handler\ErrorHandler;
 use Jgut\Slim\Exception\Renderer\HtmlRenderer;
 use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
 use Jgut\Slim\Exception\Tests\Stubs\ErrorHandlerStub;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequest;
 use Negotiation\Negotiator;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\CallableResolverInterface;
-use Zend\Diactoros\ResponseFactory;
-use Zend\Diactoros\ServerRequest;
 
 /**
  * Default error handler tests.
