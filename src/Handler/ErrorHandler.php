@@ -137,7 +137,7 @@ class ErrorHandler extends SlimErrorHandler
         $priorities = \array_keys($this->errorRenderers);
         $contentType = $this->defaultErrorRendererContentType;
 
-        if ($header !== '') {
+        if ($header !== '' && \count($priorities) !== 0) {
             try {
                 $selected = $this->negotiator->getBest($header, $priorities);
 
