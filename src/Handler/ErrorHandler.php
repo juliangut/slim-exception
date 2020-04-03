@@ -94,9 +94,9 @@ class ErrorHandler extends SlimErrorHandler
         ResponseFactoryInterface $responseFactory,
         Negotiator $negotiator
     ) {
-        parent::__construct($callableResolver, $responseFactory);
-
         $this->negotiator = $negotiator;
+
+        parent::__construct($callableResolver, $responseFactory);
     }
 
     /**
