@@ -32,6 +32,13 @@ class ErrorHandler extends BaseErrorHandler
     protected const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
 
     /**
+     * Default error renderer for logs.
+     *
+     * @var WhoopsHandler|string|callable
+     */
+    protected $logErrorRenderer = PlainTextRenderer::class;
+
+    /**
      * @var string[]
      */
     protected $errorRenderers = [
@@ -87,9 +94,29 @@ class ErrorHandler extends BaseErrorHandler
      */
     protected function determineRenderer(): callable
     {
-        /** @var mixed $renderer */
-        $renderer = parent::determineRenderer();
+        return $this->getRenderer(parent::determineRenderer());
+    }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    protected function determineLogRenderer(): callable
+    {
+        return $this->getRenderer(parent::determineLogRenderer());
+    }
+
+    /**
+     * Get Whoops aware renderer.
+     *
+     * @param mixed $renderer
+     *
+     * @return callable
+     */
+    protected function getRenderer($renderer): callable
+    {
         if (!$renderer instanceof WhoopsHandler) {
             throw new \InvalidArgumentException(\sprintf(
                 'Renderer "%s" for Whoops error handler does not implement %s',

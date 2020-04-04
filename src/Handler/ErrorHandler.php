@@ -17,7 +17,6 @@ use Jgut\Slim\Exception\Renderer\HtmlRenderer;
 use Jgut\Slim\Exception\Renderer\JsonRenderer;
 use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
 use Jgut\Slim\Exception\Renderer\XmlRenderer;
-use Jgut\Slim\Exception\Whoops\Renderer\PlainTextRenderer as WhoopsTextRenderer;
 use Negotiation\BaseAccept;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -34,6 +33,13 @@ use Slim\Interfaces\ErrorRendererInterface;
 class ErrorHandler extends SlimErrorHandler
 {
     use LoggerAwareTrait;
+
+    /**
+     * Default error renderer for logs.
+     *
+     * @var ErrorRendererInterface|string|callable
+     */
+    protected $logErrorRenderer = PlainTextRenderer::class;
 
     /**
      * PHP to PSR3 error map.
@@ -184,16 +190,26 @@ class ErrorHandler extends SlimErrorHandler
             'http_method' => $this->request->getMethod(),
             'request_uri' => (string) $this->request->getUri(),
             'level_name' => \strtoupper($logLevel),
-            'stacktrace' => $this->getStackTrace(),
         ];
 
-        $message = $this->exception->getMessage();
+        $renderer = $this->determineLogRenderer();
+        $message = $renderer($this->exception, $this->logErrorDetails);
         if (!$this->displayErrorDetails) {
             $message .= "\nTips: To display error details in HTTP response ";
             $message .= 'set "displayErrorDetails" to true in the ErrorHandler constructor.';
         }
 
         $this->logger->log($logLevel, $message, $logContext);
+    }
+
+    /**
+     * Determine log renderer.
+     *
+     * @return callable
+     */
+    protected function determineLogRenderer(): callable
+    {
+        return $this->callableResolver->resolve($this->logErrorRenderer);
     }
 
     /**
@@ -210,33 +226,5 @@ class ErrorHandler extends SlimErrorHandler
         }
 
         return LogLevel::ERROR;
-    }
-
-    /**
-     * Get exception stack trace.
-     *
-     * @return string
-     */
-    protected function getStackTrace(): string
-    {
-        if (!$this->logErrorDetails) {
-            return '';
-        }
-
-        if (!\interface_exists('\Whoops\RunInterface')) {
-            // @codeCoverageIgnoreStart
-            return $this->exception->getTraceAsString();
-            // @codeCoverageIgnoreEnd
-        }
-
-        $renderer = new WhoopsTextRenderer();
-        $renderer->setException($this->exception);
-        $exceptionParts = \explode("\n", \rtrim($renderer->generateResponse(), "\n"));
-
-        if (\count($exceptionParts) !== 1) {
-            $exceptionParts = \array_filter(\array_splice($exceptionParts, 2));
-        }
-
-        return \implode("\n", $exceptionParts);
     }
 }

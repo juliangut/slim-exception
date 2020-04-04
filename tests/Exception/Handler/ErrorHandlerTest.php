@@ -80,10 +80,10 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects(static::once())
+        $callableResolver->expects(static::any())
             ->method('resolve')
-            ->with(HtmlRenderer::class)
-            ->will($this->returnValue(new HtmlRenderer()));
+            ->withConsecutive([PlainTextRenderer::class], [HtmlRenderer::class])
+            ->willReturnOnConsecutiveCalls(new PlainTextRenderer(), new HtmlRenderer());
         /* @var CallableResolverInterface $callableResolver */
         $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator());
 
@@ -106,10 +106,10 @@ class ErrorHandlerTest extends TestCase
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $callableResolver->expects(static::once())
+        $callableResolver->expects(static::any())
             ->method('resolve')
-            ->with(HtmlRenderer::class)
-            ->will($this->returnValue(new HtmlRenderer()));
+            ->withConsecutive([PlainTextRenderer::class], [HtmlRenderer::class])
+            ->willReturnOnConsecutiveCalls(new PlainTextRenderer(), new HtmlRenderer());
         /* @var CallableResolverInterface $callableResolver */
         $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator());
 

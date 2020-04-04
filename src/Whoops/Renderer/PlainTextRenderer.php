@@ -71,22 +71,19 @@ class PlainTextRenderer extends PlainTextHandler
      */
     protected function getStackTraceOutput(array $stackFrames): string
     {
+        $argsOutputLimit = $this->getTraceFunctionArgsOutputLimit();
+
         $line = 1;
         $stackTrace = \array_map(
-            function (array $stack) use (&$line): string {
-                $template = "\n%3d. %s->%s() %s:%d%s";
-                if (!$stack['class']) {
-                    $template = "\n%3d. %s%s() %s:%d%s";
-                }
-
+            function (array $stack) use ($argsOutputLimit, &$line): string {
                 $trace = \sprintf(
-                    $template,
+                    !$stack['class'] ? "\n%3d. %s%s() %s:%d%s" : "\n%3d. %s->%s() %s:%d%s",
                     $line,
                     $stack['class'],
                     $stack['function'],
                     $stack['file'],
                     $stack['line'],
-                    $this->getArguments($stack['args'], $line)
+                    $this->getArguments($stack['args'], $line, $argsOutputLimit)
                 );
 
                 $line++;
@@ -104,10 +101,11 @@ class PlainTextRenderer extends PlainTextHandler
      *
      * @param mixed[] $args
      * @param int     $line
+     * @param int     $argsOutputLimit
      *
      * @return string
      */
-    protected function getArguments(array $args, int $line): string
+    protected function getArguments(array $args, int $line, int $argsOutputLimit): string
     {
         $addArgs = $this->addTraceFunctionArgsToOutput();
         if ($addArgs === false || $addArgs < $line) {
@@ -116,27 +114,58 @@ class PlainTextRenderer extends PlainTextHandler
             // @codeCoverageIgnoreEnd
         }
 
-        $argsOutputLimit = $this->getTraceFunctionArgsOutputLimit();
-
         \ob_start();
 
-        \var_dump($args);
+        foreach ($this->flattenArguments($args) as $arg) {
+            $this->dump($arg);
+        }
 
         if (\ob_get_length() > $argsOutputLimit) {
-            // The argument var_dump is to big.
+            // The argument var_dump is too big.
             // Discarded to limit memory usage.
             \ob_end_clean();
 
             return \sprintf(
-                "\n%sArguments dump length greater than %d Bytes. Discarded.",
+                "\n%sArguments list dump length greater than %d Bytes. Discarded.",
                 parent::VAR_DUMP_PREFIX,
                 $argsOutputLimit
             );
         }
 
-        return \sprintf(
-            "\n%s",
-            \preg_replace('/^/m', parent::VAR_DUMP_PREFIX, (string) \ob_get_clean())
+        $argumentsTrace = (string) \ob_get_clean();
+        return $argumentsTrace === ''
+            ? ''
+            : \sprintf("\n%s", \preg_replace('/^/m', parent::VAR_DUMP_PREFIX, $argumentsTrace));
+    }
+
+    /**
+     * Simplify argument list.
+     *
+     * @param mixed[] $args
+     *
+     * @return mixed[]
+     */
+    protected function flattenArguments(array $args): array
+    {
+        return \array_map(
+            function ($arg) {
+                if (\is_object($arg)) {
+                    $class = \get_class($arg);
+
+                    return $class . (\strpos($class, 'class@anonymous') !== 0 ? '::class' : '');
+                }
+
+                if (\is_resource($arg)) {
+                    return 'resource';
+                }
+
+                if (\is_array($arg)) {
+                    return $this->flattenArguments($arg);
+                }
+
+                return $arg;
+            },
+            $args
         );
     }
 }
