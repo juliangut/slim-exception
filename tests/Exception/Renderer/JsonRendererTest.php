@@ -29,11 +29,6 @@ class JsonRendererTest extends TestCase
     protected $exception;
 
     /**
-     * @var JsonRenderer
-     */
-    protected $renderer;
-
-    /**
      * {@inheritdoc}
      */
     public function setUp(): void
@@ -41,22 +36,53 @@ class JsonRendererTest extends TestCase
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $this->exception = new HttpForbiddenException($request, 'Forbidden action');
-        $this->renderer = new JsonRenderer();
     }
 
     public function testOutput(): void
     {
-        $output = ($this->renderer)($this->exception, false);
+        $output = (new JsonRenderer())($this->exception, false);
 
-        self::assertContains('"message": "403 Forbidden"', $output);
-        self::assertNotContains('"exception": [', $output);
+        $expected = <<<'EXPECTED'
+{
+    "error": {
+        "message": "403 Forbidden"
+    }
+}
+EXPECTED;
+        self::assertEquals($expected, $output);
+    }
+
+    public function testNotPrettifiedOutput(): void
+    {
+        $renderer = new JsonRenderer();
+        $renderer->setPrettify(false);
+
+        $output = $renderer($this->exception, false);
+
+        self::assertEquals('{"error":{"message":"403 Forbidden"}}', $output);
     }
 
     public function testOutputWithTrace(): void
     {
-        $output = ($this->renderer)($this->exception, true);
+        $output = (new JsonRenderer())($this->exception, true);
 
-        self::assertContains('"message": "Forbidden action"', $output);
-        self::assertContains('"exception": [', $output);
+        $expected = <<<'EXPECTED'
+{
+    "error": {
+        "message": "403 Forbidden",
+        "exception": [
+
+EXPECTED;
+        self::assertContains($expected, $output);
+    }
+
+    public function testNotPrettifiedOutputWithTrace(): void
+    {
+        $renderer = new JsonRenderer();
+        $renderer->setPrettify(false);
+
+        $output = $renderer($this->exception, true);
+
+        self::assertContains('{"error":{"message":"403 Forbidden","exception":[', $output);
     }
 }

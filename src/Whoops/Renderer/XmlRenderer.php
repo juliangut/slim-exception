@@ -25,6 +25,11 @@ class XmlRenderer extends XmlResponseHandler
     use RendererTrait;
 
     /**
+     * @var bool
+     */
+    protected $prettify = true;
+
+    /**
      * XmlHandler constructor.
      *
      * @param string $defaultTitle
@@ -34,6 +39,14 @@ class XmlRenderer extends XmlResponseHandler
         $this->defaultTitle = $defaultTitle;
 
         $this->addTraceToOutput(true);
+    }
+
+    /**
+     * @param bool $prettify
+     */
+    public function setPrettify(bool $prettify): void
+    {
+        $this->prettify = $prettify;
     }
 
     /**
@@ -66,13 +79,13 @@ class XmlRenderer extends XmlResponseHandler
     protected function getFormattedXml(array $data): string
     {
         /** @var \SimpleXMLElement $root */
-        $root = \simplexml_load_string('<?xml version="1.0" encoding="utf-8"?><root />');
-        $this->addDataNodes($root->addChild('error'), $data, 'exception');
+        $root = \simplexml_load_string('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><error />');
+        $this->addDataNodes($root, $data, 'exception');
 
         /** @var \SimpleXMLElement $rootDocument */
         $rootDocument = \dom_import_simplexml($root);
         $dom = $rootDocument->ownerDocument;
-        $dom->formatOutput = true;
+        $dom->formatOutput = $this->prettify;
 
         return $dom->saveXML();
     }
@@ -104,7 +117,15 @@ class XmlRenderer extends XmlResponseHandler
                     $value = \gettype($value);
                 }
 
-                $node->addChild($key, \str_replace('&', '&amp;', \print_r($value, true)));
+                $value = \str_replace('&', '&amp;', \print_r($value, true));
+
+                if ($key === 'message') {
+                    /** @var \DOMElement $child */
+                    $child = \dom_import_simplexml($node->addChild($key));
+                    $child->appendChild($child->ownerDocument->createCDATASection($value));
+                } else {
+                    $node->addChild($key, $value);
+                }
             }
         }
 

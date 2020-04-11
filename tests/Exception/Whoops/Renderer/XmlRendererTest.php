@@ -24,19 +24,6 @@ use Whoops\Exception\Inspector;
  */
 class XmlRendererTest extends TestCase
 {
-    /**
-     * @var XmlRenderer
-     */
-    protected $renderer;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp(): void
-    {
-        $this->renderer = new XmlRenderer();
-    }
-
     public function testOutput(): void
     {
         /* @var ServerRequestInterface $request */
@@ -44,16 +31,48 @@ class XmlRendererTest extends TestCase
         $exception = new HttpForbiddenException($request, 'Forbidden action');
         $inspector = new Inspector($exception);
 
-        $this->renderer->addTraceToOutput(true);
-        $this->renderer->setException($exception);
-        $this->renderer->setInspector($inspector);
+        $renderer = new XmlRenderer();
+        $renderer->addTraceToOutput(true);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
 
         \ob_start();
-        $this->renderer->handle();
+        $renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('<message>403 Forbidden</message>', $output);
-        self::assertContains('<trace>', $output);
+        $expected = <<<'EXPECTED'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<error>
+  <message><![CDATA[403 Forbidden]]></message>
+  <type>Slim\Exception\HttpForbiddenException</type>
+  <trace>
+
+EXPECTED;
+        self::assertContains($expected, $output);
+    }
+
+    public function testNotPrettifiedOutput(): void
+    {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
+        $inspector = new Inspector($exception);
+
+        $renderer = new XmlRenderer();
+        $renderer->addTraceToOutput(true);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
+        $renderer->setPrettify(false);
+
+        \ob_start();
+        $renderer->handle();
+        $output = \ob_get_clean();
+
+        $expected = <<<'EXPECTED'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<error><message><![CDATA[403 Forbidden]]></message><type>Slim\Exception\HttpForbiddenException</type><trace>
+EXPECTED;
+        self::assertContains($expected, $output);
     }
 
     public function testNoTraceOutput(): void
@@ -63,15 +82,47 @@ class XmlRendererTest extends TestCase
         $exception = new HttpForbiddenException($request, 'Forbidden action');
         $inspector = new Inspector($exception);
 
-        $this->renderer->addTraceToOutput(false);
-        $this->renderer->setException($exception);
-        $this->renderer->setInspector($inspector);
+        $renderer = new XmlRenderer();
+        $renderer->addTraceToOutput(false);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
 
         \ob_start();
-        $this->renderer->handle();
+        $renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('<message>403 Forbidden</message>', $output);
-        self::assertNotContains('<trace>', $output);
+        $expected = <<<'EXPECTED'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<error>
+  <message><![CDATA[403 Forbidden]]></message>
+</error>
+
+EXPECTED;
+        self::assertEquals($expected, $output);
+    }
+
+    public function testNotPrettifiedNoTraceOutput(): void
+    {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
+        $inspector = new Inspector($exception);
+
+        $renderer = new XmlRenderer();
+        $renderer->addTraceToOutput(false);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
+        $renderer->setPrettify(false);
+
+        \ob_start();
+        $renderer->handle();
+        $output = \ob_get_clean();
+
+        $expected = <<<'EXPECTED'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<error><message><![CDATA[403 Forbidden]]></message></error>
+
+EXPECTED;
+        self::assertEquals($expected, $output);
     }
 }

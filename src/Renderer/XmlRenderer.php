@@ -19,30 +19,56 @@ namespace Jgut\Slim\Exception\Renderer;
 class XmlRenderer extends AbstractRenderer
 {
     /**
+     * @var bool
+     */
+    protected $prettify = true;
+
+    /**
+     * @param bool $prettify
+     */
+    public function setPrettify(bool $prettify): void
+    {
+        $this->prettify = $prettify;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
     {
-        $output = '<' . '?xml version="1.0" encoding="UTF-8" standalone="yes"?' . ">\n";
-        $output .= "<error>\n  <message>"
-            . $this->createCdataSection($this->getErrorTitle($exception))
-            . "</message>\n";
+        $xmlTag = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
+
+        $errorParts = [
+            '<error>',
+            '  <message>' . $this->createCdataSection($this->getErrorTitle($exception)) . '</message>',
+        ];
 
         if ($displayErrorDetails) {
             do {
-                $output .= "  <exception>\n";
-                $output .= '    <type>' . \get_class($exception) . "</type>\n";
-                $output .= '    <code>' . $exception->getCode() . "</code>\n";
-                $output .= '    <message>' . $this->createCdataSection($exception->getMessage()) . "</message>\n";
-                $output .= '    <file>' . $exception->getFile() . "</file>\n";
-                $output .= '    <line>' . $exception->getLine() . "</line>\n";
-                $output .= "  </exception>\n";
+                $errorParts[] = '  <exception>';
+                $errorParts[] = '    <type>' . \get_class($exception) . '</type>';
+                $errorParts[] = '    <code>' . $exception->getCode() . '</code>';
+                $errorParts[] = '    <message>' . $this->createCdataSection($exception->getMessage()) . '</message>';
+                $errorParts[] = '    <file>' . $exception->getFile() . '</file>';
+                $errorParts[] = '    <line>' . $exception->getLine() . '</line>';
+                $errorParts[] = '  </exception>';
             } while ($exception = $exception->getPrevious());
         }
+        $errorParts[] = '</error>';
 
-        $output .= '</error>';
+        if ($this->prettify) {
+            return $xmlTag . \implode("\n", $errorParts);
+        }
 
-        return $output;
+        return $xmlTag . \implode(
+            '',
+            \array_map(
+                function (string $line): string {
+                    return \ltrim($line, ' ');
+                },
+                $errorParts
+            )
+        );
     }
 
     /**

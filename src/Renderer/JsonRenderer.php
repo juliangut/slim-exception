@@ -19,19 +19,6 @@ namespace Jgut\Slim\Exception\Renderer;
 class JsonRenderer extends AbstractRenderer
 {
     /**
-     * JSON encoding options.
-     * Preserve float values and encode &, ', ", < and > characters in the resulting JSON.
-     */
-    protected const JSON_ENCODE_OPTIONS = \JSON_UNESCAPED_UNICODE
-        | \JSON_UNESCAPED_SLASHES
-        | \JSON_PRESERVE_ZERO_FRACTION
-        | \JSON_HEX_AMP
-        | \JSON_HEX_APOS
-        | \JSON_HEX_QUOT
-        | \JSON_HEX_TAG
-        | \JSON_PRETTY_PRINT;
-
-    /**
      * List of JSON error messages.
      *
      * @var array<int, string>
@@ -50,6 +37,21 @@ class JsonRenderer extends AbstractRenderer
     ];
 
     /**
+     * Json encode prettify.
+     *
+     * @var bool
+     */
+    protected $prettify = true;
+
+    /**
+     * @param bool $prettify
+     */
+    public function setPrettify(bool $prettify): void
+    {
+        $this->prettify = $prettify;
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @throws \RuntimeException
@@ -66,7 +68,7 @@ class JsonRenderer extends AbstractRenderer
             } while ($exception = $exception->getPrevious());
         }
 
-        $json = \json_encode(['error' => $output], static::JSON_ENCODE_OPTIONS);
+        $json = \json_encode(['error' => $output], $this->getJsonFlags());
         if ($json === false) {
             // @codeCoverageIgnoreStart
             throw new \RuntimeException(self::JSON_ERROR_MESSAGES[\json_last_error()] ?? 'Unknown error');
@@ -74,6 +76,21 @@ class JsonRenderer extends AbstractRenderer
         }
 
         return $json;
+    }
+
+    /**
+     * Get JSON encode flags.
+     *
+     * @return int
+     */
+    protected function getJsonFlags(): int
+    {
+        $jsonFlags = \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_PRESERVE_ZERO_FRACTION;
+        if ($this->prettify) {
+            $jsonFlags |= \JSON_PRETTY_PRINT;
+        }
+
+        return $jsonFlags;
     }
 
     /**

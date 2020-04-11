@@ -29,11 +29,6 @@ class XmlRendererTest extends TestCase
     protected $exception;
 
     /**
-     * @var XmlRenderer
-     */
-    protected $renderer;
-
-    /**
      * {@inheritdoc}
      */
     public function setUp(): void
@@ -41,22 +36,60 @@ class XmlRendererTest extends TestCase
         /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $this->exception = new HttpForbiddenException($request, 'Forbidden action');
-        $this->renderer = new XmlRenderer();
     }
 
     public function testOutput(): void
     {
-        $output = ($this->renderer)($this->exception, false);
+        $output = (new XmlRenderer())($this->exception, false);
 
-        self::assertContains('<message><![CDATA[403 Forbidden]]></message>', $output);
-        self::assertNotContains('<exception>', $output);
+        $expected = <<<'EXPECTED'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<error>
+  <message><![CDATA[403 Forbidden]]></message>
+</error>
+EXPECTED;
+        self::assertEquals($expected, $output);
+    }
+
+    public function testNotPrettifiedOutput(): void
+    {
+        $renderer = new XmlRenderer();
+        $renderer->setPrettify(false);
+
+        $output = $renderer($this->exception, false);
+
+        $expected = <<<'EXPECTED'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<error><message><![CDATA[403 Forbidden]]></message></error>
+EXPECTED;
+        self::assertEquals($expected, $output);
     }
 
     public function testOutputWithTrace(): void
     {
-        $output = ($this->renderer)($this->exception, true);
+        $output = (new XmlRenderer())($this->exception, true);
 
-        self::assertContains('<message><![CDATA[403 Forbidden]]></message>', $output);
-        self::assertContains('<exception>', $output);
+        $expected = <<<'EXPECTED'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<error>
+  <message><![CDATA[403 Forbidden]]></message>
+  <exception>
+
+EXPECTED;
+        self::assertContains($expected, $output);
+    }
+
+    public function testNotPrettifiedOutputWithTrace(): void
+    {
+        $renderer = new XmlRenderer();
+        $renderer->setPrettify(false);
+
+        $output = $renderer($this->exception, true);
+
+        $expected = <<<'EXPECTED'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<error><message><![CDATA[403 Forbidden]]></message><exception>
+EXPECTED;
+        self::assertContains($expected, $output);
     }
 }

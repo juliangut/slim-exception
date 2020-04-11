@@ -25,19 +25,6 @@ class JsonRenderer extends JsonResponseHandler
     use RendererTrait;
 
     /**
-     * JSON encoding options.
-     * Preserve float values and encode &, ', ", < and > characters in the resulting JSON.
-     */
-    protected const JSON_ENCODE_OPTIONS = \JSON_UNESCAPED_UNICODE
-        | \JSON_UNESCAPED_SLASHES
-        | \JSON_PRESERVE_ZERO_FRACTION
-        | \JSON_HEX_AMP
-        | \JSON_HEX_APOS
-        | \JSON_HEX_QUOT
-        | \JSON_HEX_TAG
-        | \JSON_PRETTY_PRINT;
-
-    /**
      * List of JSON error messages.
      *
      * @var array<int, string>
@@ -56,6 +43,13 @@ class JsonRenderer extends JsonResponseHandler
     ];
 
     /**
+     * Json encode prettify.
+     *
+     * @var bool
+     */
+    protected $prettify = true;
+
+    /**
      * JsonHandler constructor.
      *
      * @param string $defaultTitle
@@ -65,6 +59,14 @@ class JsonRenderer extends JsonResponseHandler
         $this->defaultTitle = $defaultTitle;
 
         $this->addTraceToOutput(true);
+    }
+
+    /**
+     * @param bool $prettify
+     */
+    public function setPrettify(bool $prettify): void
+    {
+        $this->prettify = $prettify;
     }
 
     /**
@@ -84,7 +86,7 @@ class JsonRenderer extends JsonResponseHandler
 
         $error = $this->getExceptionData($inspector, $addTrace);
 
-        $json = \json_encode($error, static::JSON_ENCODE_OPTIONS);
+        $json = \json_encode($error, $this->getJsonFlags());
         if ($json === false) {
             // @codeCoverageIgnoreStart
             throw new \RuntimeException(self::JSON_ERROR_MESSAGES[\json_last_error()] ?? 'Unknown error');
@@ -94,5 +96,20 @@ class JsonRenderer extends JsonResponseHandler
         echo $json;
 
         return Handler::QUIT;
+    }
+
+    /**
+     * Get JSON encode flags.
+     *
+     * @return int
+     */
+    protected function getJsonFlags(): int
+    {
+        $jsonFlags = \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_PRESERVE_ZERO_FRACTION;
+        if ($this->prettify) {
+            $jsonFlags |= \JSON_PRETTY_PRINT;
+        }
+
+        return $jsonFlags;
     }
 }

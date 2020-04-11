@@ -24,19 +24,6 @@ use Whoops\Exception\Inspector;
  */
 class JsonRendererTest extends TestCase
 {
-    /**
-     * @var JsonRenderer
-     */
-    protected $renderer;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp(): void
-    {
-        $this->renderer = new JsonRenderer();
-    }
-
     public function testOutput(): void
     {
         /* @var ServerRequestInterface $request */
@@ -44,16 +31,44 @@ class JsonRendererTest extends TestCase
         $exception = new HttpForbiddenException($request, 'Forbidden');
         $inspector = new Inspector($exception);
 
-        $this->renderer->addTraceToOutput(true);
-        $this->renderer->setException($exception);
-        $this->renderer->setInspector($inspector);
+        $renderer = new JsonRenderer();
+        $renderer->addTraceToOutput(true);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
 
         \ob_start();
-        $this->renderer->handle();
+        $renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('"message": "403 Forbidden"', $output);
-        self::assertContains('"trace": ', $output);
+        $expected = <<<'EXPECTED'
+{
+    "message": "403 Forbidden",
+    "type": "Slim\\Exception\\HttpForbiddenException",
+    "trace": [
+
+EXPECTED;
+        self::assertContains($expected, $output);
+    }
+
+    public function testNotPrettifiedOutput(): void
+    {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden');
+        $inspector = new Inspector($exception);
+
+        $renderer = new JsonRenderer();
+        $renderer->addTraceToOutput(true);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
+        $renderer->setPrettify(false);
+
+        \ob_start();
+        $renderer->handle();
+        $output = \ob_get_clean();
+
+        $expected = '{"message":"403 Forbidden","type":"Slim\\\Exception\\\HttpForbiddenException","trace":[';
+        self::assertContains($expected, $output);
     }
 
     public function testNoTraceOutput(): void
@@ -63,15 +78,41 @@ class JsonRendererTest extends TestCase
         $exception = new HttpForbiddenException($request, 'Forbidden');
         $inspector = new Inspector($exception);
 
-        $this->renderer->addTraceToOutput(false);
-        $this->renderer->setException($exception);
-        $this->renderer->setInspector($inspector);
+        $renderer = new JsonRenderer();
+        $renderer->addTraceToOutput(false);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
 
         \ob_start();
-        $this->renderer->handle();
+        $renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains('"message": "403 Forbidden"', $output);
-        self::assertNotContains('"trace": ', $output);
+        $expected = <<<'EXPECTED'
+{
+    "message": "403 Forbidden"
+}
+EXPECTED;
+        self::assertEquals($expected, $output);
+    }
+
+    public function testNotPrettifiedNoTraceOutput(): void
+    {
+        /* @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden');
+        $inspector = new Inspector($exception);
+
+        $renderer = new JsonRenderer();
+        $renderer->addTraceToOutput(false);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
+        $renderer->setPrettify(false);
+
+        \ob_start();
+        $renderer->handle();
+        $output = \ob_get_clean();
+
+        $expected = '{"message":"403 Forbidden"}';
+        self::assertEquals($expected, $output);
     }
 }
