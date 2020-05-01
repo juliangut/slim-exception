@@ -26,7 +26,6 @@ class XmlRendererTest extends TestCase
 {
     public function testOutput(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $exception = new HttpForbiddenException($request, 'Forbidden action');
         $inspector = new Inspector($exception);
@@ -53,7 +52,6 @@ EXPECTED;
 
     public function testNotPrettifiedOutput(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $exception = new HttpForbiddenException($request, 'Forbidden action');
         $inspector = new Inspector($exception);
@@ -77,7 +75,6 @@ EXPECTED;
 
     public function testNoTraceOutput(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $exception = new HttpForbiddenException($request, 'Forbidden action');
         $inspector = new Inspector($exception);
@@ -103,7 +100,6 @@ EXPECTED;
 
     public function testNotPrettifiedNoTraceOutput(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $exception = new HttpForbiddenException($request, 'Forbidden action');
         $inspector = new Inspector($exception);

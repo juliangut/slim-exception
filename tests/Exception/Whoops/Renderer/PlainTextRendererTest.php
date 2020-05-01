@@ -39,7 +39,6 @@ class PlainTextRendererTest extends TestCase
 
     public function testOutput(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $originalException = new \ErrorException('Original exception');
         $exception = new HttpNotImplementedException($request, null, $originalException);
@@ -60,7 +59,6 @@ class PlainTextRendererTest extends TestCase
 
     public function testNoTraceOutput(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $exception = new HttpNotImplementedException($request);
         $inspector = new Inspector($exception);

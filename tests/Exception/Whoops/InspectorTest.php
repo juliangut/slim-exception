@@ -26,7 +26,6 @@ class InspectorTest extends TestCase
 {
     public function testAssign(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $originalException = new \InvalidArgumentException();
         $exception = new HttpInternalServerErrorException($request, null, $originalException);
@@ -38,7 +37,6 @@ class InspectorTest extends TestCase
 
     public function testStackTraceFrames(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $originalException = new \InvalidArgumentException();
         $exception = new HttpInternalServerErrorException($request, null, $originalException);

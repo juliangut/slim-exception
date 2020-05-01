@@ -47,10 +47,9 @@ class ErrorHandlerTest extends TestCase
             ->will($this->returnValue(function (): void {
                 // noop
             }));
-        /* @var CallableResolverInterface $callableResolver */
         $handler = new WhoopsErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), new Whoops());
 
-        $response = $handler($request, $exception, false, false, true);
+        $handler($request, $exception, false, false, true);
     }
 
     public function testHandle(): void
@@ -66,7 +65,6 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->with(JsonRenderer::class)
             ->will($this->returnValue(new JsonRenderer()));
-        /* @var CallableResolverInterface $callableResolver */
         $handler = new WhoopsErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), new Whoops());
 
         $response = $handler($request, $exception, false, false, true);
@@ -87,7 +85,6 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->with(HtmlRenderer::class)
             ->will($this->returnValue(new HtmlRenderer()));
-        /* @var CallableResolverInterface $callableResolver */
         $handler = new WhoopsErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), new Whoops());
 
         $response = $handler($request, $exception, false, false, true);

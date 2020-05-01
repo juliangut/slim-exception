@@ -40,7 +40,6 @@ class HtmlRendererTest extends TestCase
 
     public function testOutput(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $exception = new HttpInternalServerErrorException($request, 'Impossible error', new \ErrorException());
         $inspector = new Inspector($exception);

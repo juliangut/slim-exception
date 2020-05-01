@@ -30,7 +30,7 @@ class PlainTextRenderer extends PlainTextHandler
      * @param string               $defaultTitle
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $defaultTitle = 'Slim Application error', LoggerInterface $logger = null)
+    public function __construct(string $defaultTitle = 'Slim Application error', ?LoggerInterface $logger = null)
     {
         parent::__construct($logger);
 

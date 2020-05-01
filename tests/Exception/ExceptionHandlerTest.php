@@ -70,7 +70,6 @@ class ExceptionHandlerTest extends TestCase
         $errorHandler->expects(static::once())
             ->method('__invoke')
             ->will($this->returnValue($response));
-        /* @var ErrorHandlerInterface $errorHandler */
 
         $exceptionHandler = new ExceptionHandlerStub(new ServerRequest(), $errorHandler, false, false, false);
         $exceptionHandler->registerHandling();
@@ -105,7 +104,6 @@ class ExceptionHandlerTest extends TestCase
         $errorHandler->expects(static::once())
             ->method('__invoke')
             ->will($this->returnValue($response));
-        /* @var ErrorHandlerInterface $errorHandler */
 
         $exceptionHandler = new ExceptionHandlerStub(new ServerRequest(), $errorHandler, false, false, false, $error);
         $exceptionHandler->registerHandling();

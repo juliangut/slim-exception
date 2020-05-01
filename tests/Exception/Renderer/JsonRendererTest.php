@@ -33,7 +33,6 @@ class JsonRendererTest extends TestCase
      */
     public function setUp(): void
     {
-        /* @var ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $this->exception = new HttpForbiddenException($request, 'Forbidden action');
     }

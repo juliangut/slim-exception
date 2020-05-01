@@ -42,7 +42,6 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->with(PlainTextRenderer::class)
             ->will($this->returnValue(new PlainTextRenderer()));
-        /* @var CallableResolverInterface $callableResolver */
         $handler = new ErrorHandler($callableResolver, new ResponseFactory(), new Negotiator());
         $handler->setErrorRenderers(['text/plain' => PlainTextRenderer::class]);
 
@@ -64,7 +63,6 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->with(HtmlRenderer::class)
             ->will($this->returnValue(new HtmlRenderer()));
-        /* @var CallableResolverInterface $callableResolver */
         $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator());
 
         $response = $handler($request, $exception, false, false, true);
@@ -84,7 +82,6 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->withConsecutive([PlainTextRenderer::class], [HtmlRenderer::class])
             ->willReturnOnConsecutiveCalls(new PlainTextRenderer(), new HtmlRenderer());
-        /* @var CallableResolverInterface $callableResolver */
         $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator());
 
         $logger = $this->getMockBuilder(LoggerInterface::class)
@@ -92,7 +89,6 @@ class ErrorHandlerTest extends TestCase
             ->getMock();
         $logger->expects(static::once())
             ->method('log');
-        /* @var LoggerInterface $logger */
         $handler->setLogger($logger);
 
         $handler(new ServerRequest(), $exception, false, true, true);
@@ -110,7 +106,6 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->withConsecutive([PlainTextRenderer::class], [HtmlRenderer::class])
             ->willReturnOnConsecutiveCalls(new PlainTextRenderer(), new HtmlRenderer());
-        /* @var CallableResolverInterface $callableResolver */
         $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator());
 
         $logger = $this->getMockBuilder(LoggerInterface::class)
@@ -118,7 +113,6 @@ class ErrorHandlerTest extends TestCase
             ->getMock();
         $logger->expects(static::once())
             ->method('log');
-        /* @var LoggerInterface $logger */
         $handler->setLogger($logger);
 
         $handler($request, $exception, false, true, false);
