@@ -48,7 +48,9 @@
     "thecodingmachine/phpstan-strict-rules": "^0.12"
   },
   "suggest": {
-    "filp/whoops": "Enhance development error reporting and production stack-traces"
+    "filp/whoops": "Enhance development error reporting and production stack-traces",
+    "ext-json": "In order to render json",
+    "ext-simplexml": "In order to render xml"
   },
   "autoload": {
     "psr-4": {
