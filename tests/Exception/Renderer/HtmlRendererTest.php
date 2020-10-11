@@ -24,9 +24,9 @@ use Slim\Exception\HttpForbiddenException;
 class HtmlRendererTest extends TestCase
 {
     /**
-     * @var HttpForbiddenException
+     * @var \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface
      */
-    protected $exception;
+    protected $request;
 
     /**
      * @var HtmlRenderer
@@ -38,26 +38,50 @@ class HtmlRendererTest extends TestCase
      */
     public function setUp(): void
     {
-        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $this->exception = new HttpForbiddenException($request);
+        $this->request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $this->renderer = new HtmlRenderer();
     }
 
-    public function testOutput(): void
+    public function testDefaultHttpExceptionOutput(): void
     {
-        $output = ($this->renderer)($this->exception, false);
+        $exception = new HttpForbiddenException($this->request);
+        $output = ($this->renderer)($exception, false);
 
         self::assertContains('<title>403 Forbidden</title>', $output);
         self::assertContains('<h1>403 Forbidden</h1>', $output);
         self::assertNotContains('<h2>Details</h2>', $output);
+        self::assertContains('<p>Forbidden.</p>', $output);
+    }
+
+    public function testMessageHttpExceptionOutput(): void
+    {
+        $exception = new HttpForbiddenException($this->request, 'No access');
+        $output = ($this->renderer)($exception, false);
+
+        self::assertContains('<title>403 Forbidden</title>', $output);
+        self::assertContains('<h1>403 Forbidden</h1>', $output);
+        self::assertNotContains('<h2>Details</h2>', $output);
+        self::assertContains('<p>No access</p>', $output);
+    }
+
+    public function testDescriptionHttpExceptionOutput(): void
+    {
+        $exception = new HttpForbiddenException($this->request, '');
+        $output = ($this->renderer)($exception, false);
+
+        self::assertContains('<title>403 Forbidden</title>', $output);
+        self::assertContains('<h1>403 Forbidden</h1>', $output);
+        self::assertNotContains('<h2>Details</h2>', $output);
+        self::assertContains('<p>You are not permitted to perform the requested operation.</p>', $output);
     }
 
     public function testOutputWithTrace(): void
     {
-        $output = ($this->renderer)($this->exception, true);
+        $exception = new \RuntimeException();
+        $output = ($this->renderer)($exception, true);
 
-        self::assertContains('<title>403 Forbidden</title>', $output);
-        self::assertContains('<h1>403 Forbidden</h1>', $output);
+        self::assertContains('<title>Slim Application error</title>', $output);
+        self::assertContains('<h1>Slim Application error</h1>', $output);
         self::assertContains('<h2>Details</h2>', $output);
     }
 }

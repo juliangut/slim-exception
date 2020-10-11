@@ -14,5 +14,5 @@ parameters:
       path: src/ExceptionHandler.php
     - message: '/^Call to function is_subclass_of\(\) with Whoops\\Handler\\HandlerInterface and .Jgut\\\\Slim\\\\Exception\\\\Whoops\\\\Renderer\\\\HtmlRenderer. will always evaluate to false\.$/'
       path: src/Whoops/Handler/ErrorHandler.php
-    - message: '/^Method Whoops\\Handler\\Handler::set(Exception|Inspector|Run)\(\) has no return typehint specified\.$/'
-      path: src/Whoops/Renderer/RendererTrait.php
+    - message: '/^Cannot call method createCDATASection\(\) on DOMDocument\|null\.$/'
+      path: src/Whoops/Renderer/XmlRenderer.php
