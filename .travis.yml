@@ -13,9 +13,9 @@ env:
   - COMPOSER_FLAGS="--prefer-stable --prefer-dist"
 
 php:
-  - 7.1
   - 7.2
   - 7.3
+  - 7.4
   - nightly
 
 matrix:
@@ -24,7 +24,7 @@ matrix:
     - php: 7.1
       env:
         - COMPOSER_FLAGS="--prefer-lowest --prefer-stable --prefer-dist"
-    - php: 7.4
+    - php: 7.1
       env:
         - TEST_VERSION=true
         - COMPOSER_FLAGS="--prefer-stable --prefer-dist"
