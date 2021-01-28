@@ -32,7 +32,7 @@
     "brainmaestro/composer-git-hooks": "^2.8",
     "filp/whoops": "^2.4",
     "friendsofphp/php-cs-fixer": "^2.16",
-    "infection/infection": "^0.13|^0.15|^0.16|^0.18|^0.19",
+    "infection/infection": "^0.13|^0.15|^0.18|^0.19",
     "laminas/laminas-diactoros": "^2.1",
     "overtrue/phplint": "^1.2",
     "phpmd/phpmd": "^2.8",
@@ -43,7 +43,7 @@
     "phpunit/phpunit": "^7.5|^8.0",
     "povils/phpmnd": "^2.1",
     "roave/security-advisories": "dev-master",
-    "sebastian/phpcpd": "^4.0|^5.0",
+    "sebastian/phpcpd": "^4.0|^5.0|^6.0",
     "squizlabs/php_codesniffer": "^3.5",
     "thecodingmachine/phpstan-strict-rules": "^0.12"
   },
