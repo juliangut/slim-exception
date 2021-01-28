@@ -78,8 +78,10 @@ class XmlRenderer extends XmlResponseHandler
      */
     protected function getFormattedXml(array $data): string
     {
+        $xmlTemplate = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><error />';
+
         /** @var \SimpleXMLElement $root */
-        $root = \simplexml_load_string('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><error />');
+        $root = \simplexml_load_string($xmlTemplate);
         $this->addDataNodes($root, $data, 'exception');
 
         /** @var \SimpleXMLElement $rootDocument */
@@ -87,7 +89,9 @@ class XmlRenderer extends XmlResponseHandler
         $dom = $rootDocument->ownerDocument;
         $dom->formatOutput = $this->prettify;
 
-        return $dom->saveXML();
+        $xmlOutput = $dom->saveXML();
+
+        return \is_string($xmlOutput) ? $xmlOutput : $xmlTemplate;
     }
 
     /**

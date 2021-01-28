@@ -93,7 +93,7 @@ class ExceptionHandler
     {
         $response = \call_user_func(
             $this->errorHandler,
-            $this->request,
+            $exception instanceof HttpException ? $exception->getRequest() : $this->request,
             $exception,
             $this->displayErrorDetails,
             $this->logErrors,
