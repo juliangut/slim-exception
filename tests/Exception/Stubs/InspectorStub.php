@@ -25,12 +25,12 @@ class InspectorStub extends Inspector
     /**
      * {@inheritdoc}
      */
-    public function getFrames()
+    public function getFrames(): FrameCollection
     {
         $frames = new FrameCollection([]);
         $frames->prependFrames(\array_filter(
             parent::getFrames()->getArray(),
-            function (Frame $frame): bool {
+            static function (Frame $frame): bool {
                 // Filter out PHPUnit from stack trace
                 return \strpos($frame->getClass(), 'PHPUnit\\') !== 0;
             }

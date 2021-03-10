@@ -32,7 +32,7 @@ class ErrorHandlerTest extends TestCase
     public function testInvalidHandler(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('/^Renderer ".+" for Whoops error handler does not implement .+/');
+        $this->expectExceptionMessageMatches('/^Renderer ".+" for Whoops error handler does not implement .+/');
 
         $request = (new ServerRequest())
             ->withHeader('Accept', 'application/*+json');
@@ -44,9 +44,9 @@ class ErrorHandlerTest extends TestCase
         $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(JsonRenderer::class)
-            ->will($this->returnValue(function (): void {
+            ->willReturn(static function (): void {
                 // noop
-            }));
+            });
         $handler = new WhoopsErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), new Whoops());
 
         $handler($request, $exception, false, false, true);
@@ -64,13 +64,16 @@ class ErrorHandlerTest extends TestCase
         $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(JsonRenderer::class)
-            ->will($this->returnValue(new JsonRenderer()));
+            ->willReturn(new JsonRenderer());
         $handler = new WhoopsErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), new Whoops());
 
         $response = $handler($request, $exception, false, false, true);
 
-        self::assertEquals('application/json', $response->getHeaderLine('Content-Type'));
-        self::assertContains('"type": "Slim\\\Exception\\\HttpBadRequestException"', (string) $response->getBody());
+        static::assertEquals('application/json', $response->getHeaderLine('Content-Type'));
+        static::assertStringContainsString(
+            '"type": "Slim\\\Exception\\\HttpBadRequestException"',
+            (string) $response->getBody()
+        );
     }
 
     public function testDefaultHandle(): void
@@ -84,12 +87,12 @@ class ErrorHandlerTest extends TestCase
         $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(HtmlRenderer::class)
-            ->will($this->returnValue(new HtmlRenderer()));
+            ->willReturn(new HtmlRenderer());
         $handler = new WhoopsErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), new Whoops());
 
         $response = $handler($request, $exception, false, false, true);
 
-        self::assertEquals('text/html', $response->getHeaderLine('Content-Type'));
-        self::assertContains('Bad request', (string) $response->getBody());
+        static::assertEquals('text/html', $response->getHeaderLine('Content-Type'));
+        static::assertStringContainsString('Bad request', (string) $response->getBody());
     }
 }

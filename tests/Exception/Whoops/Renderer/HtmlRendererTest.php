@@ -58,9 +58,12 @@ class HtmlRendererTest extends TestCase
         $this->renderer->handle();
         $output = \ob_get_clean();
 
-        self::assertContains(HttpInternalServerErrorException::class, $output);
-        self::assertContains('<title>Slim Application error</title>', $output);
-        self::assertContains('<span class="exc-title-primary">HttpInternalServerErrorException</span>', $output);
-        self::assertContains('<span>Impossible error</span>', $output);
+        static::assertStringContainsString(HttpInternalServerErrorException::class, $output);
+        static::assertStringContainsString('<title>Slim Application error</title>', $output);
+        static::assertStringContainsString(
+            '<span class="exc-title-primary">HttpInternalServerErrorException</span>',
+            $output
+        );
+        static::assertStringContainsString('<span>Impossible error</span>', $output);
     }
 }

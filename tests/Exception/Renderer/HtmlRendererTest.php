@@ -47,10 +47,10 @@ class HtmlRendererTest extends TestCase
         $exception = new HttpForbiddenException($this->request);
         $output = ($this->renderer)($exception, false);
 
-        self::assertContains('<title>403 Forbidden</title>', $output);
-        self::assertContains('<h1>403 Forbidden</h1>', $output);
-        self::assertNotContains('<h2>Details</h2>', $output);
-        self::assertContains('<p>Forbidden.</p>', $output);
+        static::assertStringContainsString('<title>403 Forbidden</title>', $output);
+        static::assertStringContainsString('<h1>403 Forbidden</h1>', $output);
+        static::assertStringNotContainsString('<h2>Details</h2>', $output);
+        static::assertStringContainsString('<p>Forbidden.</p>', $output);
     }
 
     public function testMessageHttpExceptionOutput(): void
@@ -58,10 +58,10 @@ class HtmlRendererTest extends TestCase
         $exception = new HttpForbiddenException($this->request, 'No access');
         $output = ($this->renderer)($exception, false);
 
-        self::assertContains('<title>403 Forbidden</title>', $output);
-        self::assertContains('<h1>403 Forbidden</h1>', $output);
-        self::assertNotContains('<h2>Details</h2>', $output);
-        self::assertContains('<p>No access</p>', $output);
+        static::assertStringContainsString('<title>403 Forbidden</title>', $output);
+        static::assertStringContainsString('<h1>403 Forbidden</h1>', $output);
+        static::assertStringNotContainsString('<h2>Details</h2>', $output);
+        static::assertStringContainsString('<p>No access</p>', $output);
     }
 
     public function testDescriptionHttpExceptionOutput(): void
@@ -69,10 +69,10 @@ class HtmlRendererTest extends TestCase
         $exception = new HttpForbiddenException($this->request, '');
         $output = ($this->renderer)($exception, false);
 
-        self::assertContains('<title>403 Forbidden</title>', $output);
-        self::assertContains('<h1>403 Forbidden</h1>', $output);
-        self::assertNotContains('<h2>Details</h2>', $output);
-        self::assertContains('<p>You are not permitted to perform the requested operation.</p>', $output);
+        static::assertStringContainsString('<title>403 Forbidden</title>', $output);
+        static::assertStringContainsString('<h1>403 Forbidden</h1>', $output);
+        static::assertStringNotContainsString('<h2>Details</h2>', $output);
+        static::assertStringContainsString('<p>You are not permitted to perform the requested operation.</p>', $output);
     }
 
     public function testOutputWithTrace(): void
@@ -80,8 +80,8 @@ class HtmlRendererTest extends TestCase
         $exception = new \RuntimeException();
         $output = ($this->renderer)($exception, true);
 
-        self::assertContains('<title>Slim Application error</title>', $output);
-        self::assertContains('<h1>Slim Application error</h1>', $output);
-        self::assertContains('<h2>Details</h2>', $output);
+        static::assertStringContainsString('<title>Slim Application error</title>', $output);
+        static::assertStringContainsString('<h1>Slim Application error</h1>', $output);
+        static::assertStringContainsString('<h2>Details</h2>', $output);
     }
 }

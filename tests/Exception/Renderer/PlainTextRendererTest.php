@@ -47,14 +47,14 @@ class PlainTextRendererTest extends TestCase
     {
         $output = ($this->renderer)($this->exception, false);
 
-        self::assertEquals('403 Forbidden', $output);
+        static::assertEquals('403 Forbidden', $output);
     }
 
     public function testOutputWithTrace(): void
     {
         $output = ($this->renderer)($this->exception, true);
 
-        self::assertContains('403 Forbidden', $output);
-        self::assertContains('Trace', $output);
+        static::assertStringContainsString('403 Forbidden', $output);
+        static::assertStringContainsString('Trace', $output);
     }
 }

@@ -52,7 +52,7 @@ class XmlRenderer extends XmlResponseHandler
     /**
      * {@inheritdoc}
      */
-    public function handle(): int
+    public function handle()
     {
         $exception = $this->getException();
 
@@ -126,7 +126,10 @@ class XmlRenderer extends XmlResponseHandler
                 if ($key === 'message') {
                     /** @var \DOMElement $child */
                     $child = \dom_import_simplexml($node->addChild($key));
-                    $child->appendChild($child->ownerDocument->createCDATASection($value));
+                    /** @var \DOMDocument $document */
+                    $document = $child->ownerDocument;
+
+                    $child->appendChild($document->createCDATASection($value));
                 } else {
                     $node->addChild($key, $value);
                 }

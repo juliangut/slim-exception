@@ -63,7 +63,7 @@ class XmlRenderer extends AbstractRenderer
         return $xmlTag . \implode(
             '',
             \array_map(
-                function (string $line): string {
+                static function (string $line): string {
                     return \ltrim($line, ' ');
                 },
                 $errorParts

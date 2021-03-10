@@ -47,7 +47,7 @@ class XmlRendererTest extends TestCase
   <message><![CDATA[403 Forbidden]]></message>
 </error>
 EXPECTED;
-        self::assertEquals($expected, $output);
+        static::assertEquals($expected, $output);
     }
 
     public function testNotPrettifiedOutput(): void
@@ -61,7 +61,7 @@ EXPECTED;
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <error><message><![CDATA[403 Forbidden]]></message></error>
 EXPECTED;
-        self::assertEquals($expected, $output);
+        static::assertEquals($expected, $output);
     }
 
     public function testOutputWithTrace(): void
@@ -75,7 +75,7 @@ EXPECTED;
   <exception>
 
 EXPECTED;
-        self::assertContains($expected, $output);
+        static::assertStringContainsString($expected, $output);
     }
 
     public function testNotPrettifiedOutputWithTrace(): void
@@ -89,6 +89,6 @@ EXPECTED;
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <error><message><![CDATA[403 Forbidden]]></message><exception>
 EXPECTED;
-        self::assertContains($expected, $output);
+        static::assertStringContainsString($expected, $output);
     }
 }

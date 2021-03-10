@@ -119,6 +119,10 @@ class ExceptionHandler
     public function handleError(int $severity, string $message, ?string $file = null, ?int $line = null): bool
     {
         if ((\error_reporting() & $severity) !== 0) {
+            /**
+             * @var string $file
+             * @var int    $line
+             */
             throw new \ErrorException($message, $severity, $severity, $file, $line);
         }
 
@@ -210,7 +214,7 @@ class ExceptionHandler
 
         if (\function_exists('xdebug_get_function_stack')) {
             $trace = \array_map(
-                function (array $frame): array {
+                static function (array $frame): array {
                     if (!isset($frame['type'])) {
                         // http://bugs.xdebug.org/view.php?id=695
                         if (isset($frame['class'])) {

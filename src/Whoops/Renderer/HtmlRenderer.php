@@ -43,7 +43,7 @@ class HtmlRenderer extends PrettyPageHandler
     /**
      * {@inheritdoc}
      */
-    public function handle(): int
+    public function handle()
     {
         $exception = $this->getException();
         $this->setInspector(new Inspector($exception));

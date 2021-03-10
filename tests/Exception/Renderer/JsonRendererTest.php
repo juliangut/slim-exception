@@ -48,7 +48,7 @@ class JsonRendererTest extends TestCase
     }
 }
 EXPECTED;
-        self::assertEquals($expected, $output);
+        static::assertEquals($expected, $output);
     }
 
     public function testNotPrettifiedOutput(): void
@@ -58,7 +58,7 @@ EXPECTED;
 
         $output = $renderer($this->exception, false);
 
-        self::assertEquals('{"error":{"message":"403 Forbidden"}}', $output);
+        static::assertEquals('{"error":{"message":"403 Forbidden"}}', $output);
     }
 
     public function testOutputWithTrace(): void
@@ -72,7 +72,7 @@ EXPECTED;
         "exception": [
 
 EXPECTED;
-        self::assertContains($expected, $output);
+        static::assertStringContainsString($expected, $output);
     }
 
     public function testNotPrettifiedOutputWithTrace(): void
@@ -82,6 +82,6 @@ EXPECTED;
 
         $output = $renderer($this->exception, true);
 
-        self::assertContains('{"error":{"message":"403 Forbidden","exception":[', $output);
+        static::assertStringContainsString('{"error":{"message":"403 Forbidden","exception":[', $output);
     }
 }

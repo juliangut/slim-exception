@@ -18,10 +18,13 @@ use Jgut\Slim\Exception\Renderer\JsonRenderer;
 use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
 use Jgut\Slim\Exception\Renderer\XmlRenderer;
 use Negotiation\BaseAccept;
+use Negotiation\Exception\InvalidArgument;
+use Negotiation\Exception\InvalidHeader;
+use Negotiation\Exception\InvalidMediaType;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Slim\Interfaces\CallableResolverInterface;
@@ -29,11 +32,11 @@ use Slim\Interfaces\ErrorRendererInterface;
 
 /**
  * exception handler.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ErrorHandler extends SlimErrorHandler
 {
-    use LoggerAwareTrait;
-
     /**
      * Default error renderer for logs.
      *
@@ -94,15 +97,17 @@ class ErrorHandler extends SlimErrorHandler
      * @param CallableResolverInterface $callableResolver
      * @param ResponseFactoryInterface  $responseFactory
      * @param Negotiator                $negotiator
+     * @param LoggerInterface|null      $logger
      */
     public function __construct(
         CallableResolverInterface $callableResolver,
         ResponseFactoryInterface $responseFactory,
-        Negotiator $negotiator
+        Negotiator $negotiator,
+        ?LoggerInterface $logger = null
     ) {
         $this->negotiator = $negotiator;
 
-        parent::__construct($callableResolver, $responseFactory);
+        parent::__construct($callableResolver, $responseFactory, $logger);
     }
 
     /**
@@ -151,7 +156,7 @@ class ErrorHandler extends SlimErrorHandler
                     $contentType = $selected->getType();
                 }
                 // @codeCoverageIgnoreStart
-            } catch (\Throwable $exception) {
+            } catch (InvalidArgument | InvalidHeader | InvalidMediaType $exception) {
                 // @ignoreException
             }
             // @codeCoverageIgnoreEnd

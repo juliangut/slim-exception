@@ -56,7 +56,7 @@ class ExceptionHandlerTest extends TestCase
 
         $exceptionHandler->handleShutdown();
 
-        self::assertEquals('', \ob_get_clean());
+        static::assertEquals('', \ob_get_clean());
     }
 
     public function testHandleExceptionFromError(): void
@@ -69,7 +69,7 @@ class ExceptionHandlerTest extends TestCase
             ->getMock();
         $errorHandler->expects(static::once())
             ->method('__invoke')
-            ->will($this->returnValue($response));
+            ->willReturn($response);
 
         $exceptionHandler = new ExceptionHandlerStub(new ServerRequest(), $errorHandler, false, false, false);
         $exceptionHandler->registerHandling();
@@ -83,7 +83,7 @@ class ExceptionHandlerTest extends TestCase
 
             $exceptionHandler->handleException($exception);
 
-            self::assertEquals('Exception!', \ob_get_clean());
+            static::assertEquals('Exception!', \ob_get_clean());
         }
     }
 
@@ -103,7 +103,7 @@ class ExceptionHandlerTest extends TestCase
             ->getMock();
         $errorHandler->expects(static::once())
             ->method('__invoke')
-            ->will($this->returnValue($response));
+            ->willReturn($response);
 
         $exceptionHandler = new ExceptionHandlerStub(new ServerRequest(), $errorHandler, false, false, false, $error);
         $exceptionHandler->registerHandling();
@@ -112,13 +112,15 @@ class ExceptionHandlerTest extends TestCase
 
         $exceptionHandler->handleShutdown();
 
-        self::assertEquals('Exception!', \ob_get_clean());
+        static::assertEquals('Exception!', \ob_get_clean());
 
         static::$exitShutDown = true;
     }
 
     /**
      * Hack to prevent shutdown function to be triggered after PHPUnit has finished.
+     *
+     * @SuppressWarnings(PHPMD.ExitExpression)
      */
     public static function shutDown(): void
     {

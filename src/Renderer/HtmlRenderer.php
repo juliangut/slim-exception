@@ -61,34 +61,24 @@ OUTPUT;
      */
     private function formatException(\Throwable $exception): string
     {
-        $output = \sprintf('<div><strong>Type:</strong> %s</div>', \get_class($exception));
+        $outputString = <<<'OUTPUT'
+<div><strong>Type:</strong> %s</div>
+<div><strong>Code:</strong> %s</div>
+<div><strong>Message:</strong> %s</div>
+<div><strong>File:</strong> %s</div>
+<div><strong>Line:</strong> %s</div>
+<h2>Trace</h2>
+<pre>%s</pre>
+OUTPUT;
 
-        $code = $exception->getCode();
-        if ($code !== null) {
-            $output .= \sprintf('<div><strong>Code:</strong> %s</div>', $code);
-        }
-
-        $message = $exception->getMessage();
-        if ($message !== null) {
-            $output .= \sprintf('<div><strong>Message:</strong> %s</div>', \htmlentities($message));
-        }
-
-        $file = $exception->getFile();
-        if ($file !== null) {
-            $output .= \sprintf('<div><strong>File:</strong> %s</div>', $file);
-        }
-
-        $line = $exception->getLine();
-        if ($line !== null) {
-            $output .= \sprintf('<div><strong>Line:</strong> %s</div>', $line);
-        }
-
-        $trace = $exception->getTraceAsString();
-        if ($trace !== null) {
-            $output .= '<h2>Trace</h2>';
-            $output .= \sprintf('<pre>%s</pre>', \htmlentities($trace));
-        }
-
-        return $output;
+        return \sprintf(
+            $outputString,
+            \get_class($exception),
+            $exception->getCode(),
+            \htmlentities($exception->getMessage()),
+            $exception->getFile(),
+            $exception->getLine(),
+            \htmlentities($exception->getTraceAsString())
+        );
     }
 }

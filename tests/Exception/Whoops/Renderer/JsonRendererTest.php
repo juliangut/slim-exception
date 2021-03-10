@@ -46,7 +46,7 @@ class JsonRendererTest extends TestCase
     "trace": [
 
 EXPECTED;
-        self::assertContains($expected, $output);
+        static::assertStringContainsString($expected, $output);
     }
 
     public function testNotPrettifiedOutput(): void
@@ -66,7 +66,7 @@ EXPECTED;
         $output = \ob_get_clean();
 
         $expected = '{"message":"403 Forbidden","type":"Slim\\\Exception\\\HttpForbiddenException","trace":[';
-        self::assertContains($expected, $output);
+        static::assertStringContainsString($expected, $output);
     }
 
     public function testNoTraceOutput(): void
@@ -89,7 +89,7 @@ EXPECTED;
     "message": "403 Forbidden"
 }
 EXPECTED;
-        self::assertEquals($expected, $output);
+        static::assertEquals($expected, $output);
     }
 
     public function testNotPrettifiedNoTraceOutput(): void
@@ -109,6 +109,6 @@ EXPECTED;
         $output = \ob_get_clean();
 
         $expected = '{"message":"403 Forbidden"}';
-        self::assertEquals($expected, $output);
+        static::assertEquals($expected, $output);
     }
 }

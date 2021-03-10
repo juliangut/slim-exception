@@ -74,7 +74,7 @@ class JsonRenderer extends JsonResponseHandler
      *
      * @throws \RuntimeException
      */
-    public function handle(): int
+    public function handle()
     {
         $exception = $this->getException();
 
@@ -105,7 +105,10 @@ class JsonRenderer extends JsonResponseHandler
      */
     protected function getJsonFlags(): int
     {
-        $jsonFlags = \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_PRESERVE_ZERO_FRACTION;
+        $jsonFlags = \JSON_UNESCAPED_UNICODE
+            | \JSON_UNESCAPED_SLASHES
+            | \JSON_PRESERVE_ZERO_FRACTION
+            | \JSON_THROW_ON_ERROR;
         if ($this->prettify) {
             $jsonFlags |= \JSON_PRETTY_PRINT;
         }

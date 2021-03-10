@@ -1,11 +1,6 @@
-[![PHP version](https://img.shields.io/badge/PHP-%3E%3D7.1-8892BF.svg?style=flat-square)](http://php.net)
+[![PHP version](https://img.shields.io/badge/PHP-%3E%3D7.3-8892BF.svg?style=flat-square)](http://php.net)
 [![Latest Version](https://img.shields.io/packagist/v/juliangut/slim-exception.svg?style=flat-square)](https://packagist.org/packages/juliangut/slim-exception)
 [![License](https://img.shields.io/github/license/juliangut/slim-exception.svg?style=flat-square)](https://github.com/juliangut/slim-exception/blob/master/LICENSE)
-
-[![Build Status](https://img.shields.io/travis/juliangut/slim-exception.svg?style=flat-square)](https://travis-ci.org/juliangut/slim-exception)
-[![Style Check](https://styleci.io/repos/98827578/shield)](https://styleci.io/repos/98827578)
-[![Code Quality](https://img.shields.io/scrutinizer/g/juliangut/slim-exception.svg?style=flat-square)](https://scrutinizer-ci.com/g/juliangut/slim-exception)
-[![Code Coverage](https://img.shields.io/coveralls/juliangut/slim-exception.svg?style=flat-square)](https://coveralls.io/github/juliangut/slim-exception)
 
 [![Total Downloads](https://img.shields.io/packagist/dt/juliangut/slim-exception.svg?style=flat-square)](https://packagist.org/packages/juliangut/slim-exception/stats)
 [![Monthly Downloads](https://img.shields.io/packagist/dm/juliangut/slim-exception.svg?style=flat-square)](https://packagist.org/packages/juliangut/slim-exception/stats)
@@ -122,7 +117,7 @@ trigger_error('This is embarrasing', \E_USER_ERROR);
 
 Overall usage has been drastically simplified due to Slim 4 migration to exception based error handling, basically what slim-exception was doing in 1.x.
 
-* Minimum Slim version is now 4.2
+* Minimum Slim version is now 4.7
 * ExceptionManager has been removed as its functionality is now integrated into Slim
 * Exceptions no longer uses juliangut/http-exception and thus they have no identifier
 * Global error/exception handling has been moved from a trait (meant for App) to its own class ExceptionHandler

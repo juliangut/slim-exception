@@ -32,7 +32,7 @@ class InspectorTest extends TestCase
 
         $inspector = new Inspector($exception);
 
-        self::assertEquals($exception, $inspector->getException());
+        static::assertEquals($exception, $inspector->getException());
     }
 
     public function testStackTraceFrames(): void
@@ -45,7 +45,7 @@ class InspectorTest extends TestCase
 
         $frames = $inspector->getTraceFrames();
 
-        self::assertEquals(__CLASS__, $frames[\count($frames) - 1]->getClass());
-        self::assertEquals(__FUNCTION__, $frames[\count($frames) - 1]->getFunction());
+        static::assertEquals(__CLASS__, $frames[\count($frames) - 1]->getClass());
+        static::assertEquals(__FUNCTION__, $frames[\count($frames) - 1]->getFunction());
     }
 }

@@ -44,33 +44,23 @@ class PlainTextRenderer extends AbstractRenderer
      */
     private function formatException(\Throwable $exception): string
     {
-        $output = \sprintf("Type: %s\n", \get_class($exception));
+        $outputString = <<<'OUTPUT'
+Type: %s
+Code: %s
+Message: %s
+File: %s
+Line: %s
+Trace: %s
+OUTPUT;
 
-        $code = $exception->getCode();
-        if ($code !== null) {
-            $output .= \sprintf("Code: %s\n", $code);
-        }
-
-        $message = $exception->getMessage();
-        if ($message !== null) {
-            $output .= \sprintf("Message: %s\n", \htmlentities($message));
-        }
-
-        $file = $exception->getFile();
-        if ($file !== null) {
-            $output .= \sprintf("File: %s\n", $file);
-        }
-
-        $line = $exception->getLine();
-        if ($line !== null) {
-            $output .= \sprintf("Line: %s\n", $line);
-        }
-
-        $trace = $exception->getTraceAsString();
-        if ($trace !== null) {
-            $output .= \sprintf('Trace: %s', $trace);
-        }
-
-        return $output;
+        return \sprintf(
+            $outputString,
+            \get_class($exception),
+            $exception->getCode(),
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine(),
+            $exception->getTraceAsString()
+        );
     }
 }

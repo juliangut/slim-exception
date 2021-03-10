@@ -4,15 +4,5 @@ parameters:
     - src
   checkMissingIterableValueType: false
   ignoreErrors:
-    - message: '/^Strict comparison using !== between (string|int) and null will always evaluate to true\./'
-      paths:
-        - src/Renderer/HtmlRenderer.php
-        - src/Renderer/PlainTextRenderer.php
-    - message: '/^In method "Jgut\\Slim\\Exception\\Handler\\ErrorHandler::determineContentType", caught "Throwable" must be rethrown\./'
-      path: src/Handler/ErrorHandler.php
-    - message: '/^Parameter #(4|5) \$(filename|line) of class ErrorException constructor expects (string|int), (string|int)\|null given\.$/'
-      path: src/ExceptionHandler.php
     - message: '/^Call to function is_subclass_of\(\) with Whoops\\Handler\\HandlerInterface and .Jgut\\\\Slim\\\\Exception\\\\Whoops\\\\Renderer\\\\HtmlRenderer. will always evaluate to false\.$/'
       path: src/Whoops/Handler/ErrorHandler.php
-    - message: '/^Cannot call method createCDATASection\(\) on DOMDocument\|null\.$/'
-      path: src/Whoops/Renderer/XmlRenderer.php

@@ -41,14 +41,14 @@ class ErrorHandlerTest extends TestCase
         $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(PlainTextRenderer::class)
-            ->will($this->returnValue(new PlainTextRenderer()));
+            ->willReturn(new PlainTextRenderer());
         $handler = new ErrorHandler($callableResolver, new ResponseFactory(), new Negotiator());
         $handler->setErrorRenderers(['text/plain' => PlainTextRenderer::class]);
 
         $response = $handler($request, $exception, false, false, true);
 
-        self::assertEquals('text/plain', $response->getHeaderLine('Content-Type'));
-        self::assertEquals('400 Bad Request', (string) $response->getBody());
+        static::assertEquals('text/plain', $response->getHeaderLine('Content-Type'));
+        static::assertEquals('400 Bad Request', (string) $response->getBody());
     }
 
     public function testDefaultHandle(): void
@@ -62,13 +62,13 @@ class ErrorHandlerTest extends TestCase
         $callableResolver->expects(static::once())
             ->method('resolve')
             ->with(HtmlRenderer::class)
-            ->will($this->returnValue(new HtmlRenderer()));
+            ->willReturn(new HtmlRenderer());
         $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator());
 
         $response = $handler($request, $exception, false, false, true);
 
-        self::assertEquals('text/html', $response->getHeaderLine('Content-Type'));
-        self::assertContains('<h1>400 Bad Request</h1>', (string) $response->getBody());
+        static::assertEquals('text/html', $response->getHeaderLine('Content-Type'));
+        static::assertStringContainsString('<h1>400 Bad Request</h1>', (string) $response->getBody());
     }
 
     public function testLoggingError(): void
@@ -82,14 +82,14 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->withConsecutive([PlainTextRenderer::class], [HtmlRenderer::class])
             ->willReturnOnConsecutiveCalls(new PlainTextRenderer(), new HtmlRenderer());
-        $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator());
 
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $logger->expects(static::once())
             ->method('log');
-        $handler->setLogger($logger);
+
+        $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), $logger);
 
         $handler(new ServerRequest(), $exception, false, true, true);
     }
@@ -106,14 +106,14 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->withConsecutive([PlainTextRenderer::class], [HtmlRenderer::class])
             ->willReturnOnConsecutiveCalls(new PlainTextRenderer(), new HtmlRenderer());
-        $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator());
 
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $logger->expects(static::once())
             ->method('log');
-        $handler->setLogger($logger);
+
+        $handler = new ErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), $logger);
 
         $handler($request, $exception, false, true, false);
     }

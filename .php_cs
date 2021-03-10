@@ -25,7 +25,7 @@ $finder = Finder::create()
     ->exclude(['vendor', 'build'])
     ->in(__DIR__);
 
-return Config::create()
+return (new Config())
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
     ->setRules([
@@ -48,7 +48,7 @@ return Config::create()
         'combine_consecutive_unsets' => true,
         'compact_nullable_typehint' => true,
         'concat_space' => [
-            'spacing' => 'one'
+            'spacing' => 'one',
         ],
         'declare_equal_normalize' => true,
         'declare_strict_types' => true,
@@ -102,7 +102,6 @@ return Config::create()
         'no_singleline_whitespace_before_semicolons' => true,
         'no_spaces_around_offset' => true,
         'no_superfluous_elseif' => true,
-        'no_trailing_comma_in_list_call' => true,
         'no_trailing_comma_in_singleline_array' => true,
         'no_unneeded_control_parentheses' => true,
         'no_unneeded_curly_braces' => true,
@@ -119,7 +118,7 @@ return Config::create()
         'normalize_index_brace' => true,
         'nullable_type_declaration_for_default_null_value' => true,
         'ordered_class_elements' => [
-            'order' => ['use_trait']
+            'order' => ['use_trait'],
         ],
         'ordered_imports' => [
             'importsOrder' => ['class', 'const', 'function'],
@@ -142,7 +141,7 @@ return Config::create()
         'phpdoc_separation' => true,
         'phpdoc_single_line_var_spacing' => true,
         'phpdoc_summary' => true,
-        'phpdoc_to_comment' => true,
+        'phpdoc_to_comment' => false,
         'phpdoc_trim' => true,
         'phpdoc_types' => true,
         'phpdoc_var_without_name' => true,
@@ -167,7 +166,7 @@ return Config::create()
         'trim_array_spaces' => true,
         'unary_operator_spaces' => true,
         'visibility_required' => [
-            'elements' => ['const', 'property', 'method']
+            'elements' => ['const', 'property', 'method'],
         ],
         'void_return' => true,
         'whitespace_after_comma_in_array' => true,
