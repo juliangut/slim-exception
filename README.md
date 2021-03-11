@@ -37,10 +37,11 @@ $app = AppFactory::create();
 
 $callableResolver = $app->getCallableResolver();
 $responseFactory = $app->getResponseFactory();
+$logger = new Logger();
 
 $errorHandler = $inDevelopment
-    ? new WhoopsErrorHandler($callableResolver, $responseFactory, new Negotiator(), new Whoops())
-    : new ErrorHandler($callableResolver, $responseFactory, new Negotiator());
+    ? new WhoopsErrorHandler($callableResolver, $responseFactory, new Negotiator(), $logger)
+    : new ErrorHandler($callableResolver, $responseFactory, new Negotiator(), $logger);
 
 // Add Error Middleware
 $errorMiddleware = $app->addErrorMiddleware($inDevelopment, true, true);
@@ -53,7 +54,7 @@ $app->run();
 
 ### Renderers
 
-Custom error renderers are configured when using slim-exception error handlers. Fear not, out of the box ErrorHandler is a direct drop-in to change default Slim's ErrorHandler
+Custom error renderers are configured when using slim-exception error handlers. Fear not, out of the box ErrorHandler is a direct drop-in to change default Slim ErrorHandler
 
 You can register your error renderers or completely change them
 

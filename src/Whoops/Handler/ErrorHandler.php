@@ -20,6 +20,7 @@ use Jgut\Slim\Exception\Whoops\Renderer\PlainTextRenderer;
 use Jgut\Slim\Exception\Whoops\Renderer\XmlRenderer;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Log\LoggerInterface;
 use Slim\Interfaces\CallableResolverInterface;
 use Whoops\Handler\HandlerInterface as WhoopsHandler;
 use Whoops\Run as Whoops;
@@ -69,14 +70,16 @@ class ErrorHandler extends BaseErrorHandler
      * @param ResponseFactoryInterface  $responseFactory
      * @param Negotiator                $negotiator
      * @param Whoops                    $whoops
+     * @param LoggerInterface|null      $logger
      */
     public function __construct(
         CallableResolverInterface $callableResolver,
         ResponseFactoryInterface $responseFactory,
         Negotiator $negotiator,
-        Whoops $whoops
+        Whoops $whoops,
+        ?LoggerInterface $logger = null
     ) {
-        parent::__construct($callableResolver, $responseFactory, $negotiator);
+        parent::__construct($callableResolver, $responseFactory, $negotiator, $logger);
 
         $whoops = clone $whoops;
         $whoops->clearHandlers();
