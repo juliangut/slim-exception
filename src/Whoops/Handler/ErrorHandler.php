@@ -122,7 +122,7 @@ class ErrorHandler extends BaseErrorHandler
     {
         if (!$renderer instanceof WhoopsHandler) {
             throw new \InvalidArgumentException(\sprintf(
-                'Renderer "%s" for Whoops error handler does not implement %s',
+                'Renderer "%s" for Whoops error handler should implement "%s".',
                 \is_object($renderer) ? \get_class($renderer) : \gettype($renderer),
                 WhoopsHandler::class
             ));

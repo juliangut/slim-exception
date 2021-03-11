@@ -123,7 +123,7 @@ class ExceptionHandler
              * @var string $file
              * @var int    $line
              */
-            throw new \ErrorException($message, $severity, $severity, $file, $line);
+            throw new \ErrorException(\rtrim($message, '.') . '.', $severity, $severity, $file, $line);
         }
 
         return false;

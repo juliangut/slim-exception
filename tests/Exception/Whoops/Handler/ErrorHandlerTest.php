@@ -32,7 +32,7 @@ class ErrorHandlerTest extends TestCase
     public function testInvalidHandler(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches('/^Renderer ".+" for Whoops error handler does not implement .+/');
+        $this->expectExceptionMessageMatches('/^Renderer ".+" for Whoops error handler should implement ".+"\.$/');
 
         $request = (new ServerRequest())
             ->withHeader('Accept', 'application/*+json');

@@ -18,9 +18,7 @@ use Jgut\Slim\Exception\Renderer\JsonRenderer;
 use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
 use Jgut\Slim\Exception\Renderer\XmlRenderer;
 use Negotiation\BaseAccept;
-use Negotiation\Exception\InvalidArgument;
-use Negotiation\Exception\InvalidHeader;
-use Negotiation\Exception\InvalidMediaType;
+use Negotiation\Exception\Exception as NegotiateException;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -156,7 +154,7 @@ class ErrorHandler extends SlimErrorHandler
                     $contentType = $selected->getType();
                 }
                 // @codeCoverageIgnoreStart
-            } catch (InvalidArgument | InvalidHeader | InvalidMediaType $exception) {
+            } catch (NegotiateException $exception) {
                 // @ignoreException
             }
             // @codeCoverageIgnoreEnd
