@@ -6,3 +6,5 @@ parameters:
   ignoreErrors:
     - message: '/^Call to function is_subclass_of\(\) with Whoops\\Handler\\HandlerInterface and .Jgut\\\\Slim\\\\Exception\\\\Whoops\\\\Renderer\\\\HtmlRenderer. will always evaluate to false\.$/'
       path: src/Whoops/Handler/ErrorHandler.php
+    - message: '/^Expression on left side of \?\? is not nullable\.$/'
+      path: src/Whoops/Renderer/RendererTrait.php

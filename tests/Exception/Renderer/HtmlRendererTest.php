@@ -17,9 +17,10 @@ use Jgut\Slim\Exception\Renderer\HtmlRenderer;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpForbiddenException;
+use RuntimeException;
 
 /**
- * HTML exception renderer tests.
+ * @internal
  */
 class HtmlRendererTest extends TestCase
 {
@@ -34,9 +35,9 @@ class HtmlRendererTest extends TestCase
     protected $renderer;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $this->renderer = new HtmlRenderer();
@@ -77,7 +78,7 @@ class HtmlRendererTest extends TestCase
 
     public function testOutputWithTrace(): void
     {
-        $exception = new \RuntimeException();
+        $exception = new RuntimeException();
         $output = ($this->renderer)($exception, true);
 
         static::assertStringContainsString('<title>Slim Application error</title>', $output);

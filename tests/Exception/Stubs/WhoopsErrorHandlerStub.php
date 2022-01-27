@@ -15,13 +15,10 @@ namespace Jgut\Slim\Exception\Tests\Stubs;
 
 use Jgut\Slim\Exception\Whoops\Handler\ErrorHandler;
 
-/**
- * Custom Whoops error handler stub.
- */
 class WhoopsErrorHandlerStub extends ErrorHandler
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function inCli(): bool
     {

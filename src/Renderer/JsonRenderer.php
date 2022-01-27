@@ -13,14 +13,12 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Renderer;
 
-/**
- * JSON exception renderer.
- */
+use Throwable;
+use RuntimeException;
+
 class JsonRenderer extends AbstractRenderer
 {
     /**
-     * List of JSON error messages.
-     *
      * @var array<int, string>
      */
     protected const JSON_ERROR_MESSAGES = [
@@ -37,26 +35,21 @@ class JsonRenderer extends AbstractRenderer
     ];
 
     /**
-     * Json encode prettify.
-     *
      * @var bool
      */
     protected $prettify = true;
 
-    /**
-     * @param bool $prettify
-     */
     public function setPrettify(bool $prettify): void
     {
         $this->prettify = $prettify;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
+    public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
         $output = ['message' => $this->getErrorTitle($exception)];
 
@@ -68,10 +61,10 @@ class JsonRenderer extends AbstractRenderer
             } while ($exception = $exception->getPrevious());
         }
 
-        $json = \json_encode(['error' => $output], $this->getJsonFlags());
+        $json = json_encode(['error' => $output], $this->getJsonFlags());
         if ($json === false) {
             // @codeCoverageIgnoreStart
-            throw new \RuntimeException(self::JSON_ERROR_MESSAGES[\json_last_error()] ?? 'Unknown error.');
+            throw new RuntimeException(self::JSON_ERROR_MESSAGES[json_last_error()] ?? 'Unknown error.');
             // @codeCoverageIgnoreEnd
         }
 
@@ -80,8 +73,6 @@ class JsonRenderer extends AbstractRenderer
 
     /**
      * Get JSON encode flags.
-     *
-     * @return int
      */
     protected function getJsonFlags(): int
     {
@@ -94,11 +85,9 @@ class JsonRenderer extends AbstractRenderer
     }
 
     /**
-     * @param \Throwable $exception
-     *
-     * @return mixed[]
+     * @return array<string, mixed>
      */
-    private function formatException(\Throwable $exception): array
+    private function formatException(Throwable $exception): array
     {
         return [
             'type' => \get_class($exception),

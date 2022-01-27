@@ -13,15 +13,14 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Renderer;
 
-/**
- * Plain text exception renderer.
- */
+use Throwable;
+
 class PlainTextRenderer extends AbstractRenderer
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
+    public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
         $output = $this->getErrorTitle($exception);
 
@@ -37,30 +36,25 @@ class PlainTextRenderer extends AbstractRenderer
         return $output;
     }
 
-    /**
-     * @param \Throwable $exception
-     *
-     * @return string
-     */
-    private function formatException(\Throwable $exception): string
+    private function formatException(Throwable $exception): string
     {
         $outputString = <<<'OUTPUT'
-Type: %s
-Code: %s
-Message: %s
-File: %s
-Line: %s
-Trace: %s
-OUTPUT;
+        Type: %s
+        Code: %s
+        Message: %s
+        File: %s
+        Line: %s
+        Trace: %s
+        OUTPUT;
 
-        return \sprintf(
+        return sprintf(
             $outputString,
             \get_class($exception),
             $exception->getCode(),
             $exception->getMessage(),
             $exception->getFile(),
             $exception->getLine(),
-            $exception->getTraceAsString()
+            $exception->getTraceAsString(),
         );
     }
 }

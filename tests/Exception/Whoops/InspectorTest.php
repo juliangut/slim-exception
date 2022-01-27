@@ -18,16 +18,17 @@ use Jgut\Slim\Exception\Whoops\Inspector;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpInternalServerErrorException;
+use InvalidArgumentException;
 
 /**
- * Custom Whoops inspector tests.
+ * @internal
  */
 class InspectorTest extends TestCase
 {
     public function testAssign(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $originalException = new \InvalidArgumentException();
+        $originalException = new InvalidArgumentException();
         $exception = new HttpInternalServerErrorException($request, null, $originalException);
 
         $inspector = new Inspector($exception);
@@ -38,7 +39,7 @@ class InspectorTest extends TestCase
     public function testStackTraceFrames(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $originalException = new \InvalidArgumentException();
+        $originalException = new InvalidArgumentException();
         $exception = new HttpInternalServerErrorException($request, null, $originalException);
 
         $inspector = new InspectorStub($exception);

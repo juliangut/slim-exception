@@ -13,15 +13,17 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Interfaces\ErrorHandlerInterface;
 use Slim\ResponseEmitter;
+use Throwable;
+use ReflectionProperty;
+use Exception;
+use ErrorException;
 
-/**
- * Exception handling.
- */
 class ExceptionHandler
 {
     /**
@@ -49,15 +51,6 @@ class ExceptionHandler
      */
     protected $logErrorDetails;
 
-    /**
-     * ExceptionHandler constructor.
-     *
-     * @param ServerRequestInterface $request
-     * @param ErrorHandlerInterface  $errorHandler
-     * @param bool                   $displayErrorDetails
-     * @param bool                   $logErrors
-     * @param bool                   $logErrorDetails
-     */
     public function __construct(
         ServerRequestInterface $request,
         ErrorHandlerInterface $errorHandler,
@@ -77,27 +70,26 @@ class ExceptionHandler
      */
     public function registerHandling(): void
     {
-        \set_exception_handler([$this, 'handleException']);
-        \set_error_handler([$this, 'handleError']);
-        \register_shutdown_function([$this, 'handleShutdown']);
+        set_exception_handler([$this, 'handleException']);
+        set_error_handler([$this, 'handleError']);
+        register_shutdown_function([$this, 'handleShutdown']);
 
-        \ini_set('display_errors', 'off');
+        ini_set('display_errors', 'off');
     }
 
     /**
      * Custom exceptions handler.
-     *
-     * @param \Throwable $exception
      */
-    public function handleException(\Throwable $exception): void
+    public function handleException(Throwable $exception): void
     {
+        /** @var ResponseInterface $response */
         $response = \call_user_func(
             $this->errorHandler,
             $exception instanceof HttpException ? $exception->getRequest() : $this->request,
             $exception,
             $this->displayErrorDetails,
             $this->logErrors,
-            $this->logErrorDetails
+            $this->logErrorDetails,
         );
 
         (new ResponseEmitter())->emit($response);
@@ -107,23 +99,16 @@ class ExceptionHandler
      * Custom errors handler.
      * Transforms unhandled errors into exceptions.
      *
-     * @param int         $severity
-     * @param string      $message
-     * @param string|null $file
-     * @param int|null    $line
-     *
-     * @throws \ErrorException
-     *
-     * @return bool
+     * @throws ErrorException
      */
     public function handleError(int $severity, string $message, ?string $file = null, ?int $line = null): bool
     {
-        if ((\error_reporting() & $severity) !== 0) {
+        if ((error_reporting() & $severity) !== 0) {
             /**
              * @var string $file
              * @var int    $line
              */
-            throw new \ErrorException(\rtrim($message, '.') . '.', $severity, $severity, $file, $line);
+            throw new ErrorException(rtrim($message, '.') . '.', $severity, $severity, $file, $line);
         }
 
         return false;
@@ -137,7 +122,7 @@ class ExceptionHandler
     public function handleShutdown(): void
     {
         $error = $this->getLastError();
-        if (\count($error) !== 0 && $this->isFatalError($error['type'])) {
+        if ($error !== null && $this->isFatalError($error['type'])) {
             $this->handleException($this->getFatalException($error));
 
             // @codeCoverageIgnoreStart
@@ -151,19 +136,15 @@ class ExceptionHandler
     /**
      * Get last generated error.
      *
-     * @return mixed[]
+     * @return array{type: int, message: string, file: string, line: int}|null
      */
-    protected function getLastError(): array
+    protected function getLastError(): ?array
     {
-        return \error_get_last() ?? [];
+        return error_get_last();
     }
 
     /**
      * Check if error is fatal.
-     *
-     * @param int $error
-     *
-     * @return bool
      */
     protected function isFatalError(int $error): bool
     {
@@ -182,20 +163,18 @@ class ExceptionHandler
     /**
      * Get exception from fatal error.
      *
-     * @param mixed[] $error
-     *
-     * @return HttpException
+     * @param array{type: int, message: string, file: string, line: int} $error
      */
     private function getFatalException(array $error): HttpException
     {
-        $message = \explode("\n", $error['message']);
-        $message = $error['type'] . ' - ' . \preg_replace('/ in .+\.php(:\d+)?$/', '', $message[0]);
+        $message = explode("\n", $error['message']);
+        $message = $error['type'] . ' - ' . preg_replace('/ in .+\.php(:\d+)?$/', '', $message[0]);
 
         $exception = new HttpInternalServerErrorException($this->request, $message);
 
         $trace = $this->getBackTrace();
         if (\count($trace) !== 0) {
-            $reflection = new \ReflectionProperty(\Exception::class, 'trace');
+            $reflection = new ReflectionProperty(Exception::class, 'trace');
             $reflection->setAccessible(true);
             $reflection->setValue($exception, $trace);
         }
@@ -206,23 +185,23 @@ class ExceptionHandler
     /**
      * Get execution backtrace.
      *
-     * @return mixed[]
+     * @return array<array<string, mixed>>
      */
     private function getBackTrace(): array
     {
         $trace = [];
 
         if (\function_exists('xdebug_get_function_stack')) {
-            $trace = \array_map(
+            $trace = array_map(
                 static function (array $frame): array {
                     if (!isset($frame['type'])) {
                         // http://bugs.xdebug.org/view.php?id=695
                         if (isset($frame['class'])) {
                             $frame['type'] = '::';
                         }
-                    } elseif ('static' === $frame['type']) {
+                    } elseif ($frame['type'] === 'static') {
                         $frame['type'] = '::';
-                    } elseif ('dynamic' === $frame['type']) {
+                    } elseif ($frame['type'] === 'dynamic') {
                         $frame['type'] = '->';
                     }
 
@@ -236,10 +215,10 @@ class ExceptionHandler
 
                     return $frame;
                 },
-                \xdebug_get_function_stack()
+                xdebug_get_function_stack(),
             );
 
-            $trace = \array_reverse(\array_slice($trace, 0, -3));
+            $trace = array_reverse(\array_slice($trace, 0, -3));
         }
 
         return $trace;

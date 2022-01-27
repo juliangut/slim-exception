@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Tests\Stubs;
 
 use Jgut\Slim\Exception\ExceptionHandler;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\ErrorHandlerInterface;
 
@@ -25,12 +24,6 @@ class ExceptionHandlerStub extends ExceptionHandler
      */
     protected $lastError;
 
-    /**
-     * AppStub constructor.
-     *
-     * @param ContainerInterface $container
-     * @param array              $lastError
-     */
     public function __construct(
         ServerRequestInterface $request,
         ErrorHandlerInterface $errorHandler,
@@ -45,9 +38,9 @@ class ExceptionHandlerStub extends ExceptionHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    protected function getLastError(): array
+    protected function getLastError(): ?array
     {
         if (\count($this->lastError)) {
             return $this->lastError;

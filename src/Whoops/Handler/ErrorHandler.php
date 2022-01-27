@@ -22,25 +22,25 @@ use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Interfaces\CallableResolverInterface;
+use Slim\Interfaces\ErrorRendererInterface;
+use Whoops\Handler\HandlerInterface;
 use Whoops\Handler\HandlerInterface as WhoopsHandler;
 use Whoops\Run as Whoops;
+use Throwable;
+use RuntimeException;
+use InvalidArgumentException;
 
-/**
- * Debug exception handler.
- */
 class ErrorHandler extends BaseErrorHandler
 {
     protected const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
 
     /**
-     * Default error renderer for logs.
-     *
-     * @var WhoopsHandler|string|callable
+     * @var ErrorRendererInterface|string|callable
      */
     protected $logErrorRenderer = PlainTextRenderer::class;
 
     /**
-     * @var string[]
+     * @var array<string|callable>
      */
     protected $errorRenderers = [
         'text/html' => HtmlRenderer::class,
@@ -57,21 +57,10 @@ class ErrorHandler extends BaseErrorHandler
     ];
 
     /**
-     * Whoops runner.
-     *
      * @var Whoops
      */
     protected $whoops;
 
-    /**
-     * ErrorHandler constructor.
-     *
-     * @param CallableResolverInterface $callableResolver
-     * @param ResponseFactoryInterface  $responseFactory
-     * @param Negotiator                $negotiator
-     * @param Whoops                    $whoops
-     * @param LoggerInterface|null      $logger
-     */
     public function __construct(
         CallableResolverInterface $callableResolver,
         ResponseFactoryInterface $responseFactory,
@@ -90,10 +79,10 @@ class ErrorHandler extends BaseErrorHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     protected function determineRenderer(): callable
     {
@@ -101,10 +90,10 @@ class ErrorHandler extends BaseErrorHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     protected function determineLogRenderer(): callable
     {
@@ -114,25 +103,23 @@ class ErrorHandler extends BaseErrorHandler
     /**
      * Get Whoops aware renderer.
      *
-     * @param mixed $renderer
-     *
-     * @return callable
+     * @param callable|HandlerInterface $renderer
      */
     protected function getRenderer($renderer): callable
     {
         if (!$renderer instanceof WhoopsHandler) {
-            throw new \InvalidArgumentException(\sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Renderer "%s" for Whoops error handler should implement "%s".',
                 \is_object($renderer) ? \get_class($renderer) : \gettype($renderer),
-                WhoopsHandler::class
+                WhoopsHandler::class,
             ));
         }
 
-        if ($renderer instanceof HtmlRenderer || \is_subclass_of($renderer, HtmlRenderer::class)) {
+        if ($renderer instanceof HtmlRenderer || is_subclass_of($renderer, HtmlRenderer::class)) {
             $renderer = $this->addRequestData($renderer);
         }
 
-        return function (\Throwable $exception) use ($renderer): string {
+        return function (Throwable $exception) use ($renderer): string {
             if ($renderer instanceof HtmlRenderer) {
                 $renderer->handleUnconditionally(true);
             }
@@ -149,10 +136,6 @@ class ErrorHandler extends BaseErrorHandler
 
     /**
      * Add extra data table with request information.
-     *
-     * @param HtmlRenderer $renderer
-     *
-     * @return HtmlRenderer
      */
     protected function addRequestData(HtmlRenderer $renderer): HtmlRenderer
     {
@@ -174,7 +157,7 @@ class ErrorHandler extends BaseErrorHandler
                     'Scheme' => $this->request->getUri()->getScheme(),
                     'Port' => $this->request->getUri()->getPort(),
                     'Host' => $this->request->getUri()->getHost(),
-                ]
+                ],
             );
         }
 

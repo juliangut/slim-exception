@@ -19,9 +19,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpInternalServerErrorException;
 use Whoops\Exception\Inspector;
 use Whoops\Run as Whoops;
+use ErrorException;
 
 /**
- * Whoops custom HTML exception renderer tests.
+ * @internal
  */
 class HtmlRendererTest extends TestCase
 {
@@ -31,9 +32,9 @@ class HtmlRendererTest extends TestCase
     protected $renderer;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->renderer = new HtmlRenderer();
     }
@@ -41,7 +42,7 @@ class HtmlRendererTest extends TestCase
     public function testOutput(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $exception = new HttpInternalServerErrorException($request, 'Impossible error', new \ErrorException());
+        $exception = new HttpInternalServerErrorException($request, 'Impossible error', new ErrorException());
         $inspector = new Inspector($exception);
         $whoops = new Whoops();
 
@@ -50,19 +51,19 @@ class HtmlRendererTest extends TestCase
         $this->renderer->setInspector($inspector);
         $this->renderer->setRun($whoops);
         $this->renderer->setApplicationPaths([
-            \dirname(__DIR__, 4) . '/src/Exception/HttpExceptionFactory.php',
+            __DIR__ . '/../../../../src/Exception/HttpExceptionFactory.php',
             __FILE__,
         ]);
 
-        \ob_start();
+        ob_start();
         $this->renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         static::assertStringContainsString(HttpInternalServerErrorException::class, $output);
         static::assertStringContainsString('<title>Slim Application error</title>', $output);
         static::assertStringContainsString(
             '<span class="exc-title-primary">HttpInternalServerErrorException</span>',
-            $output
+            $output,
         );
         static::assertStringContainsString('<span>Impossible error</span>', $output);
     }

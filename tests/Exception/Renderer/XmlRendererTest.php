@@ -19,7 +19,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpForbiddenException;
 
 /**
- * XML exception renderer tests.
+ * @internal
  */
 class XmlRendererTest extends TestCase
 {
@@ -29,9 +29,9 @@ class XmlRendererTest extends TestCase
     protected $exception;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $this->exception = new HttpForbiddenException($request, 'Forbidden action');
@@ -42,11 +42,11 @@ class XmlRendererTest extends TestCase
         $output = (new XmlRenderer())($this->exception, false);
 
         $expected = <<<'EXPECTED'
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<error>
-  <message><![CDATA[403 Forbidden]]></message>
-</error>
-EXPECTED;
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <error>
+          <message><![CDATA[403 Forbidden]]></message>
+        </error>
+        EXPECTED;
         static::assertEquals($expected, $output);
     }
 
@@ -58,9 +58,9 @@ EXPECTED;
         $output = $renderer($this->exception, false);
 
         $expected = <<<'EXPECTED'
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<error><message><![CDATA[403 Forbidden]]></message></error>
-EXPECTED;
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <error><message><![CDATA[403 Forbidden]]></message></error>
+        EXPECTED;
         static::assertEquals($expected, $output);
     }
 
@@ -69,12 +69,12 @@ EXPECTED;
         $output = (new XmlRenderer())($this->exception, true);
 
         $expected = <<<'EXPECTED'
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<error>
-  <message><![CDATA[403 Forbidden]]></message>
-  <exception>
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <error>
+          <message><![CDATA[403 Forbidden]]></message>
+          <exception>
 
-EXPECTED;
+        EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
 
@@ -86,9 +86,9 @@ EXPECTED;
         $output = $renderer($this->exception, true);
 
         $expected = <<<'EXPECTED'
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<error><message><![CDATA[403 Forbidden]]></message><exception>
-EXPECTED;
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <error><message><![CDATA[403 Forbidden]]></message><exception>
+        EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
 }

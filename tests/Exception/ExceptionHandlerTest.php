@@ -18,9 +18,10 @@ use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\ErrorHandlerInterface;
+use Exception;
 
 /**
- * Exception handling tests.
+ * @internal
  */
 class ExceptionHandlerTest extends TestCase
 {
@@ -30,13 +31,13 @@ class ExceptionHandlerTest extends TestCase
     protected static $exitShutDown = false;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * Hack to prevent shutdown function to be triggered after PHPUnit has finished.
      */
     public static function setUpBeforeClass(): void
     {
-        \register_shutdown_function([__CLASS__, 'shutDown']);
+        register_shutdown_function([__CLASS__, 'shutDown']);
     }
 
     public function testIgnoredError(): void
@@ -48,15 +49,15 @@ class ExceptionHandlerTest extends TestCase
         $exceptionHandler = new ExceptionHandlerStub(new ServerRequest(), $errorHandler, false, false, false);
         $exceptionHandler->registerHandling();
 
-        \error_reporting(\E_USER_ERROR);
+        error_reporting(\E_USER_ERROR);
 
         $exceptionHandler->handleError(\E_USER_NOTICE, 'Custom notice', __FILE__, __LINE__);
 
-        \ob_start();
+        ob_start();
 
         $exceptionHandler->handleShutdown();
 
-        static::assertEquals('', \ob_get_clean());
+        static::assertEquals('', ob_get_clean());
     }
 
     public function testHandleExceptionFromError(): void
@@ -74,16 +75,16 @@ class ExceptionHandlerTest extends TestCase
         $exceptionHandler = new ExceptionHandlerStub(new ServerRequest(), $errorHandler, false, false, false);
         $exceptionHandler->registerHandling();
 
-        \error_reporting(\E_ALL);
+        error_reporting(\E_ALL);
 
         try {
             $exceptionHandler->handleError(\E_PARSE, 'Parse error', __FILE__, __LINE__);
-        } catch (\Exception $exception) {
-            \ob_start();
+        } catch (Exception $exception) {
+            ob_start();
 
             $exceptionHandler->handleException($exception);
 
-            static::assertEquals('Exception!', \ob_get_clean());
+            static::assertEquals('Exception!', ob_get_clean());
         }
     }
 
@@ -108,11 +109,11 @@ class ExceptionHandlerTest extends TestCase
         $exceptionHandler = new ExceptionHandlerStub(new ServerRequest(), $errorHandler, false, false, false, $error);
         $exceptionHandler->registerHandling();
 
-        \ob_start();
+        ob_start();
 
         $exceptionHandler->handleShutdown();
 
-        static::assertEquals('Exception!', \ob_get_clean());
+        static::assertEquals('Exception!', ob_get_clean());
 
         static::$exitShutDown = true;
     }

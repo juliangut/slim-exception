@@ -24,9 +24,10 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\CallableResolverInterface;
+use ErrorException;
 
 /**
- * Default error handler tests.
+ * @internal
  */
 class ErrorHandlerTest extends TestCase
 {
@@ -73,7 +74,7 @@ class ErrorHandlerTest extends TestCase
 
     public function testLoggingError(): void
     {
-        $exception = new \ErrorException('Custom error', 0, \E_USER_WARNING);
+        $exception = new ErrorException('Custom error', 0, \E_USER_WARNING);
 
         $callableResolver = $this->getMockBuilder(CallableResolverInterface::class)
             ->disableOriginalConstructor()

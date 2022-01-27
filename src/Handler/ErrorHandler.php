@@ -27,25 +27,20 @@ use Psr\Log\LogLevel;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Slim\Interfaces\CallableResolverInterface;
 use Slim\Interfaces\ErrorRendererInterface;
+use ErrorException;
 
 /**
- * exception handler.
- *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ErrorHandler extends SlimErrorHandler
 {
     /**
-     * Default error renderer for logs.
-     *
      * @var ErrorRendererInterface|string|callable
      */
     protected $logErrorRenderer = PlainTextRenderer::class;
 
     /**
-     * PHP to PSR3 error map.
-     *
-     * @var array
+     * @var array<int, string>
      */
     private $errorToLogLevelMap = [
         \E_ERROR => LogLevel::ALERT,
@@ -66,14 +61,12 @@ class ErrorHandler extends SlimErrorHandler
     ];
 
     /**
-     * Content type negotiator.
-     *
      * @var Negotiator
      */
     protected $negotiator;
 
     /**
-     * @var array<string, string|ErrorRendererInterface>
+     * @var array<string|callable>
      */
     protected $errorRenderers = [
         'text/html' => HtmlRenderer::class,
@@ -89,14 +82,6 @@ class ErrorHandler extends SlimErrorHandler
         'text/plain' => PlainTextRenderer::class,
     ];
 
-    /**
-     * ErrorHandler constructor.
-     *
-     * @param CallableResolverInterface $callableResolver
-     * @param ResponseFactoryInterface  $responseFactory
-     * @param Negotiator                $negotiator
-     * @param LoggerInterface|null      $logger
-     */
     public function __construct(
         CallableResolverInterface $callableResolver,
         ResponseFactoryInterface $responseFactory,
@@ -125,7 +110,6 @@ class ErrorHandler extends SlimErrorHandler
     /**
      * Set error renderer.
      *
-     * @param string                        $contentType
      * @param string|ErrorRendererInterface $errorRenderer
      */
     public function setErrorRenderer(string $contentType, $errorRenderer): void
@@ -134,7 +118,7 @@ class ErrorHandler extends SlimErrorHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function determineContentType(ServerRequestInterface $request): ?string
     {
@@ -142,8 +126,8 @@ class ErrorHandler extends SlimErrorHandler
             return 'text/plain';
         }
 
-        $header = \trim($request->getHeaderLine('Accept'));
-        $priorities = \array_keys($this->errorRenderers);
+        $header = trim($request->getHeaderLine('Accept'));
+        $priorities = array_keys($this->errorRenderers);
         $contentType = $this->defaultErrorRendererContentType;
 
         if ($header !== '' && \count($priorities) !== 0) {
@@ -160,8 +144,8 @@ class ErrorHandler extends SlimErrorHandler
             // @codeCoverageIgnoreEnd
         }
 
-        if (\strpos($contentType, '/*+') !== false) {
-            $contentType = \str_replace('/*+', '/', $contentType);
+        if (mb_strpos($contentType, '/*+') !== false) {
+            $contentType = str_replace('/*+', '/', $contentType);
         }
 
         return $contentType;
@@ -169,8 +153,6 @@ class ErrorHandler extends SlimErrorHandler
 
     /**
      * Check if running in CLI.
-     *
-     * @return bool
      */
     protected function inCli(): bool
     {
@@ -178,7 +160,7 @@ class ErrorHandler extends SlimErrorHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function writeToErrorLog(): void
     {
@@ -192,7 +174,7 @@ class ErrorHandler extends SlimErrorHandler
         $logContext = [
             'http_method' => $this->request->getMethod(),
             'request_uri' => (string) $this->request->getUri(),
-            'level_name' => \strtoupper($logLevel),
+            'level_name' => mb_strtoupper($logLevel),
         ];
 
         $renderer = $this->determineLogRenderer();
@@ -207,8 +189,6 @@ class ErrorHandler extends SlimErrorHandler
 
     /**
      * Determine log renderer.
-     *
-     * @return callable
      */
     protected function determineLogRenderer(): callable
     {
@@ -217,12 +197,11 @@ class ErrorHandler extends SlimErrorHandler
 
     /**
      * Get log level.
-     *
-     * @return string
      */
     final protected function getLogLevel(): string
     {
-        if ($this->exception instanceof \ErrorException
+        if (
+            $this->exception instanceof ErrorException
             && \array_key_exists($this->exception->getSeverity(), $this->errorToLogLevelMap)
         ) {
             return $this->errorToLogLevelMap[$this->exception->getSeverity()];

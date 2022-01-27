@@ -17,18 +17,12 @@ use Jgut\Slim\Exception\Whoops\Inspector;
 use Psr\Log\LoggerInterface;
 use Whoops\Handler\PlainTextHandler;
 
-/**
- * Whoops custom plain text exception renderer.
- */
 class PlainTextRenderer extends PlainTextHandler
 {
     use RendererTrait;
 
     /**
-     * {@inheritdoc}
-     *
-     * @param string               $defaultTitle
-     * @param LoggerInterface|null $logger
+     * @inheritDoc
      */
     public function __construct(string $defaultTitle = 'Slim Application error', ?LoggerInterface $logger = null)
     {
@@ -40,9 +34,7 @@ class PlainTextRenderer extends PlainTextHandler
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @return string
+     * @inheritDoc
      */
     public function generateResponse(): string
     {
@@ -55,55 +47,51 @@ class PlainTextRenderer extends PlainTextHandler
         $addTrace = $this->addTraceToOutput();
 
         $error = $this->getExceptionData($inspector, $addTrace);
-        $stackTrace = $addTrace ? "\n" . $this->getStackTraceOutput($error['trace']) : '';
+        $stackTrace = $addTrace ? "\n" . $this->getStackTraceOutput($error['trace'] ?? []) : '';
 
-        $type = $addTrace ? $error['type'] . ': ' : '';
+        $type = $addTrace ? ($error['type'] ?? '') . ': ' : '';
+        /** @var string $message */
+        $message = $error['message'];
 
-        return \sprintf("%s%s%s\n", $type, $error['message'], $stackTrace);
+        return sprintf("%s%s%s\n", $type, $message, $stackTrace);
     }
 
     /**
      * Get plain text stack trace.
      *
-     * @param mixed[] $stackFrames
-     *
-     * @return string
+     * @param array<array{class: ?string, function: string, file: string, line: int, args: array}> $stackFrames
      */
     protected function getStackTraceOutput(array $stackFrames): string
     {
         $argsOutputLimit = $this->getTraceFunctionArgsOutputLimit();
 
         $line = 1;
-        $stackTrace = \array_map(
+        $stackTrace = array_map(
             function (array $stack) use ($argsOutputLimit, &$line): string {
-                $trace = \sprintf(
-                    !$stack['class'] ? "\n%3d. %s%s() %s:%d%s" : "\n%3d. %s->%s() %s:%d%s",
+                $trace = sprintf(
+                    $stack['class'] !== null ? "\n%3d. %s%s() %s:%d%s" : "\n%3d. %s->%s() %s:%d%s",
                     $line,
                     $stack['class'],
                     $stack['function'],
                     $stack['file'],
                     $stack['line'],
-                    $this->getArguments($stack['args'], $line, $argsOutputLimit)
+                    $this->getArguments($stack['args'], $line, $argsOutputLimit),
                 );
 
                 $line++;
 
                 return $trace;
             },
-            $stackFrames
+            $stackFrames,
         );
 
-        return "Stack trace:\n" . \implode('', $stackTrace);
+        return "Stack trace:\n" . implode('', $stackTrace);
     }
 
     /**
      * Get call arguments.
      *
-     * @param mixed[] $args
-     * @param int     $line
-     * @param int     $argsOutputLimit
-     *
-     * @return string
+     * @param array<string, mixed> $args
      */
     protected function getArguments(array $args, int $line, int $argsOutputLimit): string
     {
@@ -114,45 +102,46 @@ class PlainTextRenderer extends PlainTextHandler
             // @codeCoverageIgnoreEnd
         }
 
-        \ob_start();
+        ob_start();
 
         foreach ($this->flattenArguments($args) as $arg) {
             $this->dump($arg);
         }
 
-        if (\ob_get_length() > $argsOutputLimit) {
+        if (ob_get_length() > $argsOutputLimit) {
             // The argument var_dump is too big.
             // Discarded to limit memory usage.
-            \ob_end_clean();
+            ob_end_clean();
 
-            return \sprintf(
+            return sprintf(
                 "\n%sArguments list dump length greater than %d Bytes. Discarded.",
                 parent::VAR_DUMP_PREFIX,
-                $argsOutputLimit
+                $argsOutputLimit,
             );
         }
 
-        $argumentsTrace = (string) \ob_get_clean();
+        $argumentsTrace = (string) ob_get_clean();
+
         return $argumentsTrace === ''
             ? ''
-            : \sprintf("\n%s", \preg_replace('/^/m', parent::VAR_DUMP_PREFIX, $argumentsTrace));
+            : sprintf("\n%s", preg_replace('/^/m', parent::VAR_DUMP_PREFIX, $argumentsTrace));
     }
 
     /**
      * Simplify argument list.
      *
-     * @param mixed[] $args
+     * @param array<string, mixed> $args
      *
-     * @return mixed[]
+     * @return array<string, mixed>
      */
     protected function flattenArguments(array $args): array
     {
-        return \array_map(
+        return array_map(
             function ($arg) {
                 if (\is_object($arg)) {
                     $class = \get_class($arg);
 
-                    return $class . (\strpos($class, 'class@anonymous') !== 0 ? '::class' : '');
+                    return $class . (mb_strpos($class, 'class@anonymous') !== 0 ? '::class' : '');
                 }
 
                 if (\is_resource($arg)) {
@@ -165,7 +154,7 @@ class PlainTextRenderer extends PlainTextHandler
 
                 return $arg;
             },
-            $args
+            $args,
         );
     }
 }

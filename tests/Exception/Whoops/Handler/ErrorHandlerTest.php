@@ -23,15 +23,16 @@ use PHPUnit\Framework\TestCase;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\CallableResolverInterface;
 use Whoops\Run as Whoops;
+use InvalidArgumentException;
 
 /**
- * Whoops error handler tests.
+ * @internal
  */
 class ErrorHandlerTest extends TestCase
 {
     public function testInvalidHandler(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/^Renderer ".+" for Whoops error handler should implement ".+"\.$/');
 
         $request = (new ServerRequest())
@@ -72,7 +73,7 @@ class ErrorHandlerTest extends TestCase
         static::assertEquals('application/json', $response->getHeaderLine('Content-Type'));
         static::assertStringContainsString(
             '"type": "Slim\\\Exception\\\HttpBadRequestException"',
-            (string) $response->getBody()
+            (string) $response->getBody(),
         );
     }
 

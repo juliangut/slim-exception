@@ -15,9 +15,11 @@ namespace Jgut\Slim\Exception\Whoops\Renderer;
 
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Slim\Exception\HttpException;
+use Whoops\Exception\Frame;
 use Whoops\Exception\Inspector as WhoopsInspector;
 use Whoops\Handler\Handler;
 use Whoops\RunInterface;
+use Throwable;
 
 /**
  * Whoops dumper helper trait.
@@ -32,10 +34,7 @@ trait RendererTrait
     /**
      * Get array data from exception.
      *
-     * @param Inspector $inspector
-     * @param bool      $addTrace
-     *
-     * @return mixed[]
+     * @return array{message: string, type?: class-string<Throwable>, trace?: array}
      */
     protected function getExceptionData(Inspector $inspector, bool $addTrace = false): array
     {
@@ -56,16 +55,14 @@ trait RendererTrait
     /**
      * Get exception stack trace.
      *
-     * @param Inspector $inspector
-     *
-     * @return mixed[]
+     * @return array<int, array{file: ?string, line: ?int, function: ?string, class: ?string, args: array}>
      */
     protected function getExceptionStack(Inspector $inspector): array
     {
         $frameList = $inspector->getTraceFrames();
 
         $stackFrames = [];
-        /** @var \Whoops\Exception\Frame $frame */
+        /** @var Frame $frame */
         foreach ($frameList as $frame) {
             $stackFrames[] = [
                 'file' => $frame->getFile(true),
@@ -81,14 +78,8 @@ trait RendererTrait
 
     /**
      * Callable wrapper.
-     *
-     * @param \Throwable      $exception
-     * @param WhoopsInspector $inspector
-     * @param RunInterface    $run
-     *
-     * @return int
      */
-    final public function __invoke(\Throwable $exception, WhoopsInspector $inspector, RunInterface $run): int
+    final public function __invoke(Throwable $exception, WhoopsInspector $inspector, RunInterface $run): int
     {
         $this->setException($exception);
         $this->setInspector($inspector);
@@ -98,18 +89,12 @@ trait RendererTrait
     }
 
     /**
-     * @param \Throwable $exception
+     * @param Throwable $exception
      */
     abstract public function setException($exception);
 
-    /**
-     * @param WhoopsInspector $inspector
-     */
     abstract public function setInspector(WhoopsInspector $inspector);
 
-    /**
-     * @param RunInterface $run
-     */
     abstract public function setRun(RunInterface $run);
 
     /**

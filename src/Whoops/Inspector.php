@@ -13,20 +13,14 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops;
 
+use Whoops\Exception\Frame;
 use Whoops\Exception\FrameCollection;
 use Whoops\Exception\Inspector as BaseInspector;
+use Throwable;
 
-/**
- * Custom Whoops exception inspector.
- */
 class Inspector extends BaseInspector
 {
-    /**
-     * exception inspector constructor.
-     *
-     * @param \Throwable $exception
-     */
-    public function __construct(\Throwable $exception)
+    public function __construct(Throwable $exception)
     {
         parent::__construct($exception);
     }
@@ -35,8 +29,6 @@ class Inspector extends BaseInspector
      * Get stack trace frames.
      *
      * Exception handling frames are removed.
-     *
-     * @return FrameCollection
      */
     public function getTraceFrames(): FrameCollection
     {
@@ -50,18 +42,18 @@ class Inspector extends BaseInspector
      * Filter stack frame list.
      * Remove internal frames.
      *
-     * @return \Whoops\Exception\Frame[]
+     * @return array<Frame>
      */
     protected function filterTraceFrames(): array
     {
-        /** @var \Whoops\Exception\Frame[] $frameList */
+        /** @var array<Frame> $frameList */
         $frameList = $this->getFrames()->getArray();
 
-        $excludedPathRegex = \sprintf('!^%s/.+\.php$!', \dirname(__DIR__, 2));
+        $excludedPathRegex = sprintf('!^%s/.+\.php$!', \dirname(__DIR__, 2));
 
         $firstFrame = 0;
         for ($i = 0, $length = \count($frameList); $i < $length; $i++) {
-            if (\preg_match($excludedPathRegex, $frameList[$i]->getFile() ?? '') === 1) {
+            if (preg_match($excludedPathRegex, $frameList[$i]->getFile() ?? '') === 1) {
                 continue;
             }
 
@@ -69,6 +61,6 @@ class Inspector extends BaseInspector
             break;
         }
 
-        return \array_values(\array_slice($frameList, $firstFrame));
+        return array_values(\array_slice($frameList, $firstFrame));
     }
 }

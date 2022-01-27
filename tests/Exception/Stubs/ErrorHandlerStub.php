@@ -15,13 +15,10 @@ namespace Jgut\Slim\Exception\Tests\Stubs;
 
 use Jgut\Slim\Exception\Handler\ErrorHandler;
 
-/**
- * Custom error handler stub.
- */
 class ErrorHandlerStub extends ErrorHandler
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function inCli(): bool
     {

@@ -19,19 +19,12 @@ use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
- * Whoops custom HTML exception renderer.
- *
  * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
  */
 class HtmlRenderer extends PrettyPageHandler
 {
     use RendererTrait;
 
-    /**
-     * HtmlRenderer constructor.
-     *
-     * @param string $defaultTitle
-     */
     public function __construct(string $defaultTitle = 'Slim Application error')
     {
         parent::__construct();
@@ -41,7 +34,7 @@ class HtmlRenderer extends PrettyPageHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function handle()
     {
@@ -52,7 +45,7 @@ class HtmlRenderer extends PrettyPageHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function getExceptionFrames(): FrameCollection
     {
@@ -60,13 +53,16 @@ class HtmlRenderer extends PrettyPageHandler
         $inspector = $this->getInspector();
         $frames = $inspector->getTraceFrames();
 
-        $applicationPaths = $this->getApplicationPaths() ?? [];
+        /** @var array<string>|null $applicationPaths */
+        $applicationPaths = $this->getApplicationPaths();
+        $applicationPaths ??= [];
+
         if (\count($applicationPaths) > 0) {
             foreach ($frames as $frame) {
                 $filePath = $frame->getFile();
 
                 foreach ($applicationPaths as $path) {
-                    if (\strpos($filePath, $path) === 0) {
+                    if (mb_strpos($filePath, $path) === 0) {
                         $frame->setApplication(true);
                         break;
                     }

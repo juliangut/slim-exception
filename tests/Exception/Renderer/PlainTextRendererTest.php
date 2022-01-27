@@ -19,7 +19,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpForbiddenException;
 
 /**
- * Plain text exception renderer tests.
+ * @internal
  */
 class PlainTextRendererTest extends TestCase
 {
@@ -34,9 +34,9 @@ class PlainTextRendererTest extends TestCase
     protected $renderer;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $this->exception = new HttpForbiddenException($request, 'Forbidden action');

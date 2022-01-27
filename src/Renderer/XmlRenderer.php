@@ -13,9 +13,8 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Renderer;
 
-/**
- * XML exception renderer.
- */
+use Throwable;
+
 class XmlRenderer extends AbstractRenderer
 {
     /**
@@ -23,20 +22,17 @@ class XmlRenderer extends AbstractRenderer
      */
     protected $prettify = true;
 
-    /**
-     * @param bool $prettify
-     */
     public function setPrettify(bool $prettify): void
     {
         $this->prettify = $prettify;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
+    public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
-        $xmlTag = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
+        $xmlTag = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
 
         $errorParts = [
             '<error>',
@@ -57,29 +53,25 @@ class XmlRenderer extends AbstractRenderer
         $errorParts[] = '</error>';
 
         if ($this->prettify) {
-            return $xmlTag . \implode("\n", $errorParts);
+            return $xmlTag . implode("\n", $errorParts);
         }
 
-        return $xmlTag . \implode(
+        return $xmlTag . implode(
             '',
-            \array_map(
+            array_map(
                 static function (string $line): string {
-                    return \ltrim($line, ' ');
+                    return ltrim($line, ' ');
                 },
-                $errorParts
-            )
+                $errorParts,
+            ),
         );
     }
 
     /**
      * Returns a CDATA section with the given content.
-     *
-     * @param string $content
-     *
-     * @return string
      */
     private function createCdataSection(string $content): string
     {
-        return \sprintf('<![CDATA[%s]]>', \str_replace(']]>', ']]]]><![CDATA[>', $content));
+        return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
     }
 }

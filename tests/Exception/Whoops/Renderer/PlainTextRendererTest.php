@@ -18,9 +18,10 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpNotImplementedException;
 use Whoops\Exception\Inspector;
+use ErrorException;
 
 /**
- * Whoops custom plain text exception renderer tests.
+ * @internal
  */
 class PlainTextRendererTest extends TestCase
 {
@@ -30,9 +31,9 @@ class PlainTextRendererTest extends TestCase
     protected $renderer;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->renderer = new PlainTextRenderer();
     }
@@ -40,7 +41,7 @@ class PlainTextRendererTest extends TestCase
     public function testOutput(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $originalException = new \ErrorException('Original exception');
+        $originalException = new ErrorException('Original exception');
         $exception = new HttpNotImplementedException($request, null, $originalException);
         $inspector = new Inspector($exception);
 
@@ -49,13 +50,13 @@ class PlainTextRendererTest extends TestCase
         $handler->setException($exception);
         $handler->setInspector($inspector);
 
-        \ob_start();
+        ob_start();
         $handler->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         static::assertStringContainsString(
             'Slim\\Exception\\HttpNotImplementedException: 501 Not Implemented',
-            $output
+            $output,
         );
         static::assertStringContainsString('Stack trace:', $output);
     }
@@ -70,9 +71,9 @@ class PlainTextRendererTest extends TestCase
         $this->renderer->setException($exception);
         $this->renderer->setInspector($inspector);
 
-        \ob_start();
+        ob_start();
         $this->renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         static::assertStringContainsString('501 Not Implemented', $output);
         static::assertStringNotContainsString('Stack trace:', $output);

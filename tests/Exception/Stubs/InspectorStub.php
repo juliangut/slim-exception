@@ -17,23 +17,21 @@ use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Exception\Frame;
 use Whoops\Exception\FrameCollection;
 
-/**
- * Custom Whoops inspector stub.
- */
 class InspectorStub extends Inspector
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getFrames(): FrameCollection
     {
         $frames = new FrameCollection([]);
-        $frames->prependFrames(\array_filter(
+        $frames->prependFrames(array_filter(
             parent::getFrames()->getArray(),
             static function (Frame $frame): bool {
                 // Filter out PHPUnit from stack trace
-                return \strpos($frame->getClass(), 'PHPUnit\\') !== 0;
-            }
+                return mb_strpos($frame->getClass() ?? '', 'PHPUnit\\') !== 0
+                    && mb_strpos($frame->getFile() ?? '', '/vendor/bin/phpunit') === false;
+            },
         ));
 
         return $frames;

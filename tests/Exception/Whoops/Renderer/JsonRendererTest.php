@@ -20,7 +20,7 @@ use Slim\Exception\HttpForbiddenException;
 use Whoops\Exception\Inspector;
 
 /**
- * Whoops custom JSON exception renderer tests.
+ * @internal
  */
 class JsonRendererTest extends TestCase
 {
@@ -35,17 +35,17 @@ class JsonRendererTest extends TestCase
         $renderer->setException($exception);
         $renderer->setInspector($inspector);
 
-        \ob_start();
+        ob_start();
         $renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         $expected = <<<'EXPECTED'
-{
-    "message": "403 Forbidden",
-    "type": "Slim\\Exception\\HttpForbiddenException",
-    "trace": [
+        {
+            "message": "403 Forbidden",
+            "type": "Slim\\Exception\\HttpForbiddenException",
+            "trace": [
 
-EXPECTED;
+        EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
 
@@ -61,9 +61,9 @@ EXPECTED;
         $renderer->setInspector($inspector);
         $renderer->setPrettify(false);
 
-        \ob_start();
+        ob_start();
         $renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         $expected = '{"message":"403 Forbidden","type":"Slim\\\Exception\\\HttpForbiddenException","trace":[';
         static::assertStringContainsString($expected, $output);
@@ -80,15 +80,15 @@ EXPECTED;
         $renderer->setException($exception);
         $renderer->setInspector($inspector);
 
-        \ob_start();
+        ob_start();
         $renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         $expected = <<<'EXPECTED'
-{
-    "message": "403 Forbidden"
-}
-EXPECTED;
+        {
+            "message": "403 Forbidden"
+        }
+        EXPECTED;
         static::assertEquals($expected, $output);
     }
 
@@ -104,9 +104,9 @@ EXPECTED;
         $renderer->setInspector($inspector);
         $renderer->setPrettify(false);
 
-        \ob_start();
+        ob_start();
         $renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         $expected = '{"message":"403 Forbidden"}';
         static::assertEquals($expected, $output);

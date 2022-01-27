@@ -19,7 +19,7 @@ use Whoops\Handler\Handler;
 class RendererStub extends HtmlRenderer
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getContentTypes(): array
     {
@@ -27,7 +27,7 @@ class RendererStub extends HtmlRenderer
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function handle()
     {

@@ -16,17 +16,13 @@ namespace Jgut\Slim\Exception\Whoops\Renderer;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Handler\Handler;
 use Whoops\Handler\JsonResponseHandler;
+use RuntimeException;
 
-/**
- * Whoops custom JSON exception renderer.
- */
 class JsonRenderer extends JsonResponseHandler
 {
     use RendererTrait;
 
     /**
-     * List of JSON error messages.
-     *
      * @var array<int, string>
      */
     protected const JSON_ERROR_MESSAGES = [
@@ -43,17 +39,10 @@ class JsonRenderer extends JsonResponseHandler
     ];
 
     /**
-     * Json encode prettify.
-     *
      * @var bool
      */
     protected $prettify = true;
 
-    /**
-     * JsonHandler constructor.
-     *
-     * @param string $defaultTitle
-     */
     public function __construct(string $defaultTitle = 'Slim Application error')
     {
         $this->defaultTitle = $defaultTitle;
@@ -61,18 +50,15 @@ class JsonRenderer extends JsonResponseHandler
         $this->addTraceToOutput(true);
     }
 
-    /**
-     * @param bool $prettify
-     */
     public function setPrettify(bool $prettify): void
     {
         $this->prettify = $prettify;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function handle()
     {
@@ -86,10 +72,10 @@ class JsonRenderer extends JsonResponseHandler
 
         $error = $this->getExceptionData($inspector, $addTrace);
 
-        $json = \json_encode($error, $this->getJsonFlags());
+        $json = json_encode($error, $this->getJsonFlags());
         if ($json === false) {
             // @codeCoverageIgnoreStart
-            throw new \RuntimeException(self::JSON_ERROR_MESSAGES[\json_last_error()] ?? 'Unknown error.');
+            throw new RuntimeException(self::JSON_ERROR_MESSAGES[json_last_error()] ?? 'Unknown error.');
             // @codeCoverageIgnoreEnd
         }
 
@@ -100,8 +86,6 @@ class JsonRenderer extends JsonResponseHandler
 
     /**
      * Get JSON encode flags.
-     *
-     * @return int
      */
     protected function getJsonFlags(): int
     {

@@ -20,7 +20,7 @@ use Slim\Exception\HttpForbiddenException;
 use Whoops\Exception\Inspector;
 
 /**
- * Whoops custom XML exception renderer tests.
+ * @internal
  */
 class XmlRendererTest extends TestCase
 {
@@ -35,18 +35,18 @@ class XmlRendererTest extends TestCase
         $renderer->setException($exception);
         $renderer->setInspector($inspector);
 
-        \ob_start();
+        ob_start();
         $renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         $expected = <<<'EXPECTED'
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<error>
-  <message><![CDATA[403 Forbidden]]></message>
-  <type>Slim\Exception\HttpForbiddenException</type>
-  <trace>
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <error>
+          <message><![CDATA[403 Forbidden]]></message>
+          <type>Slim\Exception\HttpForbiddenException</type>
+          <trace>
 
-EXPECTED;
+        EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
 
@@ -62,14 +62,14 @@ EXPECTED;
         $renderer->setInspector($inspector);
         $renderer->setPrettify(false);
 
-        \ob_start();
+        ob_start();
         $renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         $expected = <<<'EXPECTED'
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<error><message><![CDATA[403 Forbidden]]></message><type>Slim\Exception\HttpForbiddenException</type><trace>
-EXPECTED;
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <error><message><![CDATA[403 Forbidden]]></message><type>Slim\Exception\HttpForbiddenException</type><trace>
+        EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
 
@@ -84,17 +84,17 @@ EXPECTED;
         $renderer->setException($exception);
         $renderer->setInspector($inspector);
 
-        \ob_start();
+        ob_start();
         $renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         $expected = <<<'EXPECTED'
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<error>
-  <message><![CDATA[403 Forbidden]]></message>
-</error>
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <error>
+          <message><![CDATA[403 Forbidden]]></message>
+        </error>
 
-EXPECTED;
+        EXPECTED;
         static::assertEquals($expected, $output);
     }
 
@@ -110,15 +110,15 @@ EXPECTED;
         $renderer->setInspector($inspector);
         $renderer->setPrettify(false);
 
-        \ob_start();
+        ob_start();
         $renderer->handle();
-        $output = \ob_get_clean();
+        $output = ob_get_clean();
 
         $expected = <<<'EXPECTED'
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<error><message><![CDATA[403 Forbidden]]></message></error>
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <error><message><![CDATA[403 Forbidden]]></message></error>
 
-EXPECTED;
+        EXPECTED;
         static::assertEquals($expected, $output);
     }
 }

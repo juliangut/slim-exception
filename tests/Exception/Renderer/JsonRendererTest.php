@@ -19,7 +19,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpForbiddenException;
 
 /**
- * JSON exception renderer tests.
+ * @internal
  */
 class JsonRendererTest extends TestCase
 {
@@ -29,9 +29,9 @@ class JsonRendererTest extends TestCase
     protected $exception;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
         $this->exception = new HttpForbiddenException($request, 'Forbidden action');
@@ -42,12 +42,12 @@ class JsonRendererTest extends TestCase
         $output = (new JsonRenderer())($this->exception, false);
 
         $expected = <<<'EXPECTED'
-{
-    "error": {
-        "message": "403 Forbidden"
-    }
-}
-EXPECTED;
+        {
+            "error": {
+                "message": "403 Forbidden"
+            }
+        }
+        EXPECTED;
         static::assertEquals($expected, $output);
     }
 
@@ -66,12 +66,12 @@ EXPECTED;
         $output = (new JsonRenderer())($this->exception, true);
 
         $expected = <<<'EXPECTED'
-{
-    "error": {
-        "message": "403 Forbidden",
-        "exception": [
+        {
+            "error": {
+                "message": "403 Forbidden",
+                "exception": [
 
-EXPECTED;
+        EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
 
