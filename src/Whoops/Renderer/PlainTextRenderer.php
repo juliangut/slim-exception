@@ -50,7 +50,6 @@ class PlainTextRenderer extends PlainTextHandler
         $stackTrace = $addTrace ? "\n" . $this->getStackTraceOutput($error['trace'] ?? []) : '';
 
         $type = $addTrace ? ($error['type'] ?? '') . ': ' : '';
-        /** @var string $message */
         $message = $error['message'];
 
         return sprintf("%s%s%s\n", $type, $message, $stackTrace);

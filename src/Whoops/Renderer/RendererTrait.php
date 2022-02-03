@@ -16,7 +16,6 @@ namespace Jgut\Slim\Exception\Whoops\Renderer;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Slim\Exception\HttpException;
 use Throwable;
-use Whoops\Exception\Frame;
 use Whoops\Exception\Inspector as WhoopsInspector;
 use Whoops\Handler\Handler;
 use Whoops\RunInterface;
@@ -53,11 +52,10 @@ trait RendererTrait
      */
     protected function getExceptionStack(Inspector $inspector): array
     {
-        $frameList = $inspector->getTraceFrames();
-
+        $frames = $inspector->getTraceFrames();
         $stackFrames = [];
-        /** @var Frame $frame */
-        foreach ($frameList as $frame) {
+
+        foreach ($frames as $frame) {
             $stackFrames[] = [
                 'file' => $frame->getFile(true),
                 'line' => $frame->getLine(),

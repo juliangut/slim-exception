@@ -29,6 +29,8 @@ class Inspector extends BaseInspector
      * Get stack trace frames.
      *
      * Exception handling frames are removed.
+     *
+     * @return FrameCollection<Frame>
      */
     public function getTraceFrames(): FrameCollection
     {
@@ -46,14 +48,14 @@ class Inspector extends BaseInspector
      */
     protected function filterTraceFrames(): array
     {
-        /** @var array<Frame> $frameList */
-        $frameList = $this->getFrames()->getArray();
+        /** @var array<Frame> $frames */
+        $frames = $this->getFrames()->getArray();
 
         $excludedPathRegex = sprintf('!^%s/.+\.php$!', \dirname(__DIR__, 2));
 
         $firstFrame = 0;
-        for ($i = 0, $length = \count($frameList); $i < $length; $i++) {
-            if (preg_match($excludedPathRegex, $frameList[$i]->getFile() ?? '') === 1) {
+        for ($i = 0, $length = \count($frames); $i < $length; $i++) {
+            if (preg_match($excludedPathRegex, $frames[$i]->getFile() ?? '') === 1) {
                 continue;
             }
 
@@ -61,6 +63,6 @@ class Inspector extends BaseInspector
             break;
         }
 
-        return array_values(\array_slice($frameList, $firstFrame));
+        return array_values(\array_slice($frames, $firstFrame));
     }
 }
