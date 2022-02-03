@@ -39,7 +39,7 @@ $callableResolver = $app->getCallableResolver();
 $responseFactory = $app->getResponseFactory();
 $logger = new Logger();
 
-$errorHandler = $inDevelopment
+$errorHandler = $inDevelopment && class_exists(WhoopsErrorHandler::class)
     ? new WhoopsErrorHandler($callableResolver, $responseFactory, new Negotiator(), $logger)
     : new ErrorHandler($callableResolver, $responseFactory, new Negotiator(), $logger);
 
@@ -72,20 +72,18 @@ $errorHandler->setErrorRenderers(['text/html' => MyCustomHtmlRenderer::class]);
 
 Developers deserve a better and more informative error handling while in development environment
 
-[Whoops](https://github.com/filp/whoops) is a great tool for this purpose and its usage is integrated in this package. There is an special Whoops error handler which can be used as default exception handler for development
+[Whoops](https://github.com/filp/whoops) is a great tool for this purpose and its usage is integrated in this package. There is a special Whoops error handler which can be used as default exception handler for development
 
 Given Whoops renderers are meant for development displayErrorDetails argument on `Slim\Interfaces\ErrorRendererInterface::__invoke` won't be considered and stacktrace will always be displayed
 
 The example of how to include Whoops error handler is in the code above
 
-For you to use this handler you'll need to require whoops first. Additionally symfony's var-dumper plays nice with whoops so require it too
+For you to use this handler you'll need to require whoops first. Additionally, Symfony's var-dumper plays nice with whoops so require it too
 
 ```
-composer require filp/whoops
-composer require symfony/var-dumper
+composer require --dev filp/whoops
+composer require --dev symfony/var-dumper
 ```
-
-_To benefit from better and richer stack traces inside logs ErrorHandler uses Whoops if present so consider requiring Whoops in production as well, but **do not use Whoops's ErrorHandler in production**_
 
 ## Handle all errors/exceptions
 
@@ -111,7 +109,7 @@ $exceptionHandler->registerHandling();
 $app->run($request);
 
 // This error will be captured and gracefully handled
-trigger_error('This is embarrasing', \E_USER_ERROR);
+trigger_error('This is embarrassing', \E_USER_ERROR);
 ```
 
 ## Upgrade from 1.x
@@ -120,7 +118,7 @@ Overall usage has been drastically simplified due to Slim 4 migration to excepti
 
 * Minimum Slim version is now 4.7
 * ExceptionManager has been removed as its functionality is now integrated into Slim
-* Exceptions no longer uses juliangut/http-exception and thus they have no identifier
+* Exceptions no longer uses juliangut/http-exception, and thus they have no identifier
 * Global error/exception handling has been moved from a trait (meant for App) to its own class ExceptionHandler
 
 ## Contributing
