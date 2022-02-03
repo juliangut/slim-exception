@@ -17,10 +17,7 @@ use Throwable;
 
 class XmlRenderer extends AbstractRenderer
 {
-    /**
-     * @var bool
-     */
-    protected $prettify = true;
+    protected bool $prettify = true;
 
     public function setPrettify(bool $prettify): void
     {

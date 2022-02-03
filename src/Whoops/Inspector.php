@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops;
 
+use Throwable;
 use Whoops\Exception\Frame;
 use Whoops\Exception\FrameCollection;
 use Whoops\Exception\Inspector as BaseInspector;
-use Throwable;
 
 class Inspector extends BaseInspector
 {

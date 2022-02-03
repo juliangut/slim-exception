@@ -13,22 +13,19 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Renderer;
 
+use ErrorException;
 use Jgut\Slim\Exception\Whoops\Renderer\PlainTextRenderer;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpNotImplementedException;
 use Whoops\Exception\Inspector;
-use ErrorException;
 
 /**
  * @internal
  */
 class PlainTextRendererTest extends TestCase
 {
-    /**
-     * @var PlainTextRenderer
-     */
-    protected $renderer;
+    protected PlainTextRenderer $renderer;
 
     /**
      * @inheritDoc

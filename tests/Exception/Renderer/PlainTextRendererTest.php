@@ -23,15 +23,9 @@ use Slim\Exception\HttpForbiddenException;
  */
 class PlainTextRendererTest extends TestCase
 {
-    /**
-     * @var HttpForbiddenException
-     */
-    protected $exception;
+    protected HttpForbiddenException $exception;
 
-    /**
-     * @var PlainTextRenderer
-     */
-    protected $renderer;
+    protected PlainTextRenderer $renderer;
 
     /**
      * @inheritDoc

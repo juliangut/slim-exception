@@ -13,23 +13,20 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Renderer;
 
+use ErrorException;
 use Jgut\Slim\Exception\Whoops\Renderer\HtmlRenderer;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpInternalServerErrorException;
 use Whoops\Exception\Inspector;
 use Whoops\Run as Whoops;
-use ErrorException;
 
 /**
  * @internal
  */
 class HtmlRendererTest extends TestCase
 {
-    /**
-     * @var HtmlRenderer
-     */
-    protected $renderer;
+    protected HtmlRenderer $renderer;
 
     /**
      * @inheritDoc

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Handler;
 
+use ErrorException;
 use Jgut\Slim\Exception\Handler\ErrorHandler;
 use Jgut\Slim\Exception\Renderer\HtmlRenderer;
 use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
@@ -24,7 +25,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\CallableResolverInterface;
-use ErrorException;
 
 /**
  * @internal

@@ -15,21 +15,15 @@ namespace Jgut\Slim\Exception\Whoops\Renderer;
 
 use Jgut\Slim\Exception\Whoops\Inspector;
 use Slim\Exception\HttpException;
+use Throwable;
 use Whoops\Exception\Frame;
 use Whoops\Exception\Inspector as WhoopsInspector;
 use Whoops\Handler\Handler;
 use Whoops\RunInterface;
-use Throwable;
 
-/**
- * Whoops dumper helper trait.
- */
 trait RendererTrait
 {
-    /**
-     * @var string
-     */
-    protected $defaultTitle;
+    protected string $defaultTitle;
 
     /**
      * Get array data from exception.
@@ -88,10 +82,7 @@ trait RendererTrait
         return $this->handle() ?? Handler::DONE;
     }
 
-    /**
-     * @param Throwable $exception
-     */
-    abstract public function setException($exception);
+    abstract public function setException(Throwable $exception);
 
     abstract public function setInspector(WhoopsInspector $inspector);
 

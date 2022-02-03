@@ -13,43 +13,28 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception;
 
+use ErrorException;
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use ReflectionProperty;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Interfaces\ErrorHandlerInterface;
 use Slim\ResponseEmitter;
 use Throwable;
-use ReflectionProperty;
-use Exception;
-use ErrorException;
 
 class ExceptionHandler
 {
-    /**
-     * @var ServerRequestInterface
-     */
-    protected $request;
+    protected ServerRequestInterface $request;
 
-    /**
-     * @var ErrorHandlerInterface
-     */
-    protected $errorHandler;
+    protected ErrorHandlerInterface $errorHandler;
 
-    /**
-     * @var bool
-     */
-    protected $displayErrorDetails;
+    protected bool $displayErrorDetails;
 
-    /**
-     * @var bool
-     */
-    protected $logErrors;
+    protected bool $logErrors;
 
-    /**
-     * @var bool
-     */
-    protected $logErrorDetails;
+    protected bool $logErrorDetails;
 
     public function __construct(
         ServerRequestInterface $request,

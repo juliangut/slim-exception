@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops;
 
+use InvalidArgumentException;
 use Jgut\Slim\Exception\Tests\Stubs\InspectorStub;
 use Jgut\Slim\Exception\Whoops\Inspector;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpInternalServerErrorException;
-use InvalidArgumentException;
 
 /**
  * @internal

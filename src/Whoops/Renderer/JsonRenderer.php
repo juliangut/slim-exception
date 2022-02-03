@@ -14,9 +14,10 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception\Whoops\Renderer;
 
 use Jgut\Slim\Exception\Whoops\Inspector;
+use JsonException;
+use RuntimeException;
 use Whoops\Handler\Handler;
 use Whoops\Handler\JsonResponseHandler;
-use RuntimeException;
 
 class JsonRenderer extends JsonResponseHandler
 {
@@ -38,10 +39,7 @@ class JsonRenderer extends JsonResponseHandler
         \JSON_ERROR_UTF16 => 'Malformed UTF-16 characters, possibly incorrectly encoded.',
     ];
 
-    /**
-     * @var bool
-     */
-    protected $prettify = true;
+    protected bool $prettify = true;
 
     public function __construct(string $defaultTitle = 'Slim Application error')
     {
@@ -72,10 +70,15 @@ class JsonRenderer extends JsonResponseHandler
 
         $error = $this->getExceptionData($inspector, $addTrace);
 
-        $json = json_encode($error, $this->getJsonFlags());
-        if ($json === false) {
+        try {
+            $json = json_encode($error, $this->getJsonFlags() | \JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
             // @codeCoverageIgnoreStart
-            throw new RuntimeException(self::JSON_ERROR_MESSAGES[json_last_error()] ?? 'Unknown error.');
+            throw new RuntimeException(
+                self::JSON_ERROR_MESSAGES[$exception->getCode()] ?? 'Unknown error.',
+                0,
+                $exception,
+            );
             // @codeCoverageIgnoreEnd
         }
 

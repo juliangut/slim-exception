@@ -16,8 +16,8 @@ namespace Jgut\Slim\Exception\Tests\Renderer;
 use Jgut\Slim\Exception\Renderer\HtmlRenderer;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Exception\HttpForbiddenException;
 use RuntimeException;
+use Slim\Exception\HttpForbiddenException;
 
 /**
  * @internal
@@ -29,10 +29,7 @@ class HtmlRendererTest extends TestCase
      */
     protected $request;
 
-    /**
-     * @var HtmlRenderer
-     */
-    protected $renderer;
+    protected HtmlRenderer $renderer;
 
     /**
      * @inheritDoc

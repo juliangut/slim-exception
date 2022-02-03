@@ -19,10 +19,7 @@ use Slim\Interfaces\ErrorHandlerInterface;
 
 class ExceptionHandlerStub extends ExceptionHandler
 {
-    /**
-     * @var array
-     */
-    protected $lastError;
+    protected array $lastError;
 
     public function __construct(
         ServerRequestInterface $request,

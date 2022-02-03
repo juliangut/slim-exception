@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Handler;
 
+use InvalidArgumentException;
 use Jgut\Slim\Exception\Handler\ErrorHandler as BaseErrorHandler;
 use Jgut\Slim\Exception\Whoops\Renderer\HtmlRenderer;
 use Jgut\Slim\Exception\Whoops\Renderer\JsonRenderer;
@@ -21,14 +22,14 @@ use Jgut\Slim\Exception\Whoops\Renderer\XmlRenderer;
 use Negotiation\Negotiator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
+use Slim\App;
 use Slim\Interfaces\CallableResolverInterface;
 use Slim\Interfaces\ErrorRendererInterface;
+use Throwable;
 use Whoops\Handler\HandlerInterface;
 use Whoops\Handler\HandlerInterface as WhoopsHandler;
 use Whoops\Run as Whoops;
-use Throwable;
-use RuntimeException;
-use InvalidArgumentException;
 
 class ErrorHandler extends BaseErrorHandler
 {
@@ -56,10 +57,7 @@ class ErrorHandler extends BaseErrorHandler
         'text/plain' => PlainTextRenderer::class,
     ];
 
-    /**
-     * @var Whoops
-     */
-    protected $whoops;
+    protected Whoops $whoops;
 
     public function __construct(
         CallableResolverInterface $callableResolver,
@@ -150,13 +148,14 @@ class ErrorHandler extends BaseErrorHandler
                 [
                     'Accept Charset' => \count($acceptHeader) !== 0 ? $acceptHeader : '<none>',
                     'Content Charset' => \count($contentTypeHeader) !== 0 ? $contentTypeHeader : '<none>',
+                    'HTTP Method' => $this->request->getMethod(),
                     'Path' => $this->request->getUri()->getPath(),
                     'Query String' => $queryString !== '' ? $queryString : '<none>',
-                    'HTTP Method' => $this->request->getMethod(),
                     'Base URL' => (string) $this->request->getUri(),
                     'Scheme' => $this->request->getUri()->getScheme(),
                     'Port' => $this->request->getUri()->getPort(),
                     'Host' => $this->request->getUri()->getHost(),
+                    'Slim Version' => App::VERSION,
                 ],
             );
         }

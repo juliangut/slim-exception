@@ -13,8 +13,9 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Renderer;
 
-use Throwable;
+use JsonException;
 use RuntimeException;
+use Throwable;
 
 class JsonRenderer extends AbstractRenderer
 {
@@ -34,10 +35,7 @@ class JsonRenderer extends AbstractRenderer
         \JSON_ERROR_UTF16 => 'Malformed UTF-16 characters, possibly incorrectly encoded.',
     ];
 
-    /**
-     * @var bool
-     */
-    protected $prettify = true;
+    protected bool $prettify = true;
 
     public function setPrettify(bool $prettify): void
     {
@@ -61,10 +59,15 @@ class JsonRenderer extends AbstractRenderer
             } while ($exception = $exception->getPrevious());
         }
 
-        $json = json_encode(['error' => $output], $this->getJsonFlags());
-        if ($json === false) {
+        try {
+            $json = json_encode(['error' => $output], $this->getJsonFlags() | \JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
             // @codeCoverageIgnoreStart
-            throw new RuntimeException(self::JSON_ERROR_MESSAGES[json_last_error()] ?? 'Unknown error.');
+            throw new RuntimeException(
+                self::JSON_ERROR_MESSAGES[$exception->getCode()] ?? 'Unknown error.',
+                0,
+                $exception,
+            );
             // @codeCoverageIgnoreEnd
         }
 

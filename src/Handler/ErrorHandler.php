@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Handler;
 
+use ErrorException;
 use Jgut\Slim\Exception\Renderer\HtmlRenderer;
 use Jgut\Slim\Exception\Renderer\JsonRenderer;
 use Jgut\Slim\Exception\Renderer\PlainTextRenderer;
@@ -27,7 +28,6 @@ use Psr\Log\LogLevel;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Slim\Interfaces\CallableResolverInterface;
 use Slim\Interfaces\ErrorRendererInterface;
-use ErrorException;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -42,7 +42,7 @@ class ErrorHandler extends SlimErrorHandler
     /**
      * @var array<int, string>
      */
-    private $errorToLogLevelMap = [
+    private array $errorToLogLevelMap = [
         \E_ERROR => LogLevel::ALERT,
         \E_WARNING => LogLevel::WARNING,
         \E_PARSE => LogLevel::ALERT,
@@ -60,10 +60,7 @@ class ErrorHandler extends SlimErrorHandler
         \E_USER_DEPRECATED => LogLevel::WARNING,
     ];
 
-    /**
-     * @var Negotiator
-     */
-    protected $negotiator;
+    protected Negotiator $negotiator;
 
     /**
      * @var array<string|callable>

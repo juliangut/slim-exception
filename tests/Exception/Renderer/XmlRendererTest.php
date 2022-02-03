@@ -23,10 +23,7 @@ use Slim\Exception\HttpForbiddenException;
  */
 class XmlRendererTest extends TestCase
 {
-    /**
-     * @var HttpForbiddenException
-     */
-    protected $exception;
+    protected HttpForbiddenException $exception;
 
     /**
      * @inheritDoc

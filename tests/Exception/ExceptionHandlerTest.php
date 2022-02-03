@@ -13,22 +13,19 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests;
 
+use Exception;
 use Jgut\Slim\Exception\Tests\Stubs\ExceptionHandlerStub;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\ErrorHandlerInterface;
-use Exception;
 
 /**
  * @internal
  */
 class ExceptionHandlerTest extends TestCase
 {
-    /**
-     * @var bool
-     */
-    protected static $exitShutDown = false;
+    protected static bool $exitShutDown = false;
 
     /**
      * {@inheritDoc}

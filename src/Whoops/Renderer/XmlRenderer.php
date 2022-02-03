@@ -13,21 +13,18 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Renderer;
 
-use Jgut\Slim\Exception\Whoops\Inspector;
-use Whoops\Handler\Handler;
-use Whoops\Handler\XmlResponseHandler;
 use DOMDocument;
 use DOMElement;
+use Jgut\Slim\Exception\Whoops\Inspector;
 use SimpleXMLElement;
+use Whoops\Handler\Handler;
+use Whoops\Handler\XmlResponseHandler;
 
 class XmlRenderer extends XmlResponseHandler
 {
     use RendererTrait;
 
-    /**
-     * @var bool
-     */
-    protected $prettify = true;
+    protected bool $prettify = true;
 
     public function __construct(string $defaultTitle = 'Slim Application error')
     {

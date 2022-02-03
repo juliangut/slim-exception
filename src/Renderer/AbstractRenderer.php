@@ -19,15 +19,9 @@ use Throwable;
 
 abstract class AbstractRenderer implements ErrorRendererInterface
 {
-    /**
-     * @var string
-     */
-    protected $defaultTitle;
+    protected string $defaultTitle;
 
-    /**
-     * @var string
-     */
-    protected $defaultDescription;
+    protected string $defaultDescription;
 
     public function __construct(
         string $defaultTitle = 'Slim Application error',

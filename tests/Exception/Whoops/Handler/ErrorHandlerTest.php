@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests\Whoops\Handler;
 
+use InvalidArgumentException;
 use Jgut\Slim\Exception\Tests\Stubs\WhoopsErrorHandlerStub;
 use Jgut\Slim\Exception\Whoops\Renderer\HtmlRenderer;
 use Jgut\Slim\Exception\Whoops\Renderer\JsonRenderer;
@@ -23,7 +24,6 @@ use PHPUnit\Framework\TestCase;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\CallableResolverInterface;
 use Whoops\Run as Whoops;
-use InvalidArgumentException;
 
 /**
  * @internal
