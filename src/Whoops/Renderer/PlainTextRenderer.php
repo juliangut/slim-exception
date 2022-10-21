@@ -21,9 +21,6 @@ class PlainTextRenderer extends PlainTextHandler
 {
     use RendererTrait;
 
-    /**
-     * @inheritDoc
-     */
     public function __construct(string $defaultTitle = 'Slim Application error', ?LoggerInterface $logger = null)
     {
         parent::__construct($logger);
@@ -33,9 +30,6 @@ class PlainTextRenderer extends PlainTextHandler
         $this->addTraceFunctionArgsToOutput(true);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function generateResponse(): string
     {
         $exception = $this->getException();
@@ -56,8 +50,6 @@ class PlainTextRenderer extends PlainTextHandler
     }
 
     /**
-     * Get plain text stack trace.
-     *
      * @param array<array{class: ?string, function: string, file: string, line: int, args: array}> $stackFrames
      */
     protected function getStackTraceOutput(array $stackFrames): string
@@ -77,7 +69,7 @@ class PlainTextRenderer extends PlainTextHandler
                     $this->getArguments($stack['args'], $line, $argsOutputLimit),
                 );
 
-                $line++;
+                ++$line;
 
                 return $trace;
             },
@@ -88,8 +80,6 @@ class PlainTextRenderer extends PlainTextHandler
     }
 
     /**
-     * Get call arguments.
-     *
      * @param array<string, mixed> $args
      */
     protected function getArguments(array $args, int $line, int $argsOutputLimit): string
@@ -127,8 +117,6 @@ class PlainTextRenderer extends PlainTextHandler
     }
 
     /**
-     * Simplify argument list.
-     *
      * @param array<string, mixed> $args
      *
      * @return array<string, mixed>

@@ -62,9 +62,6 @@ class ExceptionHandler
         ini_set('display_errors', 'off');
     }
 
-    /**
-     * Custom exceptions handler.
-     */
     public function handleException(Throwable $exception): void
     {
         /** @var ResponseInterface $response */
@@ -82,6 +79,7 @@ class ExceptionHandler
 
     /**
      * Custom errors handler.
+     *
      * Transforms unhandled errors into exceptions.
      *
      * @throws ErrorException
@@ -119,8 +117,6 @@ class ExceptionHandler
     }
 
     /**
-     * Get last generated error.
-     *
      * @return array{type: int, message: string, file: string, line: int}|null
      */
     protected function getLastError(): ?array
@@ -128,9 +124,6 @@ class ExceptionHandler
         return error_get_last();
     }
 
-    /**
-     * Check if error is fatal.
-     */
     protected function isFatalError(int $error): bool
     {
         $fatalErrors = \E_ERROR
@@ -146,8 +139,6 @@ class ExceptionHandler
     }
 
     /**
-     * Get exception from fatal error.
-     *
      * @param array{type: int, message: string, file: string, line: int} $error
      */
     private function getFatalException(array $error): HttpException
@@ -168,8 +159,6 @@ class ExceptionHandler
     }
 
     /**
-     * Get execution backtrace.
-     *
      * @return array<array<string, mixed>>
      */
     private function getBackTrace(): array
@@ -178,28 +167,7 @@ class ExceptionHandler
 
         if (\function_exists('xdebug_get_function_stack')) {
             $trace = array_map(
-                static function (array $frame): array {
-                    if (!isset($frame['type'])) {
-                        // http://bugs.xdebug.org/view.php?id=695
-                        if (isset($frame['class'])) {
-                            $frame['type'] = '::';
-                        }
-                    } elseif ($frame['type'] === 'static') {
-                        $frame['type'] = '::';
-                    } elseif ($frame['type'] === 'dynamic') {
-                        $frame['type'] = '->';
-                    }
-
-                    if (isset($frame['params'])) {
-                        if (!isset($frame['args'])) {
-                            $frame['args'] = $frame['params'];
-                        }
-
-                        unset($frame['params']);
-                    }
-
-                    return $frame;
-                },
+                fn (array $frame): array => $this->normalizeFrame($frame),
                 xdebug_get_function_stack(),
             );
 
@@ -207,5 +175,34 @@ class ExceptionHandler
         }
 
         return $trace;
+    }
+
+    /**
+     * @param array{type?: string, class?: string, params?: array<string, mixed>, args?: array<string, mixed>} $frame
+     *
+     * @return array{type?: string, class?: string, args?: array<string, mixed>}
+     */
+    private function normalizeFrame(array $frame): array
+    {
+        if (!\array_key_exists('type', $frame)) {
+            // @see http://bugs.xdebug.org/view.php?id=695
+            if (\array_key_exists('class', $frame)) {
+                $frame['type'] = '::';
+            }
+        } elseif ($frame['type'] === 'static') {
+            $frame['type'] = '::';
+        } elseif ($frame['type'] === 'dynamic') {
+            $frame['type'] = '->';
+        }
+
+        if (\array_key_exists('params', $frame)) {
+            if (!\array_key_exists('args', $frame)) {
+                $frame['args'] = $frame['params'];
+            }
+
+            unset($frame['params']);
+        }
+
+        return $frame;
     }
 }

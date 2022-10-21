@@ -17,9 +17,6 @@ use Jgut\Slim\Exception\Handler\ErrorHandler;
 
 class ErrorHandlerStub extends ErrorHandler
 {
-    /**
-     * @inheritDoc
-     */
     protected function inCli(): bool
     {
         return false;

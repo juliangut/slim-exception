@@ -38,9 +38,6 @@ class XmlRenderer extends XmlResponseHandler
         $this->prettify = $prettify;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function handle()
     {
         $exception = $this->getException();
@@ -59,8 +56,6 @@ class XmlRenderer extends XmlResponseHandler
     }
 
     /**
-     * Get formatted XML exception.
-     *
      * @param array<mixed> $data
      */
     protected function getFormattedXml(array $data): string
@@ -82,8 +77,6 @@ class XmlRenderer extends XmlResponseHandler
     }
 
     /**
-     * Transform data to XML nodes.
-     *
      * @param array<mixed> $data
      */
     protected function addDataNodes(SimpleXMLElement $node, array $data, string $nodeKey): SimpleXMLElement
@@ -100,7 +93,7 @@ class XmlRenderer extends XmlResponseHandler
             } else {
                 if (\is_object($value)) {
                     $value = \get_class($value);
-                } elseif (!is_scalar($value)) {
+                } elseif (!\is_scalar($value)) {
                     $value = \gettype($value);
                 }
 

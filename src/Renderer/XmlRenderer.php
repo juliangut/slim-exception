@@ -24,9 +24,6 @@ class XmlRenderer extends AbstractRenderer
         $this->prettify = $prettify;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
         $xmlTag = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
@@ -45,7 +42,9 @@ class XmlRenderer extends AbstractRenderer
                 $errorParts[] = '    <file>' . $exception->getFile() . '</file>';
                 $errorParts[] = '    <line>' . $exception->getLine() . '</line>';
                 $errorParts[] = '  </exception>';
-            } while ($exception = $exception->getPrevious());
+
+                $exception = $exception->getPrevious();
+            } while ($exception !== null);
         }
         $errorParts[] = '</error>';
 
@@ -56,17 +55,12 @@ class XmlRenderer extends AbstractRenderer
         return $xmlTag . implode(
             '',
             array_map(
-                static function (string $line): string {
-                    return ltrim($line, ' ');
-                },
+                static fn (string $line): string => ltrim($line, ' '),
                 $errorParts,
             ),
         );
     }
 
-    /**
-     * Returns a CDATA section with the given content.
-     */
     private function createCdataSection(string $content): string
     {
         return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));

@@ -31,9 +31,6 @@ class HtmlRendererTest extends TestCase
 
     protected HtmlRenderer $renderer;
 
-    /**
-     * @inheritDoc
-     */
     protected function setUp(): void
     {
         $this->request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();

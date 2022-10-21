@@ -27,9 +27,6 @@ class PlainTextRendererTest extends TestCase
 {
     protected PlainTextRenderer $renderer;
 
-    /**
-     * @inheritDoc
-     */
     protected function setUp(): void
     {
         $this->renderer = new PlainTextRenderer();

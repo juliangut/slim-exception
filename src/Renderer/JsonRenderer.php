@@ -19,9 +19,6 @@ use Throwable;
 
 class JsonRenderer extends AbstractRenderer
 {
-    /**
-     * @var array<int, string>
-     */
     protected const JSON_ERROR_MESSAGES = [
         \JSON_ERROR_DEPTH => 'Maximum stack depth exceeded.',
         \JSON_ERROR_STATE_MISMATCH => 'Underflow or the modes mismatch.',
@@ -56,7 +53,9 @@ class JsonRenderer extends AbstractRenderer
 
             do {
                 $output['exception'][] = $this->formatException($exception);
-            } while ($exception = $exception->getPrevious());
+
+                $exception = $exception->getPrevious();
+            } while ($exception !== null);
         }
 
         try {
@@ -74,9 +73,6 @@ class JsonRenderer extends AbstractRenderer
         return $json;
     }
 
-    /**
-     * Get JSON encode flags.
-     */
     protected function getJsonFlags(): int
     {
         $jsonFlags = \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_PRESERVE_ZERO_FRACTION;

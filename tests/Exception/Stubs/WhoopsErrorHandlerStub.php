@@ -17,9 +17,6 @@ use Jgut\Slim\Exception\Whoops\Handler\ErrorHandler;
 
 class WhoopsErrorHandlerStub extends ErrorHandler
 {
-    /**
-     * @inheritDoc
-     */
     protected function inCli(): bool
     {
         return false;

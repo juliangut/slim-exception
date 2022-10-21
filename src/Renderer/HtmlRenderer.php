@@ -17,9 +17,6 @@ use Throwable;
 
 class HtmlRenderer extends AbstractRenderer
 {
-    /**
-     * @inheritDoc
-     */
     public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
         $title = $this->getErrorTitle($exception);
@@ -34,10 +31,14 @@ class HtmlRenderer extends AbstractRenderer
         }
 
         return <<<OUTPUT
-        <html lang="en">' .
+        <!doctype html>
+        <html lang="en">
             <head>
+                <meta charset="utf-8">
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
                 <title>{$title}</title>
+
                 <style>
                     body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,sans-serif}
                     h1{margin:0;font-size:48px;font-weight:normal;line-height:48px}

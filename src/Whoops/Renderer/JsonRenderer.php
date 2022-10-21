@@ -23,9 +23,6 @@ class JsonRenderer extends JsonResponseHandler
 {
     use RendererTrait;
 
-    /**
-     * @var array<int, string>
-     */
     protected const JSON_ERROR_MESSAGES = [
         \JSON_ERROR_DEPTH => 'Maximum stack depth exceeded.',
         \JSON_ERROR_STATE_MISMATCH => 'Underflow or the modes mismatch.',
@@ -87,15 +84,9 @@ class JsonRenderer extends JsonResponseHandler
         return Handler::QUIT;
     }
 
-    /**
-     * Get JSON encode flags.
-     */
     protected function getJsonFlags(): int
     {
-        $jsonFlags = \JSON_UNESCAPED_UNICODE
-            | \JSON_UNESCAPED_SLASHES
-            | \JSON_PRESERVE_ZERO_FRACTION
-            | \JSON_THROW_ON_ERROR;
+        $jsonFlags = \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_PRESERVE_ZERO_FRACTION;
         if ($this->prettify) {
             $jsonFlags |= \JSON_PRETTY_PRINT;
         }

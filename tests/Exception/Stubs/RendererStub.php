@@ -31,7 +31,8 @@ class RendererStub extends HtmlRenderer
      */
     public function handle()
     {
-        echo $this->getException()->getMessage();
+        echo $this->getException()
+            ->getMessage();
 
         return Handler::QUIT;
     }

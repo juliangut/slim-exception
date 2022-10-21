@@ -17,9 +17,6 @@ use Throwable;
 
 class PlainTextRenderer extends AbstractRenderer
 {
-    /**
-     * @inheritDoc
-     */
     public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
         $output = $this->getErrorTitle($exception);

@@ -25,9 +25,6 @@ class XmlRendererTest extends TestCase
 {
     protected HttpForbiddenException $exception;
 
-    /**
-     * @inheritDoc
-     */
     protected function setUp(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();

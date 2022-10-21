@@ -25,8 +25,6 @@ trait RendererTrait
     protected string $defaultTitle;
 
     /**
-     * Get array data from exception.
-     *
      * @return array{message: string, type?: class-string<Throwable>, trace?: array}
      */
     protected function getExceptionData(Inspector $inspector, bool $addTrace = false): array
@@ -46,8 +44,6 @@ trait RendererTrait
     }
 
     /**
-     * Get exception stack trace.
-     *
      * @return array<int, array{file: ?string, line: ?int, function: ?string, class: ?string, args: array}>
      */
     protected function getExceptionStack(Inspector $inspector): array
@@ -68,9 +64,6 @@ trait RendererTrait
         return $stackFrames;
     }
 
-    /**
-     * Callable wrapper.
-     */
     final public function __invoke(Throwable $exception, WhoopsInspector $inspector, RunInterface $run): int
     {
         $this->setException($exception);

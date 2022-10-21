@@ -36,12 +36,17 @@ class ErrorHandler extends BaseErrorHandler
     protected const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
 
     /**
-     * @var ErrorRendererInterface|string|callable
+     * @var ErrorRendererInterface|string|callable(Throwable, bool): string
      */
     protected $logErrorRenderer = PlainTextRenderer::class;
 
     /**
-     * @var array<string|callable>
+     * @var ErrorRendererInterface|string|callable(Throwable, bool): string
+     */
+    protected $defaultErrorRenderer = HtmlRenderer::class;
+
+    /**
+     * @var array<string|callable(Throwable, bool): string>
      */
     protected $errorRenderers = [
         'text/html' => HtmlRenderer::class,
@@ -77,10 +82,12 @@ class ErrorHandler extends BaseErrorHandler
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     *
+     * @return callable(Throwable): string
      */
     protected function determineRenderer(): callable
     {
@@ -88,20 +95,27 @@ class ErrorHandler extends BaseErrorHandler
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     *
+     * @return callable(Throwable): string
      */
     protected function determineLogRenderer(): callable
     {
-        return $this->getRenderer(parent::determineLogRenderer());
+        /** @var callable(Throwable):string|HandlerInterface $renderer */
+        $renderer = parent::determineLogRenderer();
+
+        return $this->getRenderer($renderer);
     }
 
     /**
-     * Get Whoops aware renderer.
+     * @param callable(Throwable):string|HandlerInterface $renderer
      *
-     * @param callable|HandlerInterface $renderer
+     * @throws InvalidArgumentException
+     *
+     * @return callable(Throwable): string
      */
     protected function getRenderer($renderer): callable
     {
@@ -132,16 +146,14 @@ class ErrorHandler extends BaseErrorHandler
         };
     }
 
-    /**
-     * Add extra data table with request information.
-     */
     protected function addRequestData(HtmlRenderer $renderer): HtmlRenderer
     {
         $extra = $renderer->getDataTables(self::REQUEST_DATA_TABLE_LABEL);
         if (\is_array($extra) && \count($extra) === 0) {
             $acceptHeader = $this->request->getHeader('Accept');
             $contentTypeHeader = $this->request->getHeader('Content-Type');
-            $queryString = $this->request->getUri()->getQuery();
+            $queryString = $this->request->getUri()
+                ->getQuery();
 
             $renderer->addDataTable(
                 self::REQUEST_DATA_TABLE_LABEL,
@@ -149,12 +161,16 @@ class ErrorHandler extends BaseErrorHandler
                     'Accept Charset' => \count($acceptHeader) !== 0 ? $acceptHeader : '<none>',
                     'Content Charset' => \count($contentTypeHeader) !== 0 ? $contentTypeHeader : '<none>',
                     'HTTP Method' => $this->request->getMethod(),
-                    'Path' => $this->request->getUri()->getPath(),
+                    'Path' => $this->request->getUri()
+                        ->getPath(),
                     'Query String' => $queryString !== '' ? $queryString : '<none>',
                     'Base URL' => (string) $this->request->getUri(),
-                    'Scheme' => $this->request->getUri()->getScheme(),
-                    'Port' => $this->request->getUri()->getPort(),
-                    'Host' => $this->request->getUri()->getHost(),
+                    'Scheme' => $this->request->getUri()
+                        ->getScheme(),
+                    'Port' => $this->request->getUri()
+                        ->getPort(),
+                    'Host' => $this->request->getUri()
+                        ->getHost(),
                     'Slim Version' => App::VERSION,
                 ],
             );

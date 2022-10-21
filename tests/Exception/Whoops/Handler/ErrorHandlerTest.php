@@ -46,7 +46,7 @@ class ErrorHandlerTest extends TestCase
             ->method('resolve')
             ->with(JsonRenderer::class)
             ->willReturn(static function (): void {
-                // noop
+                // Noop
             });
         $handler = new WhoopsErrorHandlerStub($callableResolver, new ResponseFactory(), new Negotiator(), new Whoops());
 

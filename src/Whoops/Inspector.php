@@ -13,18 +13,12 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops;
 
-use Throwable;
 use Whoops\Exception\Frame;
 use Whoops\Exception\FrameCollection;
 use Whoops\Exception\Inspector as BaseInspector;
 
 class Inspector extends BaseInspector
 {
-    public function __construct(Throwable $exception)
-    {
-        parent::__construct($exception);
-    }
-
     /**
      * Get stack trace frames.
      *
@@ -42,6 +36,7 @@ class Inspector extends BaseInspector
 
     /**
      * Filter stack frame list.
+     *
      * Remove internal frames.
      *
      * @return array<Frame>
@@ -49,12 +44,13 @@ class Inspector extends BaseInspector
     protected function filterTraceFrames(): array
     {
         /** @var array<Frame> $frames */
-        $frames = $this->getFrames()->getArray();
+        $frames = $this->getFrames()
+            ->getArray();
 
         $excludedPathRegex = sprintf('!^%s/.+\.php$!', \dirname(__DIR__, 2));
 
         $firstFrame = 0;
-        for ($i = 0, $length = \count($frames); $i < $length; $i++) {
+        for ($i = 0, $length = \count($frames); $i < $length; ++$i) {
             if (preg_match($excludedPathRegex, $frames[$i]->getFile() ?? '') === 1) {
                 continue;
             }

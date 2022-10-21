@@ -28,6 +28,7 @@ use Psr\Log\LogLevel;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Slim\Interfaces\CallableResolverInterface;
 use Slim\Interfaces\ErrorRendererInterface;
+use Throwable;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -35,13 +36,10 @@ use Slim\Interfaces\ErrorRendererInterface;
 class ErrorHandler extends SlimErrorHandler
 {
     /**
-     * @var ErrorRendererInterface|string|callable
+     * @var ErrorRendererInterface|string|callable(Throwable, bool): string
      */
     protected $logErrorRenderer = PlainTextRenderer::class;
 
-    /**
-     * @var array<int, string>
-     */
     private array $errorToLogLevelMap = [
         \E_ERROR => LogLevel::ALERT,
         \E_WARNING => LogLevel::WARNING,
@@ -63,7 +61,12 @@ class ErrorHandler extends SlimErrorHandler
     protected Negotiator $negotiator;
 
     /**
-     * @var array<string|callable>
+     * @var ErrorRendererInterface|string|callable(Throwable, bool): string
+     */
+    protected $defaultErrorRenderer = HtmlRenderer::class;
+
+    /**
+     * @var array<string|callable(Throwable, bool): string>
      */
     protected $errorRenderers = [
         'text/html' => HtmlRenderer::class,
@@ -91,8 +94,6 @@ class ErrorHandler extends SlimErrorHandler
     }
 
     /**
-     * Set error renderers.
-     *
      * @param array<string, string|ErrorRendererInterface> $errorRenderers
      */
     public function setErrorRenderers(array $errorRenderers): void
@@ -105,8 +106,6 @@ class ErrorHandler extends SlimErrorHandler
     }
 
     /**
-     * Set error renderer.
-     *
      * @param string|ErrorRendererInterface $errorRenderer
      */
     public function setErrorRenderer(string $contentType, $errorRenderer): void
@@ -114,9 +113,6 @@ class ErrorHandler extends SlimErrorHandler
         $this->errorRenderers[$contentType] = $errorRenderer;
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function determineContentType(ServerRequestInterface $request): ?string
     {
         if ($this->inCli()) {
@@ -134,11 +130,9 @@ class ErrorHandler extends SlimErrorHandler
                 if ($selected instanceof BaseAccept) {
                     $contentType = $selected->getType();
                 }
-                // @codeCoverageIgnoreStart
             } catch (NegotiateException $exception) {
                 // @ignoreException
             }
-            // @codeCoverageIgnoreEnd
         }
 
         if (mb_strpos($contentType, '/*+') !== false) {
@@ -148,17 +142,11 @@ class ErrorHandler extends SlimErrorHandler
         return $contentType;
     }
 
-    /**
-     * Check if running in CLI.
-     */
     protected function inCli(): bool
     {
         return \PHP_SAPI === 'cli';
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function writeToErrorLog(): void
     {
         if ($this->logger === null) {
@@ -185,16 +173,13 @@ class ErrorHandler extends SlimErrorHandler
     }
 
     /**
-     * Determine log renderer.
+     * @return callable(Throwable, bool): string
      */
     protected function determineLogRenderer(): callable
     {
         return $this->callableResolver->resolve($this->logErrorRenderer);
     }
 
-    /**
-     * Get log level.
-     */
     final protected function getLogLevel(): string
     {
         if (

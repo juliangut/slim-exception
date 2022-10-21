@@ -31,17 +31,11 @@ abstract class AbstractRenderer implements ErrorRendererInterface
         $this->defaultDescription = $defaultDescription;
     }
 
-    /**
-     * Get exception title.
-     */
     protected function getErrorTitle(Throwable $exception): string
     {
         return $exception instanceof HttpException ? $exception->getTitle() : $this->defaultTitle;
     }
 
-    /**
-     * Get exception description.
-     */
     protected function getErrorDescription(Throwable $exception): string
     {
         if (!$exception instanceof HttpException) {

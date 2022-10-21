@@ -19,9 +19,6 @@ use Whoops\Exception\FrameCollection;
 
 class InspectorStub extends Inspector
 {
-    /**
-     * @inheritDoc
-     */
     public function getFrames(): FrameCollection
     {
         $frames = new FrameCollection([]);

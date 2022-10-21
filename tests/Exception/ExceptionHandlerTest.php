@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Tests;
 
-use Exception;
 use Jgut\Slim\Exception\Tests\Stubs\ExceptionHandlerStub;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\ErrorHandlerInterface;
+use Throwable;
 
 /**
  * @internal
@@ -60,7 +60,8 @@ class ExceptionHandlerTest extends TestCase
     public function testHandleExceptionFromError(): void
     {
         $response = (new ResponseFactory())->createResponse();
-        $response->getBody()->write('Exception!');
+        $response->getBody()
+            ->write('Exception!');
 
         $errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)
             ->disableOriginalConstructor()
@@ -76,7 +77,7 @@ class ExceptionHandlerTest extends TestCase
 
         try {
             $exceptionHandler->handleError(\E_PARSE, 'Parse error', __FILE__, __LINE__);
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             ob_start();
 
             $exceptionHandler->handleException($exception);
@@ -94,7 +95,8 @@ class ExceptionHandlerTest extends TestCase
             'line' => __LINE__,
         ];
         $response = (new ResponseFactory())->createResponse();
-        $response->getBody()->write('Exception!');
+        $response->getBody()
+            ->write('Exception!');
 
         $errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)
             ->disableOriginalConstructor()
