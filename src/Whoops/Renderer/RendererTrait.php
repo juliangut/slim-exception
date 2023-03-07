@@ -25,7 +25,7 @@ trait RendererTrait
     protected string $defaultTitle;
 
     /**
-     * @return array{message: string, type?: class-string<Throwable>, trace?: array}
+     * @return array{message: string, type?: class-string<Throwable>, trace?: array<TraceLine>}
      */
     protected function getExceptionData(Inspector $inspector, bool $addTrace = false): array
     {
@@ -44,7 +44,7 @@ trait RendererTrait
     }
 
     /**
-     * @return array<int, array{file: ?string, line: ?int, function: ?string, class: ?string, args: array}>
+     * @return array<TraceLine>
      */
     protected function getExceptionStack(Inspector $inspector): array
     {

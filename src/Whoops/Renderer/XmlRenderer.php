@@ -66,8 +66,8 @@ class XmlRenderer extends XmlResponseHandler
         $root = simplexml_load_string($xmlTemplate);
         $this->addDataNodes($root, $data, 'exception');
 
-        /** @var SimpleXMLElement $rootDocument */
         $rootDocument = dom_import_simplexml($root);
+        /** @var DOMDocument $dom */
         $dom = $rootDocument->ownerDocument;
         $dom->formatOutput = $this->prettify;
 

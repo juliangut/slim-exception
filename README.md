@@ -116,7 +116,7 @@ trigger_error('This is embarrassing', \E_USER_ERROR);
 
 Overall usage has been drastically simplified due to Slim 4 migration to exception based error handling, basically what slim-exception was doing in 1.x.
 
-* Minimum Slim version is now 4.7
+* Minimum Slim version is now 4.11
 * ExceptionManager has been removed as its functionality is now integrated into Slim
 * Exceptions no longer uses juliangut/http-exception, and thus they have no identifier
 * Global error/exception handling has been moved from a trait (meant for App) to its own class ExceptionHandler

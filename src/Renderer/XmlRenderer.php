@@ -55,7 +55,7 @@ class XmlRenderer extends AbstractRenderer
         return $xmlTag . implode(
             '',
             array_map(
-                static fn (string $line): string => ltrim($line, ' '),
+                static fn(string $line): string => ltrim($line, ' '),
                 $errorParts,
             ),
         );

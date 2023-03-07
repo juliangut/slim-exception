@@ -50,7 +50,7 @@ class PlainTextRenderer extends PlainTextHandler
     }
 
     /**
-     * @param array<array{class: ?string, function: string, file: string, line: int, args: array}> $stackFrames
+     * @param array<TraceLine> $stackFrames
      */
     protected function getStackTraceOutput(array $stackFrames): string
     {
@@ -136,6 +136,7 @@ class PlainTextRenderer extends PlainTextHandler
                 }
 
                 if (\is_array($arg)) {
+                    /** @var array<string, mixed> $arg */
                     return $this->flattenArguments($arg);
                 }
 

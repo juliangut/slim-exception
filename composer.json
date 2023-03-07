@@ -25,14 +25,15 @@
   "require": {
     "php": "^7.4|^8.0",
     "ext-mbstring": "*",
-    "slim/slim": "^4.7",
+    "slim/slim": "^4.11",
     "willdurand/negotiation": "^3.0"
   },
   "require-dev": {
+    "ext-dom": "*",
     "ext-json": "*",
     "ext-simplexml": "*",
     "grifart/phpstan-oneline": "~0.4",
-    "filp/whoops": "^2.8",
+    "filp/whoops": "^2.15",
     "infection/infection": "~0.24",
     "juliangut/easy-coding-standard-config": "^1.0",
     "laminas/laminas-diactoros": "^2.2",

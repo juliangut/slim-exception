@@ -19,7 +19,7 @@ use Whoops\Exception\FrameCollection;
 
 class InspectorStub extends Inspector
 {
-    public function getFrames(): FrameCollection
+    public function getFrames(array $frameFilters = []): FrameCollection
     {
         $frames = new FrameCollection([]);
         $frames->prependFrames(array_filter(
@@ -30,6 +30,10 @@ class InspectorStub extends Inspector
                     && mb_strpos($frame->getFile() ?? '', '/vendor/bin/phpunit') === false;
             },
         ));
+
+        foreach ($frameFilters as $filterCallback) {
+            $frames->filter($filterCallback);
+        }
 
         return $frames;
     }

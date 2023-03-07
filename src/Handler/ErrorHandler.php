@@ -40,6 +40,9 @@ class ErrorHandler extends SlimErrorHandler
      */
     protected $logErrorRenderer = PlainTextRenderer::class;
 
+    /**
+     * @var array<int, string>
+     */
     private array $errorToLogLevelMap = [
         \E_ERROR => LogLevel::ALERT,
         \E_WARNING => LogLevel::WARNING,
@@ -68,7 +71,7 @@ class ErrorHandler extends SlimErrorHandler
     /**
      * @var array<string|callable(Throwable, bool): string>
      */
-    protected $errorRenderers = [
+    protected array $errorRenderers = [
         'text/html' => HtmlRenderer::class,
         'application/xhtml+xml' => HtmlRenderer::class,
         'application/json' => JsonRenderer::class,
@@ -149,12 +152,6 @@ class ErrorHandler extends SlimErrorHandler
 
     protected function writeToErrorLog(): void
     {
-        if ($this->logger === null) {
-            // @codeCoverageIgnoreStart
-            return;
-            // @codeCoverageIgnoreEnd
-        }
-
         $logLevel = $this->getLogLevel();
         $logContext = [
             'http_method' => $this->request->getMethod(),

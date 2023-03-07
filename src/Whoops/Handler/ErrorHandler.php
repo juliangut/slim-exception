@@ -48,7 +48,7 @@ class ErrorHandler extends BaseErrorHandler
     /**
      * @var array<string|callable(Throwable, bool): string>
      */
-    protected $errorRenderers = [
+    protected array $errorRenderers = [
         'text/html' => HtmlRenderer::class,
         'application/xhtml+xml' => HtmlRenderer::class,
         'application/json' => JsonRenderer::class,
@@ -104,14 +104,13 @@ class ErrorHandler extends BaseErrorHandler
      */
     protected function determineLogRenderer(): callable
     {
-        /** @var callable(Throwable):string|HandlerInterface $renderer */
         $renderer = parent::determineLogRenderer();
 
         return $this->getRenderer($renderer);
     }
 
     /**
-     * @param callable(Throwable):string|HandlerInterface $renderer
+     * @param HandlerInterface|mixed $renderer
      *
      * @throws InvalidArgumentException
      *

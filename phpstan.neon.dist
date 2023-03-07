@@ -1,13 +1,17 @@
+includes:
+  - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
 parameters:
   level: max
   checkMissingCallableSignature: true
-  checkMissingIterableValueType: false
   tipsOfTheDay: false
   errorFormat: compact
   parallel:
     maximumNumberOfProcesses: 7
   paths:
     - src
+  typeAliases:
+    TraceLine: 'array{file: ?string, line: ?int, function: ?string, class: ?string, args: array<mixed>}'
   ignoreErrors:
     - message: '/^Call to function is_subclass_of\(\) with Whoops\\Handler\\HandlerInterface and .Jgut\\\\Slim\\\\Exception\\\\Whoops\\\\Renderer\\\\HtmlRenderer. will always evaluate to false\.$/'
       path: src/Whoops/Handler/ErrorHandler.php

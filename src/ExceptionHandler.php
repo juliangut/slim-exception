@@ -166,10 +166,14 @@ class ExceptionHandler
         $trace = [];
 
         if (\function_exists('xdebug_get_function_stack')) {
-            $trace = array_map(
-                fn (array $frame): array => $this->normalizeFrame($frame),
-                xdebug_get_function_stack(),
-            );
+            try {
+                $trace = array_map(
+                    fn(array $frame): array => $this->normalizeFrame($frame),
+                    xdebug_get_function_stack(),
+                );
+            } catch (ErrorException $exception) {
+                // @ignoreException
+            }
 
             $trace = array_reverse(\array_slice($trace, 0, -3));
         }
