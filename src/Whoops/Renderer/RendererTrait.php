@@ -13,55 +13,38 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Renderer;
 
-use Jgut\Slim\Exception\Whoops\Inspector;
 use Slim\Exception\HttpException;
 use Throwable;
+use Whoops\Exception\Formatter;
+use Whoops\Exception\Frame;
 use Whoops\Exception\Inspector as WhoopsInspector;
 use Whoops\Handler\Handler;
+use Whoops\Inspector\InspectorInterface;
 use Whoops\RunInterface;
 
 trait RendererTrait
 {
-    protected string $defaultTitle;
-
     /**
-     * @return array{message: string, type?: class-string<Throwable>, trace?: array<TraceLine>}
+     * @param list<callable(Frame): bool> $frameFilters
+     *
+     * @return ExceptionData
      */
-    protected function getExceptionData(Inspector $inspector, bool $addTrace = false): array
-    {
+    protected function getExceptionData(
+        InspectorInterface $inspector,
+        bool $shouldAddTrace,
+        array $frameFilters,
+    ): array {
         $exception = $inspector->getException();
 
-        $error = [
-            'message' => $exception instanceof HttpException ? $exception->getTitle() : $this->defaultTitle,
-        ];
-
-        if ($addTrace) {
-            $error['type'] = \get_class($exception);
-            $error['trace'] = $this->getExceptionStack($inspector);
-        }
+        /** @var ExceptionData $error */
+        $error = Formatter::formatExceptionAsDataArray(
+            $inspector,
+            $shouldAddTrace,
+            $frameFilters,
+        );
+        $error['message'] = $exception instanceof HttpException ? $exception->getTitle() : $this->defaultTitle;
 
         return $error;
-    }
-
-    /**
-     * @return array<TraceLine>
-     */
-    protected function getExceptionStack(Inspector $inspector): array
-    {
-        $frames = $inspector->getTraceFrames();
-        $stackFrames = [];
-
-        foreach ($frames as $frame) {
-            $stackFrames[] = [
-                'file' => $frame->getFile(true),
-                'line' => $frame->getLine(),
-                'function' => $frame->getFunction(),
-                'class' => $frame->getClass(),
-                'args' => $frame->getArgs(),
-            ];
-        }
-
-        return $stackFrames;
     }
 
     final public function __invoke(Throwable $exception, WhoopsInspector $inspector, RunInterface $run): int

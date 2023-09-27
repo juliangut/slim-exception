@@ -27,10 +27,14 @@ use Slim\App;
 use Slim\Interfaces\CallableResolverInterface;
 use Slim\Interfaces\ErrorRendererInterface;
 use Throwable;
+use Whoops\Exception\Frame;
 use Whoops\Handler\HandlerInterface;
 use Whoops\Handler\HandlerInterface as WhoopsHandler;
 use Whoops\Run as Whoops;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ErrorHandler extends BaseErrorHandler
 {
     protected const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
@@ -69,21 +73,24 @@ class ErrorHandler extends BaseErrorHandler
         ResponseFactoryInterface $responseFactory,
         Negotiator $negotiator,
         Whoops $whoops,
-        ?LoggerInterface $logger = null
+        ?LoggerInterface $logger = null,
     ) {
         parent::__construct($callableResolver, $responseFactory, $negotiator, $logger);
 
-        $whoops = clone $whoops;
-        $whoops->clearHandlers();
-        $whoops->allowQuit(false);
-        $whoops->writeToOutput(false);
+        $clonedWhoops = clone $whoops;
+        $clonedWhoops->clearHandlers();
+        $clonedWhoops->allowQuit(false);
+        $clonedWhoops->writeToOutput(false);
 
-        $this->whoops = $whoops;
+        $excludedPathRegex = sprintf('!^%s/.+\.php$!', \dirname(__DIR__, 3));
+        $clonedWhoops->addFrameFilter(
+            static fn(Frame $frame): bool => preg_match($excludedPathRegex, $frame->getFile() ?? '') !== 1,
+        );
+
+        $this->whoops = $clonedWhoops;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidArgumentException
      * @throws RuntimeException
      *
@@ -95,8 +102,6 @@ class ErrorHandler extends BaseErrorHandler
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidArgumentException
      * @throws RuntimeException
      *
@@ -116,12 +121,12 @@ class ErrorHandler extends BaseErrorHandler
      *
      * @return callable(Throwable): string
      */
-    protected function getRenderer($renderer): callable
+    protected function getRenderer(mixed $renderer): callable
     {
         if (!$renderer instanceof WhoopsHandler) {
             throw new InvalidArgumentException(sprintf(
                 'Renderer "%s" for Whoops error handler should implement "%s".',
-                \is_object($renderer) ? \get_class($renderer) : \gettype($renderer),
+                \is_object($renderer) ? $renderer::class : \gettype($renderer),
                 WhoopsHandler::class,
             ));
         }

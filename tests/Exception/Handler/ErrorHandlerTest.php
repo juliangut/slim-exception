@@ -81,7 +81,12 @@ class ErrorHandlerTest extends TestCase
             ->getMock();
         $callableResolver->expects(static::any())
             ->method('resolve')
-            ->withConsecutive([PlainTextRenderer::class], [HtmlRenderer::class])
+            ->willReturnCallback(static function ($class) {
+                return match (true) {
+                    $class === PlainTextRenderer::class => new PlainTextRenderer(),
+                    $class === HtmlRenderer::class => new HtmlRenderer(),
+                };
+            })
             ->willReturnOnConsecutiveCalls(new PlainTextRenderer(), new HtmlRenderer());
 
         $logger = $this->getMockBuilder(LoggerInterface::class)
@@ -105,7 +110,12 @@ class ErrorHandlerTest extends TestCase
             ->getMock();
         $callableResolver->expects(static::any())
             ->method('resolve')
-            ->withConsecutive([PlainTextRenderer::class], [HtmlRenderer::class])
+            ->willReturnCallback(static function ($class) {
+                return match (true) {
+                    $class === PlainTextRenderer::class => new PlainTextRenderer(),
+                    $class === HtmlRenderer::class => new HtmlRenderer(),
+                };
+            })
             ->willReturnOnConsecutiveCalls(new PlainTextRenderer(), new HtmlRenderer());
 
         $logger = $this->getMockBuilder(LoggerInterface::class)

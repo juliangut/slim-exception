@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpForbiddenException;
 use Whoops\Exception\Inspector;
+use Whoops\Run as Whoops;
 
 /**
  * @internal
@@ -31,20 +32,27 @@ class JsonRendererTest extends TestCase
         $inspector = new Inspector($exception);
 
         $renderer = new JsonRenderer();
-        $renderer->addTraceToOutput(true);
         $renderer->setException($exception);
         $renderer->setInspector($inspector);
+        $renderer->setRun(new Whoops());
 
         ob_start();
         $renderer->handle();
         $output = ob_get_clean();
 
-        $expected = <<<'EXPECTED'
-        {
-            "message": "403 Forbidden",
-            "type": "Slim\\Exception\\HttpForbiddenException",
-            "trace": [
+        $file = __FILE__;
 
+        $expected = <<<EXPECTED
+        {
+            "error": [
+                {
+                    "type": "Slim\\\\Exception\\\\HttpForbiddenException",
+                    "message": "403 Forbidden",
+                    "code": 403,
+                    "file": "{$file}",
+                    "line": 31,
+                    "trace": [
+                        {
         EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
@@ -56,16 +64,22 @@ class JsonRendererTest extends TestCase
         $inspector = new Inspector($exception);
 
         $renderer = new JsonRenderer();
-        $renderer->addTraceToOutput(true);
         $renderer->setException($exception);
         $renderer->setInspector($inspector);
         $renderer->setPrettify(false);
+        $renderer->setRun(new Whoops());
 
         ob_start();
         $renderer->handle();
         $output = ob_get_clean();
 
-        $expected = '{"message":"403 Forbidden","type":"Slim\\\Exception\\\HttpForbiddenException","trace":[';
+        $expected = '{"error":[{'
+            . '"type":"Slim\\\\Exception\\\\HttpForbiddenException",'
+            . '"message":"403 Forbidden",'
+            . '"code":403,'
+            . '"file":"' . __FILE__ . '",'
+            . '"line":63,'
+            . '"trace":[{';
         static::assertStringContainsString($expected, $output);
     }
 
@@ -79,14 +93,25 @@ class JsonRendererTest extends TestCase
         $renderer->addTraceToOutput(false);
         $renderer->setException($exception);
         $renderer->setInspector($inspector);
+        $renderer->setRun(new Whoops());
 
         ob_start();
         $renderer->handle();
         $output = ob_get_clean();
 
-        $expected = <<<'EXPECTED'
+        $file = __FILE__;
+
+        $expected = <<<EXPECTED
         {
-            "message": "403 Forbidden"
+            "error": [
+                {
+                    "type": "Slim\\\\Exception\\\\HttpForbiddenException",
+                    "message": "403 Forbidden",
+                    "code": 403,
+                    "file": "{$file}",
+                    "line": 89
+                }
+            ]
         }
         EXPECTED;
         static::assertEquals($expected, $output);
@@ -103,12 +128,19 @@ class JsonRendererTest extends TestCase
         $renderer->setException($exception);
         $renderer->setInspector($inspector);
         $renderer->setPrettify(false);
+        $renderer->setRun(new Whoops());
 
         ob_start();
         $renderer->handle();
         $output = ob_get_clean();
 
-        $expected = '{"message":"403 Forbidden"}';
+        $expected = '{"error":[{'
+            . '"type":"Slim\\\\Exception\\\\HttpForbiddenException",'
+            . '"message":"403 Forbidden",'
+            . '"code":403,'
+            . '"file":"' . __FILE__ . '",'
+            . '"line":123'
+            . '}]}';
         static::assertEquals($expected, $output);
     }
 }

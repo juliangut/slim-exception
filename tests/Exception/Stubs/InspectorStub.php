@@ -17,6 +17,9 @@ use Jgut\Slim\Exception\Whoops\Inspector;
 use Whoops\Exception\Frame;
 use Whoops\Exception\FrameCollection;
 
+/**
+ * @internal
+ */
 class InspectorStub extends Inspector
 {
     public function getFrames(array $frameFilters = []): FrameCollection

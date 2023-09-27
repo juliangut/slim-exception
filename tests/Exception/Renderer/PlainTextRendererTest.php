@@ -27,25 +27,38 @@ class PlainTextRendererTest extends TestCase
 
     protected PlainTextRenderer $renderer;
 
-    protected function setUp(): void
-    {
-        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $this->exception = new HttpForbiddenException($request, 'Forbidden action');
-        $this->renderer = new PlainTextRenderer();
-    }
-
     public function testOutput(): void
     {
-        $output = ($this->renderer)($this->exception, false);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
+        $renderer = new PlainTextRenderer();
+
+        $output = $renderer($exception, false);
 
         static::assertEquals('403 Forbidden', $output);
     }
 
     public function testOutputWithTrace(): void
     {
-        $output = ($this->renderer)($this->exception, true);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
+        $renderer = new PlainTextRenderer();
 
-        static::assertStringContainsString('403 Forbidden', $output);
-        static::assertStringContainsString('Trace', $output);
+        $output = $renderer($exception, true);
+
+        $file = __FILE__;
+
+        $expected /** @lang text */
+            = <<<EXPECTED
+            403 Forbidden
+            Type: Slim\\Exception\\HttpForbiddenException
+            Code: 403
+            Message: Forbidden action
+            File: {$file}
+            Line: 44
+            Trace:
+            EXPECTED;
+
+        static::assertStringContainsString($expected, $output);
     }
 }

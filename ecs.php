@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-use Jgut\ECS\Config\ConfigSet74;
+use Jgut\ECS\Config\ConfigSet80;
 use SlevomatCodingStandard\Sniffs\Exceptions\ReferenceThrowableOnlySniff;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
@@ -31,15 +31,11 @@ return static function (ECSConfig $ecsConfig) use ($header): void {
         __DIR__ . '/tests',
     ]);
 
-    $configSet = new ConfigSet74();
-
-    $configSet
+    (new ConfigSet80())
         ->setHeader($header)
         ->enablePhpUnitRules()
         ->setAdditionalSkips([
-            ReferenceThrowableOnlySniff::class . '.ReferencedGeneralException' => [
-                __DIR__ . '/src/ExceptionHandler.php',
-            ],
+            ReferenceThrowableOnlySniff::class . '.ReferencedGeneralException' => __DIR__ . '/src/ExceptionHandler.php',
         ])
         ->configure($ecsConfig);
 };

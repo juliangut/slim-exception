@@ -16,20 +16,17 @@ namespace Jgut\Slim\Exception\Tests\Stubs;
 use Jgut\Slim\Exception\Whoops\Renderer\HtmlRenderer;
 use Whoops\Handler\Handler;
 
+/**
+ * @internal
+ */
 class RendererStub extends HtmlRenderer
 {
-    /**
-     * @inheritDoc
-     */
     public function getContentTypes(): array
     {
         return [];
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function handle()
+    public function handle(): ?int
     {
         echo $this->getException()
             ->getMessage();

@@ -19,19 +19,13 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpNotImplementedException;
 use Whoops\Exception\Inspector;
+use Whoops\Run as Whoops;
 
 /**
  * @internal
  */
 class PlainTextRendererTest extends TestCase
 {
-    protected PlainTextRenderer $renderer;
-
-    protected function setUp(): void
-    {
-        $this->renderer = new PlainTextRenderer();
-    }
-
     public function testOutput(): void
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
@@ -39,20 +33,27 @@ class PlainTextRendererTest extends TestCase
         $exception = new HttpNotImplementedException($request, null, $originalException);
         $inspector = new Inspector($exception);
 
-        $handler = new PlainTextRenderer();
-        $handler->addTraceFunctionArgsToOutput(true);
-        $handler->setException($exception);
-        $handler->setInspector($inspector);
+        $renderer = new PlainTextRenderer();
+        $renderer->addTraceFunctionArgsToOutput(true);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
+        $renderer->setRun(new Whoops());
 
         ob_start();
-        $handler->handle();
+        $renderer->handle();
         $output = ob_get_clean();
 
-        static::assertStringContainsString(
-            'Slim\\Exception\\HttpNotImplementedException: 501 Not Implemented',
-            $output,
-        );
-        static::assertStringContainsString('Stack trace:', $output);
+        $file = __FILE__;
+
+        $expected = <<<EXPECTED
+        Type: Slim\\Exception\\HttpNotImplementedException
+        Code: 501
+        Message: 501 Not Implemented
+        File: {$file}
+        Line: 33
+        Trace:
+        EXPECTED;
+        static::assertStringContainsString($expected, $output);
     }
 
     public function testNoTraceOutput(): void
@@ -61,15 +62,16 @@ class PlainTextRendererTest extends TestCase
         $exception = new HttpNotImplementedException($request);
         $inspector = new Inspector($exception);
 
-        $this->renderer->addTraceToOutput(false);
-        $this->renderer->setException($exception);
-        $this->renderer->setInspector($inspector);
+        $renderer = new PlainTextRenderer();
+        $renderer->addTraceToOutput(false);
+        $renderer->setException($exception);
+        $renderer->setInspector($inspector);
+        $renderer->setRun(new Whoops());
 
         ob_start();
-        $this->renderer->handle();
+        $renderer->handle();
         $output = ob_get_clean();
 
-        static::assertStringContainsString('501 Not Implemented', $output);
-        static::assertStringNotContainsString('Stack trace:', $output);
+        static::assertEquals('501 Not Implemented', $output);
     }
 }

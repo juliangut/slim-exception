@@ -23,7 +23,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": "^7.4|^8.0",
+    "php": "^8.0",
     "ext-mbstring": "*",
     "slim/slim": "^4.11",
     "willdurand/negotiation": "^3.0"
@@ -32,23 +32,18 @@
     "ext-dom": "*",
     "ext-json": "*",
     "ext-simplexml": "*",
-    "grifart/phpstan-oneline": "~0.4",
     "filp/whoops": "^2.15",
-    "infection/infection": "~0.24",
-    "juliangut/easy-coding-standard-config": "^1.0",
-    "laminas/laminas-diactoros": "^2.2",
-    "overtrue/phplint": "^3.0|^4.0",
+    "infection/infection": "~0.25|~0.27",
+    "juliangut/easy-coding-standard-config": "dev-master",
+    "juliangut/phpstan-config": "^1.1",
+    "laminas/laminas-diactoros": "^2.20",
+    "overtrue/phplint": "^4.0|^5.0|^6.0",
     "phpcompatibility/php-compatibility": "^9.3",
-    "phpmd/phpmd": "^2.10",
-    "phpstan/extension-installer": "^1.1",
-    "phpstan/phpstan": "^1.0",
-    "phpstan/phpstan-deprecation-rules": "^1.0",
-    "phpstan/phpstan-strict-rules": "^1.0",
-    "phpunit/phpunit": "^9.5",
-    "povils/phpmnd": "^2.5",
-    "roave/security-advisories": "dev-master",
-    "sebastian/phpcpd": "^6.0",
-    "thecodingmachine/phpstan-strict-rules": "^1.0"
+    "phpmd/phpmd": "^2.13",
+    "phpstan/phpstan": "^1.10",
+    "phpunit/phpunit": "^9.6.13|^10.3",
+    "povils/phpmnd": "^3.2",
+    "roave/security-advisories": "dev-master"
   },
   "suggest": {
     "filp/whoops": "Enhance development error reporting and production stack-traces",
@@ -69,8 +64,7 @@
     "sort-packages": true,
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "infection/extension-installer": true,
-      "phpstan/extension-installer": true
+      "infection/extension-installer": true
     }
   }
 }

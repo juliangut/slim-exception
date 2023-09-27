@@ -13,40 +13,62 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Renderer;
 
-use Jgut\Slim\Exception\Whoops\Inspector;
 use Psr\Log\LoggerInterface;
+use Whoops\Exception\Frame;
 use Whoops\Handler\PlainTextHandler;
 
 class PlainTextRenderer extends PlainTextHandler
 {
     use RendererTrait;
 
-    public function __construct(string $defaultTitle = 'Slim Application error', ?LoggerInterface $logger = null)
-    {
+    public function __construct(
+        protected string $defaultTitle = 'Slim Application error',
+        ?LoggerInterface $logger = null,
+    ) {
         parent::__construct($logger);
-
-        $this->defaultTitle = $defaultTitle;
 
         $this->addTraceFunctionArgsToOutput(true);
     }
 
     public function generateResponse(): string
     {
-        $exception = $this->getException();
-
-        $inspector = new Inspector($exception);
-        $this->setInspector($inspector);
-
         /** @var bool $addTrace */
         $addTrace = $this->addTraceToOutput();
 
-        $error = $this->getExceptionData($inspector, $addTrace);
-        $stackTrace = $addTrace ? "\n" . $this->getStackTraceOutput($error['trace'] ?? []) : '';
+        /** @var list<callable(Frame): bool> $frameFilters */
+        $frameFilters = array_values($this->getRun()->getFrameFilters());
 
-        $type = $addTrace ? ($error['type'] ?? '') . ': ' : '';
-        $message = $error['message'];
+        $error = $this->getExceptionData($this->getInspector(), $addTrace, $frameFilters);
 
-        return sprintf("%s%s%s\n", $type, $message, $stackTrace);
+        return !$addTrace
+            ? $error['message']
+            : $this->formatError($error);
+    }
+
+    /**
+     * @param ExceptionData $error
+     */
+    private function formatError(array $error): string
+    {
+        $outputString = <<<'OUTPUT'
+        Type: %s
+        Code: %s
+        Message: %s
+        File: %s
+        Line: %s
+        Trace:
+        %s
+        OUTPUT;
+
+        return sprintf(
+            $outputString,
+            $error['type'],
+            $error['code'],
+            $error['message'],
+            $error['file'],
+            $error['line'],
+            $this->getStackTraceOutput($error['trace'] ?? []),
+        );
     }
 
     /**
@@ -76,7 +98,7 @@ class PlainTextRenderer extends PlainTextHandler
             $stackFrames,
         );
 
-        return "Stack trace:\n" . implode('', $stackTrace);
+        return implode('', $stackTrace);
     }
 
     /**
@@ -126,7 +148,7 @@ class PlainTextRenderer extends PlainTextHandler
         return array_map(
             function ($arg) {
                 if (\is_object($arg)) {
-                    $class = \get_class($arg);
+                    $class = $arg::class;
 
                     return $class . (mb_strpos($class, 'class@anonymous') !== 0 ? '::class' : '');
                 }

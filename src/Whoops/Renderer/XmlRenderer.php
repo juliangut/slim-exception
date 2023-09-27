@@ -15,8 +15,8 @@ namespace Jgut\Slim\Exception\Whoops\Renderer;
 
 use DOMDocument;
 use DOMElement;
-use Jgut\Slim\Exception\Whoops\Inspector;
 use SimpleXMLElement;
+use Whoops\Exception\Frame;
 use Whoops\Handler\Handler;
 use Whoops\Handler\XmlResponseHandler;
 
@@ -26,10 +26,9 @@ class XmlRenderer extends XmlResponseHandler
 
     protected bool $prettify = true;
 
-    public function __construct(string $defaultTitle = 'Slim Application error')
-    {
-        $this->defaultTitle = $defaultTitle;
-
+    public function __construct(
+        protected string $defaultTitle = 'Slim Application error',
+    ) {
         $this->addTraceToOutput(true);
     }
 
@@ -40,23 +39,23 @@ class XmlRenderer extends XmlResponseHandler
 
     public function handle()
     {
-        $exception = $this->getException();
-
-        $inspector = new Inspector($exception);
-        $this->setInspector($inspector);
-
         /** @var bool $addTrace */
         $addTrace = $this->addTraceToOutput();
 
-        $error = $this->getExceptionData($inspector, $addTrace);
+        /** @var list<callable(Frame): bool> $frameFilters */
+        $frameFilters = array_values($this->getRun()->getFrameFilters());
 
-        echo $this->getFormattedXml($error);
+        $response = $this->getExceptionData($this->getInspector(), $addTrace, $frameFilters);
+
+        $output = $this->getFormattedXml($response);
+
+        echo $output; // @phpstan-ignore-line
 
         return Handler::QUIT;
     }
 
     /**
-     * @param array<mixed> $data
+     * @param ExceptionData $data
      */
     protected function getFormattedXml(array $data): string
     {
@@ -93,7 +92,7 @@ class XmlRenderer extends XmlResponseHandler
                 $this->addDataNodes($node->addChild($key), $value, $key);
             } else {
                 if (\is_object($value)) {
-                    $value = \get_class($value);
+                    $value = $value::class;
                 } elseif (!\is_scalar($value)) {
                     $value = \gettype($value);
                 }

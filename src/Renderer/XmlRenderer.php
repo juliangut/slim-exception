@@ -36,7 +36,7 @@ class XmlRenderer extends AbstractRenderer
         if ($displayErrorDetails) {
             do {
                 $errorParts[] = '  <exception>';
-                $errorParts[] = '    <type>' . \get_class($exception) . '</type>';
+                $errorParts[] = '    <type>' . $exception::class . '</type>';
                 $errorParts[] = '    <code>' . $exception->getCode() . '</code>';
                 $errorParts[] = '    <message>' . $this->createCdataSection($exception->getMessage()) . '</message>';
                 $errorParts[] = '    <file>' . $exception->getFile() . '</file>';

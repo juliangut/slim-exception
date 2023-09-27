@@ -23,17 +23,11 @@ use Slim\Exception\HttpForbiddenException;
  */
 class JsonRendererTest extends TestCase
 {
-    protected HttpForbiddenException $exception;
-
-    protected function setUp(): void
-    {
-        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $this->exception = new HttpForbiddenException($request, 'Forbidden action');
-    }
-
     public function testOutput(): void
     {
-        $output = (new JsonRenderer())($this->exception, false);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
+        $output = (new JsonRenderer())($exception, false);
 
         $expected = <<<'EXPECTED'
         {
@@ -47,17 +41,21 @@ class JsonRendererTest extends TestCase
 
     public function testNotPrettifiedOutput(): void
     {
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
         $renderer = new JsonRenderer();
         $renderer->setPrettify(false);
 
-        $output = $renderer($this->exception, false);
+        $output = $renderer($exception, false);
 
         static::assertEquals('{"error":{"message":"403 Forbidden"}}', $output);
     }
 
     public function testOutputWithTrace(): void
     {
-        $output = (new JsonRenderer())($this->exception, true);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
+        $output = (new JsonRenderer())($exception, true);
 
         $expected = <<<'EXPECTED'
         {
@@ -71,10 +69,12 @@ class JsonRendererTest extends TestCase
 
     public function testNotPrettifiedOutputWithTrace(): void
     {
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
         $renderer = new JsonRenderer();
         $renderer->setPrettify(false);
 
-        $output = $renderer($this->exception, true);
+        $output = $renderer($exception, true);
 
         static::assertStringContainsString('{"error":{"message":"403 Forbidden","exception":[', $output);
     }

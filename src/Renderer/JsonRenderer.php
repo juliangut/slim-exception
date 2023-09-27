@@ -40,8 +40,6 @@ class JsonRenderer extends AbstractRenderer
     }
 
     /**
-     * @inheritDoc
-     *
      * @throws RuntimeException
      */
     public function __invoke(Throwable $exception, bool $displayErrorDetails): string
@@ -89,7 +87,7 @@ class JsonRenderer extends AbstractRenderer
     private function formatException(Throwable $exception): array
     {
         return [
-            'type' => \get_class($exception),
+            'type' => $exception::class,
             'code' => $exception->getCode(),
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),

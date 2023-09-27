@@ -28,8 +28,6 @@ class ExceptionHandlerTest extends TestCase
     protected static bool $exitShutDown = false;
 
     /**
-     * {@inheritDoc}
-     *
      * Hack to prevent shutdown function to be triggered after PHPUnit has finished.
      */
     public static function setUpBeforeClass(): void

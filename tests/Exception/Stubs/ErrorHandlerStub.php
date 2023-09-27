@@ -15,6 +15,9 @@ namespace Jgut\Slim\Exception\Tests\Stubs;
 
 use Jgut\Slim\Exception\Handler\ErrorHandler;
 
+/**
+ * @internal
+ */
 class ErrorHandlerStub extends ErrorHandler
 {
     protected function inCli(): bool

@@ -24,59 +24,140 @@ use Slim\Exception\HttpForbiddenException;
  */
 class HtmlRendererTest extends TestCase
 {
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface
-     */
-    protected $request;
-
-    protected HtmlRenderer $renderer;
-
-    protected function setUp(): void
-    {
-        $this->request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $this->renderer = new HtmlRenderer();
-    }
-
     public function testDefaultHttpExceptionOutput(): void
     {
-        $exception = new HttpForbiddenException($this->request);
-        $output = ($this->renderer)($exception, false);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $renderer = new HtmlRenderer();
+        $exception = new HttpForbiddenException($request);
+        $output = ($renderer)($exception, false);
 
-        static::assertStringContainsString('<title>403 Forbidden</title>', $output);
-        static::assertStringContainsString('<h1>403 Forbidden</h1>', $output);
-        static::assertStringNotContainsString('<h2>Details</h2>', $output);
-        static::assertStringContainsString('<p>Forbidden.</p>', $output);
+        $expected /** @lang html */
+            = <<<'EXPECTED'
+            <!doctype html>
+            <html lang="en">
+                <head>
+                    <meta charset="utf-8">
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+                    <title>403 Forbidden</title>
+
+                    <style>
+                        body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,sans-serif}
+                        h1{margin:0;font-size:48px;font-weight:normal;line-height:48px}
+                        strong{display:inline-block;width:65px}
+                    </style>
+                </head>
+                <body>
+                    <h1>403 Forbidden</h1>
+                    <div><p>Forbidden.</p></div>
+                    <a href="#" onClick="window.history.go(-1)">Go Back</a>
+                </body>
+            </html>
+            EXPECTED;
+        static::assertEquals($expected, $output);
     }
 
     public function testMessageHttpExceptionOutput(): void
     {
-        $exception = new HttpForbiddenException($this->request, 'No access');
-        $output = ($this->renderer)($exception, false);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $renderer = new HtmlRenderer();
+        $exception = new HttpForbiddenException($request, 'No access');
+        $output = ($renderer)($exception, false);
 
-        static::assertStringContainsString('<title>403 Forbidden</title>', $output);
-        static::assertStringContainsString('<h1>403 Forbidden</h1>', $output);
-        static::assertStringNotContainsString('<h2>Details</h2>', $output);
-        static::assertStringContainsString('<p>No access</p>', $output);
+        $expected /** @lang html */
+            = <<<'EXPECTED'
+            <!doctype html>
+            <html lang="en">
+                <head>
+                    <meta charset="utf-8">
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+                    <title>403 Forbidden</title>
+
+                    <style>
+                        body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,sans-serif}
+                        h1{margin:0;font-size:48px;font-weight:normal;line-height:48px}
+                        strong{display:inline-block;width:65px}
+                    </style>
+                </head>
+                <body>
+                    <h1>403 Forbidden</h1>
+                    <div><p>No access</p></div>
+                    <a href="#" onClick="window.history.go(-1)">Go Back</a>
+                </body>
+            </html>
+            EXPECTED;
+        static::assertEquals($expected, $output);
     }
 
     public function testDescriptionHttpExceptionOutput(): void
     {
-        $exception = new HttpForbiddenException($this->request, '');
-        $output = ($this->renderer)($exception, false);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $renderer = new HtmlRenderer();
+        $exception = new HttpForbiddenException($request, '');
+        $output = ($renderer)($exception, false);
 
-        static::assertStringContainsString('<title>403 Forbidden</title>', $output);
-        static::assertStringContainsString('<h1>403 Forbidden</h1>', $output);
-        static::assertStringNotContainsString('<h2>Details</h2>', $output);
-        static::assertStringContainsString('<p>You are not permitted to perform the requested operation.</p>', $output);
+        $expected /** @lang html */
+            = <<<'EXPECTED'
+            <!doctype html>
+            <html lang="en">
+                <head>
+                    <meta charset="utf-8">
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+                    <title>403 Forbidden</title>
+
+                    <style>
+                        body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,sans-serif}
+                        h1{margin:0;font-size:48px;font-weight:normal;line-height:48px}
+                        strong{display:inline-block;width:65px}
+                    </style>
+                </head>
+                <body>
+                    <h1>403 Forbidden</h1>
+                    <div><p>You are not permitted to perform the requested operation.</p></div>
+                    <a href="#" onClick="window.history.go(-1)">Go Back</a>
+                </body>
+            </html>
+            EXPECTED;
+        static::assertEquals($expected, $output);
     }
 
     public function testOutputWithTrace(): void
     {
+        $renderer = new HtmlRenderer();
         $exception = new RuntimeException();
-        $output = ($this->renderer)($exception, true);
+        $output = ($renderer)($exception, true);
 
-        static::assertStringContainsString('<title>Slim Application error</title>', $output);
-        static::assertStringContainsString('<h1>Slim Application error</h1>', $output);
-        static::assertStringContainsString('<h2>Details</h2>', $output);
+        $file = __FILE__;
+
+        $expected /** @lang html */
+            = <<<EXPECTED
+            <!doctype html>
+            <html lang="en">
+                <head>
+                    <meta charset="utf-8">
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+                    <title>Slim Application error</title>
+
+                    <style>
+                        body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,sans-serif}
+                        h1{margin:0;font-size:48px;font-weight:normal;line-height:48px}
+                        strong{display:inline-block;width:65px}
+                    </style>
+                </head>
+                <body>
+                    <h1>Slim Application error</h1>
+                    <div><p>The application could not run because of the following error:</p>
+            <h2>Details</h2>
+            <div><strong>Type:</strong> RuntimeException</div>
+            <div><strong>Code:</strong> 0</div>
+            <div><strong>Message:</strong> </div>
+            <div><strong>File:</strong> {$file}</div>
+            <div><strong>Line:</strong> 129</div>
+            <h2>Trace</h2>
+            EXPECTED;
+        static::assertStringContainsString($expected, $output);
     }
 }

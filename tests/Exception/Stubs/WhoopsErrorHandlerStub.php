@@ -15,6 +15,9 @@ namespace Jgut\Slim\Exception\Tests\Stubs;
 
 use Jgut\Slim\Exception\Whoops\Handler\ErrorHandler;
 
+/**
+ * @internal
+ */
 class WhoopsErrorHandlerStub extends ErrorHandler
 {
     protected function inCli(): bool
