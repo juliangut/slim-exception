@@ -14,10 +14,9 @@ declare(strict_types=1);
 namespace Jgut\Slim\Exception;
 
 use ErrorException;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use ReflectionProperty;
+use ReflectionClass;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Interfaces\ErrorHandlerInterface;
@@ -26,29 +25,13 @@ use Throwable;
 
 class ExceptionHandler
 {
-    protected ServerRequestInterface $request;
-
-    protected ErrorHandlerInterface $errorHandler;
-
-    protected bool $displayErrorDetails;
-
-    protected bool $logErrors;
-
-    protected bool $logErrorDetails;
-
     public function __construct(
-        ServerRequestInterface $request,
-        ErrorHandlerInterface $errorHandler,
-        bool $displayErrorDetails,
-        bool $logErrors,
-        bool $logErrorDetails
-    ) {
-        $this->request = $request;
-        $this->errorHandler = $errorHandler;
-        $this->displayErrorDetails = $displayErrorDetails;
-        $this->logErrors = $logErrors;
-        $this->logErrorDetails = $logErrorDetails;
-    }
+        protected ServerRequestInterface $request,
+        protected ErrorHandlerInterface $errorHandler,
+        protected bool $displayErrorDetails,
+        protected bool $logErrors,
+        protected bool $logErrorDetails,
+    ) {}
 
     /**
      * Register exception handling.
@@ -110,7 +93,7 @@ class ExceptionHandler
 
             // @codeCoverageIgnoreStart
             if (!\defined('PHPUNIT_TEST')) {
-                exit;
+                exit; // @phpstan-ignore-line
             }
             // @codeCoverageIgnoreEnd
         }
@@ -150,9 +133,16 @@ class ExceptionHandler
 
         $trace = $this->getBackTrace();
         if (\count($trace) !== 0) {
-            $reflection = new ReflectionProperty(Exception::class, 'trace');
-            $reflection->setAccessible(true);
-            $reflection->setValue($exception, $trace);
+            $reflectionClass = new ReflectionClass($exception);
+            while ($reflectionClass->getParentClass() !== false) {
+                $reflectionClass = $reflectionClass->getParentClass();
+            }
+
+            if ($reflectionClass->hasProperty('trace')) {
+                $reflectionProperty = $reflectionClass->getProperty('trace');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($exception, $trace);
+            }
         }
 
         return $exception;
@@ -171,7 +161,7 @@ class ExceptionHandler
                     fn(array $frame): array => $this->normalizeFrame($frame),
                     xdebug_get_function_stack(),
                 );
-            } catch (ErrorException $exception) {
+            } catch (ErrorException) {
                 // @ignoreException
             }
 

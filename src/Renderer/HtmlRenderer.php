@@ -68,7 +68,7 @@ class HtmlRenderer extends AbstractRenderer
 
         return sprintf(
             $outputString,
-            \get_class($exception),
+            $exception::class,
             $exception->getCode(),
             htmlentities($exception->getMessage()),
             $exception->getFile(),

@@ -13,13 +13,12 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Renderer;
 
-use Jgut\Slim\Exception\Whoops\Inspector;
 use JsonException;
 use RuntimeException;
+use Whoops\Exception\Frame;
 use Whoops\Handler\Handler;
-use Whoops\Handler\JsonResponseHandler;
 
-class JsonRenderer extends JsonResponseHandler
+class JsonRenderer extends Handler
 {
     use RendererTrait;
 
@@ -38,37 +37,51 @@ class JsonRenderer extends JsonResponseHandler
 
     protected bool $prettify = true;
 
-    public function __construct(string $defaultTitle = 'Slim Application error')
-    {
-        $this->defaultTitle = $defaultTitle;
+    protected bool $returnFrames = true;
 
-        $this->addTraceToOutput(true);
-    }
+    public function __construct(
+        protected string $defaultTitle = 'Slim Application error',
+        private bool $jsonApi = false,
+    ) {}
 
     public function setPrettify(bool $prettify): void
     {
         $this->prettify = $prettify;
     }
 
+    public function addTraceToOutput(bool $returnFrames = null): bool
+    {
+        if ($returnFrames !== null) {
+            $this->returnFrames = $returnFrames;
+        }
+
+        return $this->returnFrames;
+    }
+
     /**
-     * @inheritDoc
-     *
      * @throws RuntimeException
      */
     public function handle()
     {
-        $exception = $this->getException();
+        /** @var list<callable(Frame): bool> $frameFilters */
+        $frameFilters = array_values($this->getRun()->getFrameFilters());
 
-        $inspector = new Inspector($exception);
-        $this->setInspector($inspector);
-
-        /** @var bool $addTrace */
-        $addTrace = $this->addTraceToOutput();
-
-        $error = $this->getExceptionData($inspector, $addTrace);
+        if ($this->jsonApi === true) {
+            $response = [
+                'errors' => [
+                    $this->getExceptionData($this->getInspector(), $this->addTraceToOutput(), $frameFilters),
+                ],
+            ];
+        } else {
+            $response = [
+                'error' => [
+                    $this->getExceptionData($this->getInspector(), $this->addTraceToOutput(), $frameFilters),
+                ],
+            ];
+        }
 
         try {
-            $json = json_encode($error, $this->getJsonFlags() | \JSON_THROW_ON_ERROR);
+            $output = json_encode($response, $this->getJsonFlags() | \JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
             // @codeCoverageIgnoreStart
             throw new RuntimeException(
@@ -79,7 +92,7 @@ class JsonRenderer extends JsonResponseHandler
             // @codeCoverageIgnoreEnd
         }
 
-        echo $json;
+        echo $output; // @phpstan-ignore-line
 
         return Handler::QUIT;
     }

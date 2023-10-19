@@ -17,32 +17,27 @@ use Jgut\Slim\Exception\ExceptionHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\ErrorHandlerInterface;
 
+/**
+ * @internal
+ */
 class ExceptionHandlerStub extends ExceptionHandler
 {
-    protected array $lastError;
-
+    /**
+     * @param array{type: int, message: string, file: string, line: int}|null $lastError
+     */
     public function __construct(
         ServerRequestInterface $request,
         ErrorHandlerInterface $errorHandler,
         bool $displayErrorDetails,
         bool $logErrors,
         bool $logErrorDetails,
-        array $lastError = []
+        protected ?array $lastError = null,
     ) {
         parent::__construct($request, $errorHandler, $displayErrorDetails, $logErrors, $logErrorDetails);
-
-        $this->lastError = $lastError;
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getLastError(): ?array
     {
-        if (\count($this->lastError)) {
-            return $this->lastError;
-        }
-
-        return parent::getLastError();
+        return $this->lastError ?? parent::getLastError();
     }
 }

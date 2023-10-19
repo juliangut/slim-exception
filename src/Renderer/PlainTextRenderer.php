@@ -22,7 +22,7 @@ class PlainTextRenderer extends AbstractRenderer
         $output = $this->getErrorTitle($exception);
 
         if ($displayErrorDetails) {
-            $output .= $this->formatException($exception);
+            $output .= "\n" . $this->formatException($exception);
 
             while ($exception = $exception->getPrevious()) {
                 $output .= "\nPrevious Error:\n";
@@ -41,12 +41,13 @@ class PlainTextRenderer extends AbstractRenderer
         Message: %s
         File: %s
         Line: %s
-        Trace: %s
+        Trace:
+        %s
         OUTPUT;
 
         return sprintf(
             $outputString,
-            \get_class($exception),
+            $exception::class,
             $exception->getCode(),
             $exception->getMessage(),
             $exception->getFile(),

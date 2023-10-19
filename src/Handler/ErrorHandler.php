@@ -61,8 +61,6 @@ class ErrorHandler extends SlimErrorHandler
         \E_USER_DEPRECATED => LogLevel::WARNING,
     ];
 
-    protected Negotiator $negotiator;
-
     /**
      * @var ErrorRendererInterface|string|callable(Throwable, bool): string
      */
@@ -88,16 +86,14 @@ class ErrorHandler extends SlimErrorHandler
     public function __construct(
         CallableResolverInterface $callableResolver,
         ResponseFactoryInterface $responseFactory,
-        Negotiator $negotiator,
-        ?LoggerInterface $logger = null
+        protected Negotiator $negotiator,
+        ?LoggerInterface $logger = null,
     ) {
-        $this->negotiator = $negotiator;
-
         parent::__construct($callableResolver, $responseFactory, $logger);
     }
 
     /**
-     * @param array<string, string|ErrorRendererInterface> $errorRenderers
+     * @param array<string, ErrorRendererInterface|class-string<ErrorRendererInterface>> $errorRenderers
      */
     public function setErrorRenderers(array $errorRenderers): void
     {
@@ -109,9 +105,9 @@ class ErrorHandler extends SlimErrorHandler
     }
 
     /**
-     * @param string|ErrorRendererInterface $errorRenderer
+     * @param ErrorRendererInterface|class-string<ErrorRendererInterface> $errorRenderer
      */
-    public function setErrorRenderer(string $contentType, $errorRenderer): void
+    public function setErrorRenderer(string $contentType, ErrorRendererInterface|string $errorRenderer): void
     {
         $this->errorRenderers[$contentType] = $errorRenderer;
     }
@@ -133,12 +129,12 @@ class ErrorHandler extends SlimErrorHandler
                 if ($selected instanceof BaseAccept) {
                     $contentType = $selected->getType();
                 }
-            } catch (NegotiateException $exception) {
+            } catch (NegotiateException) {
                 // @ignoreException
             }
         }
 
-        if (mb_strpos($contentType, '/*+') !== false) {
+        if (str_contains($contentType, '/*+')) {
             $contentType = str_replace('/*+', '/', $contentType);
         }
 

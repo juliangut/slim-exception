@@ -23,66 +23,69 @@ use Slim\Exception\HttpForbiddenException;
  */
 class XmlRendererTest extends TestCase
 {
-    protected HttpForbiddenException $exception;
-
-    protected function setUp(): void
-    {
-        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
-        $this->exception = new HttpForbiddenException($request, 'Forbidden action');
-    }
-
     public function testOutput(): void
     {
-        $output = (new XmlRenderer())($this->exception, false);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
+        $output = (new XmlRenderer())($exception, false);
 
-        $expected = <<<'EXPECTED'
-        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <error>
-          <message><![CDATA[403 Forbidden]]></message>
-        </error>
-        EXPECTED;
+        $expected /** @lang xml */
+            = <<<'EXPECTED'
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <error>
+              <message><![CDATA[403 Forbidden]]></message>
+            </error>
+            EXPECTED;
         static::assertEquals($expected, $output);
     }
 
     public function testNotPrettifiedOutput(): void
     {
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
         $renderer = new XmlRenderer();
         $renderer->setPrettify(false);
 
-        $output = $renderer($this->exception, false);
+        $output = $renderer($exception, false);
 
-        $expected = <<<'EXPECTED'
-        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <error><message><![CDATA[403 Forbidden]]></message></error>
-        EXPECTED;
+        $expected /** @lang xml */
+            = <<<'EXPECTED'
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <error><message><![CDATA[403 Forbidden]]></message></error>
+            EXPECTED;
         static::assertEquals($expected, $output);
     }
 
     public function testOutputWithTrace(): void
     {
-        $output = (new XmlRenderer())($this->exception, true);
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
+        $output = (new XmlRenderer())($exception, true);
 
-        $expected = <<<'EXPECTED'
-        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <error>
-          <message><![CDATA[403 Forbidden]]></message>
-          <exception>
-
-        EXPECTED;
+        $expected /** @lang xml */
+            = <<<'EXPECTED'
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <error>
+              <message><![CDATA[403 Forbidden]]></message>
+              <exception>
+            EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
 
     public function testNotPrettifiedOutputWithTrace(): void
     {
+        $request = $this->getMockBuilder(ServerRequestInterface::class)->disableOriginalConstructor()->getMock();
+        $exception = new HttpForbiddenException($request, 'Forbidden action');
         $renderer = new XmlRenderer();
         $renderer->setPrettify(false);
 
-        $output = $renderer($this->exception, true);
+        $output = $renderer($exception, true);
 
-        $expected = <<<'EXPECTED'
-        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <error><message><![CDATA[403 Forbidden]]></message><exception>
-        EXPECTED;
+        $expected /** @lang xml */
+            = <<<'EXPECTED'
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <error><message><![CDATA[403 Forbidden]]></message><exception>
+            EXPECTED;
         static::assertStringContainsString($expected, $output);
     }
 }

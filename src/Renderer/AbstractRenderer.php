@@ -19,17 +19,10 @@ use Throwable;
 
 abstract class AbstractRenderer implements ErrorRendererInterface
 {
-    protected string $defaultTitle;
-
-    protected string $defaultDescription;
-
     public function __construct(
-        string $defaultTitle = 'Slim Application error',
-        string $defaultDescription = 'A website error has occurred. Sorry for the temporary inconvenience.'
-    ) {
-        $this->defaultTitle = $defaultTitle;
-        $this->defaultDescription = $defaultDescription;
-    }
+        protected string $defaultTitle = 'Slim Application error',
+        protected string $defaultDescription = 'An error has occurred. Sorry for the temporary inconvenience.',
+    ) {}
 
     protected function getErrorTitle(Throwable $exception): string
     {

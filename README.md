@@ -1,4 +1,4 @@
-[![PHP version](https://img.shields.io/badge/PHP-%3E%3D7.4-8892BF.svg?style=flat-square)](http://php.net)
+[![PHP version](https://img.shields.io/badge/PHP-%3E%3D8.0-8892BF.svg?style=flat-square)](http://php.net)
 [![Latest Version](https://img.shields.io/packagist/v/juliangut/slim-exception.svg?style=flat-square)](https://packagist.org/packages/juliangut/slim-exception)
 [![License](https://img.shields.io/github/license/juliangut/slim-exception.svg?style=flat-square)](https://github.com/juliangut/slim-exception/blob/master/LICENSE)
 
@@ -112,14 +112,10 @@ $app->run($request);
 trigger_error('This is embarrassing', \E_USER_ERROR);
 ```
 
-## Upgrade from 1.x
+## Upgrade from 2.x
 
-Overall usage has been drastically simplified due to Slim 4 migration to exception based error handling, basically what slim-exception was doing in 1.x.
-
-* Minimum Slim version is now 4.11
-* ExceptionManager has been removed as its functionality is now integrated into Slim
-* Exceptions no longer uses juliangut/http-exception, and thus they have no identifier
-* Global error/exception handling has been moved from a trait (meant for App) to its own class ExceptionHandler
+* Minimum PHP version is now 8.0
+* Minimum Whoops version is now 2.15 as custom Inspector has been removed in favor of Whoop's frame filters
 
 ## Contributing
 
