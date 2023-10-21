@@ -25,11 +25,10 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Slim\App;
 use Slim\Interfaces\CallableResolverInterface;
-use Slim\Interfaces\ErrorRendererInterface;
+use Slim\Interfaces\ErrorRendererInterface as ErrorRenderer;
 use Throwable;
 use Whoops\Exception\Frame;
 use Whoops\Handler\HandlerInterface;
-use Whoops\Handler\HandlerInterface as WhoopsHandler;
 use Whoops\Run as Whoops;
 
 /**
@@ -40,17 +39,17 @@ class ErrorHandler extends BaseErrorHandler
     protected const REQUEST_DATA_TABLE_LABEL = 'Slim Application (Request)';
 
     /**
-     * @var ErrorRendererInterface|string|callable(Throwable, bool): string
+     * @var ErrorRenderer|class-string<ErrorRenderer>|callable(Throwable, bool): string
      */
     protected $logErrorRenderer = PlainTextRenderer::class;
 
     /**
-     * @var ErrorRendererInterface|string|callable(Throwable, bool): string
+     * @var ErrorRenderer|class-string<ErrorRenderer>|callable(Throwable, bool): string
      */
     protected $defaultErrorRenderer = HtmlRenderer::class;
 
     /**
-     * @var array<string|callable(Throwable, bool): string>
+     * @var array<string, ErrorRenderer|class-string<ErrorRenderer>|callable(Throwable, bool): string>
      */
     protected array $errorRenderers = [
         'text/html' => HtmlRenderer::class,
@@ -123,11 +122,11 @@ class ErrorHandler extends BaseErrorHandler
      */
     protected function getRenderer(mixed $renderer): callable
     {
-        if (!$renderer instanceof WhoopsHandler) {
+        if (!$renderer instanceof HandlerInterface) {
             throw new InvalidArgumentException(sprintf(
                 'Renderer "%s" for Whoops error handler should implement "%s".',
                 \is_object($renderer) ? $renderer::class : \gettype($renderer),
-                WhoopsHandler::class,
+                HandlerInterface::class,
             ));
         }
 

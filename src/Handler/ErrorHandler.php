@@ -27,7 +27,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Slim\Interfaces\CallableResolverInterface;
-use Slim\Interfaces\ErrorRendererInterface;
+use Slim\Interfaces\ErrorRendererInterface as ErrorRenderer;
 use Throwable;
 
 /**
@@ -36,7 +36,7 @@ use Throwable;
 class ErrorHandler extends SlimErrorHandler
 {
     /**
-     * @var ErrorRendererInterface|string|callable(Throwable, bool): string
+     * @var ErrorRenderer|class-string<ErrorRenderer>|callable(Throwable, bool): string
      */
     protected $logErrorRenderer = PlainTextRenderer::class;
 
@@ -62,12 +62,12 @@ class ErrorHandler extends SlimErrorHandler
     ];
 
     /**
-     * @var ErrorRendererInterface|string|callable(Throwable, bool): string
+     * @var ErrorRenderer|class-string<ErrorRenderer>|callable(Throwable, bool): string
      */
     protected $defaultErrorRenderer = HtmlRenderer::class;
 
     /**
-     * @var array<string|callable(Throwable, bool): string>
+     * @var array<string, ErrorRenderer|class-string<ErrorRenderer>|callable(Throwable, bool): string>
      */
     protected array $errorRenderers = [
         'text/html' => HtmlRenderer::class,
@@ -93,21 +93,21 @@ class ErrorHandler extends SlimErrorHandler
     }
 
     /**
-     * @param array<string, ErrorRendererInterface|class-string<ErrorRendererInterface>> $errorRenderers
+     * @param array<string, ErrorRenderer|class-string<ErrorRenderer>|callable(Throwable, bool): string> $renderers
      */
-    public function setErrorRenderers(array $errorRenderers): void
+    public function setErrorRenderers(array $renderers): void
     {
         $this->errorRenderers = [];
 
-        foreach ($errorRenderers as $contentType => $errorRenderer) {
-            $this->setErrorRenderer($contentType, $errorRenderer);
+        foreach ($renderers as $contentType => $renderer) {
+            $this->setErrorRenderer($contentType, $renderer);
         }
     }
 
     /**
-     * @param ErrorRendererInterface|class-string<ErrorRendererInterface> $errorRenderer
+     * @param ErrorRenderer|class-string<ErrorRenderer>|callable(Throwable, bool): string $errorRenderer
      */
-    public function setErrorRenderer(string $contentType, ErrorRendererInterface|string $errorRenderer): void
+    public function setErrorRenderer(string $contentType, ErrorRenderer|string|callable $errorRenderer): void
     {
         $this->errorRenderers[$contentType] = $errorRenderer;
     }

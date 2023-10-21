@@ -14,5 +14,13 @@ parameters:
   ignoreErrors:
     - message: '/^Call to function is_subclass_of\(\) with Whoops\\Handler\\HandlerInterface and .Jgut\\\\Slim\\\\Exception\\\\Whoops\\\\Renderer\\\\HtmlRenderer. will always evaluate to false\.$/'
       path: src/Whoops/Handler/ErrorHandler.php
+    - messages:
+      - '/^PHPDoc type \(callable\(Throwable, bool\): string\)\|class-string<Slim\\Interfaces\\ErrorRendererInterface> of property Jgut\\Slim\\Exception\\Handler\\ErrorHandler::\$(log|default)ErrorRenderer is not the same as PHPDoc type \(callable\(\): mixed\)\|string of overridden property Slim\\Handlers\\ErrorHandler::\$(log|default)ErrorRenderer\.$/'
+      - '/^PHPDoc type array<string, \(callable\(Throwable, bool\): string\)\|class-string<Slim\\Interfaces\\ErrorRendererInterface>> of property Jgut\\Slim\\Exception\\Handler\\ErrorHandler::\$errorRenderers is not the same as PHPDoc type array<\(callable\(\): mixed\)\|string> of overridden property Slim\\Handlers\\ErrorHandler::\$errorRenderers\.$/'
+      path: src/Handler/ErrorHandler.php
+    - messages:
+      - '/^Property Jgut\\Slim\\Exception\\Whoops\\Handler\\ErrorHandler::\$(log|default)ErrorRenderer \(\(callable\(Throwable, bool\): string\)\|class-string<Slim\\Interfaces\\ErrorRendererInterface>\) does not accept default value of type .Jgut\\\\Slim\\\\Exception\\\\Whoops\\\\Renderer\\\\(PlainText|Html)Renderer.\.$/'
+      - '/^Property Jgut\\Slim\\Exception\\Whoops\\Handler\\ErrorHandler::\$errorRenderers \(array<string, \(callable\(Throwable, bool\): string\)\|class-string<Slim\\Interfaces\\ErrorRendererInterface>>\) does not accept default value of type/'
+      path: src/Whoops/Handler/ErrorHandler.php
     - message: '/^Expression on left side of \?\? is not nullable\.$/'
       path: src/Whoops/Renderer/RendererTrait.php
