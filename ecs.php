@@ -1,12 +1,10 @@
 <?php
 
 /*
- * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim exception handling.
+ * (c) 2017-2023 Julián Gutiérrez <juliangut@gmail.com>
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
- * @author Julián Gutiérrez <juliangut@gmail.com>
  */
 
 declare(strict_types=1);
@@ -15,16 +13,14 @@ use Jgut\ECS\Config\ConfigSet80;
 use SlevomatCodingStandard\Sniffs\Exceptions\ReferenceThrowableOnlySniff;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
-$header = <<<'HEADER'
-slim-exception (https://github.com/juliangut/slim-exception).
-Slim exception handling.
+return static function (ECSConfig $ecsConfig): void {
+    $header = <<<'HEADER'
+    (c) 2017-{{year}} Julián Gutiérrez <juliangut@gmail.com>
 
-@license BSD-3-Clause
-@link https://github.com/juliangut/slim-exception
-@author Julián Gutiérrez <juliangut@gmail.com>
-HEADER;
+    @license BSD-3-Clause
+    @link https://github.com/juliangut/slim-exception
+    HEADER;
 
-return static function (ECSConfig $ecsConfig) use ($header): void {
     $ecsConfig->paths([
         __FILE__,
         __DIR__ . '/src',

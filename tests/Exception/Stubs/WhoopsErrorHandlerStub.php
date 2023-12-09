@@ -1,12 +1,10 @@
 <?php
 
 /*
- * slim-exception (https://github.com/juliangut/slim-exception).
- * Slim exception handling.
+ * (c) 2017-2023 Julián Gutiérrez <juliangut@gmail.com>
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
- * @author Julián Gutiérrez <juliangut@gmail.com>
  */
 
 declare(strict_types=1);
