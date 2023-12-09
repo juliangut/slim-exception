@@ -87,7 +87,9 @@ class XmlRenderer extends XmlResponseHandler
             $key = preg_replace('/[^a-z0-9\-_.:]/i', '_', $key);
 
             if (\is_array($value)) {
-                $this->addDataNodes($node->addChild($key), $value, $key);
+                /** @var SimpleXMLElement $childNode */
+                $childNode = $node->addChild($key);
+                $this->addDataNodes($childNode, $value, $key);
             } else {
                 if (\is_object($value)) {
                     $value = $value::class;
@@ -98,8 +100,10 @@ class XmlRenderer extends XmlResponseHandler
                 $value = str_replace('&', '&amp;', print_r($value, true));
 
                 if ($key === 'message') {
+                    /** @var SimpleXMLElement $childNode */
+                    $childNode = $node->addChild($key);
                     /** @var DOMElement $child */
-                    $child = dom_import_simplexml($node->addChild($key));
+                    $child = dom_import_simplexml($childNode);
                     /** @var DOMDocument $document */
                     $document = $child->ownerDocument;
 
