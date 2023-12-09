@@ -48,7 +48,7 @@ class XmlRendererTest extends TestCase
               <message><![CDATA[403 Forbidden]]></message>
               <code>403</code>
               <file>{$file}</file>
-              <line>31</line>
+              <line>29</line>
               <trace>
             EXPECTED;
         static::assertStringContainsString($expected, $output);
@@ -76,7 +76,7 @@ class XmlRendererTest extends TestCase
             . '<message><![CDATA[403 Forbidden]]></message>'
             . '<code>403</code>'
             . '<file>' . __FILE__ . '</file>'
-            . '<line>62</line>'
+            . '<line>60</line>'
             . '<trace>';
         static::assertStringContainsString($expected, $output);
     }
@@ -107,7 +107,7 @@ class XmlRendererTest extends TestCase
               <message><![CDATA[403 Forbidden]]></message>
               <code>403</code>
               <file>{$file}</file>
-              <line>89</line>
+              <line>87</line>
             </error>
 
             EXPECTED;
@@ -137,7 +137,7 @@ class XmlRendererTest extends TestCase
             . '<message><![CDATA[403 Forbidden]]></message>'
             . '<code>403</code>'
             . '<file>' . __FILE__ . '</file>'
-            . '<line>122</line>'
+            . '<line>120</line>'
             . '</error>' . "\n";
         static::assertEquals($expected, $output);
     }

@@ -48,7 +48,7 @@ class PlainTextRendererTest extends TestCase
         Code: 501
         Message: 501 Not Implemented
         File: {$file}
-        Line: 33
+        Line: 31
         Trace:
         EXPECTED;
         static::assertStringContainsString($expected, $output);

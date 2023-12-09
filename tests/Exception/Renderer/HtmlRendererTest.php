@@ -153,7 +153,7 @@ class HtmlRendererTest extends TestCase
             <div><strong>Code:</strong> 0</div>
             <div><strong>Message:</strong> </div>
             <div><strong>File:</strong> {$file}</div>
-            <div><strong>Line:</strong> 129</div>
+            <div><strong>Line:</strong> 127</div>
             <h2>Trace</h2>
             EXPECTED;
         static::assertStringContainsString($expected, $output);

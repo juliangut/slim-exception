@@ -53,7 +53,7 @@ class PlainTextRendererTest extends TestCase
             Code: 403
             Message: Forbidden action
             File: {$file}
-            Line: 44
+            Line: 42
             Trace:
             EXPECTED;
 

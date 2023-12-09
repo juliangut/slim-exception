@@ -48,7 +48,7 @@ class JsonRendererTest extends TestCase
                     "message": "403 Forbidden",
                     "code": 403,
                     "file": "{$file}",
-                    "line": 31,
+                    "line": 29,
                     "trace": [
                         {
         EXPECTED;
@@ -76,7 +76,7 @@ class JsonRendererTest extends TestCase
             . '"message":"403 Forbidden",'
             . '"code":403,'
             . '"file":"' . __FILE__ . '",'
-            . '"line":63,'
+            . '"line":61,'
             . '"trace":[{';
         static::assertStringContainsString($expected, $output);
     }
@@ -107,7 +107,7 @@ class JsonRendererTest extends TestCase
                     "message": "403 Forbidden",
                     "code": 403,
                     "file": "{$file}",
-                    "line": 89
+                    "line": 87
                 }
             ]
         }
@@ -137,7 +137,7 @@ class JsonRendererTest extends TestCase
             . '"message":"403 Forbidden",'
             . '"code":403,'
             . '"file":"' . __FILE__ . '",'
-            . '"line":123'
+            . '"line":121'
             . '}]}';
         static::assertEquals($expected, $output);
     }
