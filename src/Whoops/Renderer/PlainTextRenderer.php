@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2017-2023 Julián Gutiérrez <juliangut@gmail.com>
+ * (c) 2017-2024 Julián Gutiérrez <juliangut@gmail.com>
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -65,12 +65,12 @@ class PlainTextRenderer extends PlainTextHandler
             $error['message'],
             $error['file'],
             $error['line'],
-            $this->getStackTraceOutput($error['trace'] ?? []),
+            $this->getStackTraceOutput(array_values($error['trace'] ?? [])),
         );
     }
 
     /**
-     * @param array<TraceLine> $stackFrames
+     * @param list<TraceLine> $stackFrames
      */
     protected function getStackTraceOutput(array $stackFrames): string
     {

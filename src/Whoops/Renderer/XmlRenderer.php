@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2017-2023 Julián Gutiérrez <juliangut@gmail.com>
+ * (c) 2017-2024 Julián Gutiérrez <juliangut@gmail.com>
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -75,7 +75,7 @@ class XmlRenderer extends XmlResponseHandler
     }
 
     /**
-     * @param array<mixed> $data
+     * @param array<int|string, mixed|array<int|string, mixed>> $data
      */
     protected function addDataNodes(SimpleXMLElement $node, array $data, string $nodeKey): SimpleXMLElement
     {
@@ -89,6 +89,7 @@ class XmlRenderer extends XmlResponseHandler
             if (\is_array($value)) {
                 /** @var SimpleXMLElement $childNode */
                 $childNode = $node->addChild($key);
+                /** @var array<int|string, mixed> $value */
                 $this->addDataNodes($childNode, $value, $key);
             } else {
                 if (\is_object($value)) {

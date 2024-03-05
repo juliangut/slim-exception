@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2017-2023 Julián Gutiérrez <juliangut@gmail.com>
+ * (c) 2017-2024 Julián Gutiérrez <juliangut@gmail.com>
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -13,25 +13,33 @@ use Jgut\ECS\Config\ConfigSet80;
 use SlevomatCodingStandard\Sniffs\Exceptions\ReferenceThrowableOnlySniff;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
-return static function (ECSConfig $ecsConfig): void {
-    $header = <<<'HEADER'
+$configSet = (new ConfigSet80())
+    ->setHeader(<<<'HEADER'
     (c) 2017-{{year}} Julián Gutiérrez <juliangut@gmail.com>
 
     @license BSD-3-Clause
     @link https://github.com/juliangut/slim-exception
-    HEADER;
-
-    $ecsConfig->paths([
-        __FILE__,
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
+    HEADER)
+    ->enablePhpUnitRules()
+    ->setAdditionalSkips([
+        ReferenceThrowableOnlySniff::class . '.ReferencedGeneralException' => [
+            __DIR__ . '/src/ExceptionHandler.php',
+        ],
     ]);
+$paths = [
+    __FILE__,
+    __DIR__ . '/src',
+    __DIR__ . '/tests',
+];
 
-    (new ConfigSet80())
-        ->setHeader($header)
-        ->enablePhpUnitRules()
-        ->setAdditionalSkips([
-            ReferenceThrowableOnlySniff::class . '.ReferencedGeneralException' => __DIR__ . '/src/ExceptionHandler.php',
-        ])
-        ->configure($ecsConfig);
-};
+if (!method_exists(ECSConfig::class, 'configure')) {
+    return static function (ECSConfig $ecsConfig) use ($configSet, $paths): void {
+        $ecsConfig->paths($paths);
+
+        $configSet->configure($ecsConfig);
+    };
+}
+
+return $configSet
+    ->configureBuilder()
+    ->withPaths($paths);

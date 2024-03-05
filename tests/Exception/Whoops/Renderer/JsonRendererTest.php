@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2017-2023 Julián Gutiérrez <juliangut@gmail.com>
+ * (c) 2017-2024 Julián Gutiérrez <juliangut@gmail.com>
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -72,7 +72,7 @@ class JsonRendererTest extends TestCase
         $output = ob_get_clean();
 
         $expected = '{"error":[{'
-            . '"type":"Slim\\\\Exception\\\\HttpForbiddenException",'
+            . '"type":"Slim\\\Exception\\\HttpForbiddenException",'
             . '"message":"403 Forbidden",'
             . '"code":403,'
             . '"file":"' . __FILE__ . '",'
@@ -133,7 +133,7 @@ class JsonRendererTest extends TestCase
         $output = ob_get_clean();
 
         $expected = '{"error":[{'
-            . '"type":"Slim\\\\Exception\\\\HttpForbiddenException",'
+            . '"type":"Slim\\\Exception\\\HttpForbiddenException",'
             . '"message":"403 Forbidden",'
             . '"code":403,'
             . '"file":"' . __FILE__ . '",'

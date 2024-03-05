@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2017-2023 Julián Gutiérrez <juliangut@gmail.com>
+ * (c) 2017-2024 Julián Gutiérrez <juliangut@gmail.com>
  *
  * @license BSD-3-Clause
  * @link https://github.com/juliangut/slim-exception
@@ -147,7 +147,7 @@ class ExceptionHandler
     }
 
     /**
-     * @return array<array<string, mixed>>
+     * @return list<array<string, mixed>>
      */
     private function getBackTrace(): array
     {
@@ -155,10 +155,10 @@ class ExceptionHandler
 
         if (\function_exists('xdebug_get_function_stack')) {
             try {
-                $trace = array_map(
+                $trace = array_values(array_map(
                     fn(array $frame): array => $this->normalizeFrame($frame),
                     xdebug_get_function_stack(),
-                );
+                ));
             } catch (ErrorException) {
                 // @ignoreException
             }
