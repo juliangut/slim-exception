@@ -44,7 +44,7 @@
     "phpunit/phpunit": "^9.6.13|^10.4",
     "povils/phpmnd": "^3.2",
     "roave/security-advisories": "dev-master",
-    "symfony/var-dumper": "^6.0.4"
+    "symfony/var-dumper": "^7.1.4"
   },
   "suggest": {
     "filp/whoops": "Enhance development error reporting (>=2.15)",
