@@ -59,7 +59,7 @@ class JsonRenderer extends Handler
     /**
      * @throws RuntimeException
      */
-    public function handle()
+    public function handle(): int
     {
         /** @var list<callable(Frame): bool> $frameFilters */
         $frameFilters = array_values($this->getRun()->getFrameFilters());

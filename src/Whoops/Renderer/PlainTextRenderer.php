@@ -58,7 +58,7 @@ class PlainTextRenderer extends PlainTextHandler
         %s
         OUTPUT;
 
-        return sprintf(
+        return \sprintf(
             $outputString,
             $error['type'],
             $error['code'],
@@ -79,7 +79,7 @@ class PlainTextRenderer extends PlainTextHandler
         $line = 1;
         $stackTrace = array_map(
             function (array $stack) use ($argsOutputLimit, &$line): string {
-                $trace = sprintf(
+                $trace = \sprintf(
                     $stack['class'] !== null ? "\n%3d. %s%s() %s:%d%s" : "\n%3d. %s->%s() %s:%d%s",
                     $line,
                     $stack['class'],
@@ -105,7 +105,7 @@ class PlainTextRenderer extends PlainTextHandler
     protected function getArguments(array $args, int $line, int $argsOutputLimit): string
     {
         $addArgs = $this->addTraceFunctionArgsToOutput();
-        if ($addArgs === false || $addArgs < $line) {
+        if ($addArgs === false || (\is_int($addArgs) && $addArgs < $line)) {
             // @codeCoverageIgnoreStart
             return '';
             // @codeCoverageIgnoreEnd
@@ -117,12 +117,12 @@ class PlainTextRenderer extends PlainTextHandler
             $this->dump($arg);
         }
 
-        if (ob_get_length() > $argsOutputLimit) {
+        if ((int) ob_get_length() > $argsOutputLimit) {
             // The argument var_dump is too big.
             // Discarded to limit memory usage.
             ob_end_clean();
 
-            return sprintf(
+            return \sprintf(
                 "\n%sArguments list dump length greater than %d Bytes. Discarded.",
                 parent::VAR_DUMP_PREFIX,
                 $argsOutputLimit,
@@ -133,7 +133,7 @@ class PlainTextRenderer extends PlainTextHandler
 
         return $argumentsTrace === ''
             ? ''
-            : sprintf("\n%s", preg_replace('/^/m', parent::VAR_DUMP_PREFIX, $argumentsTrace));
+            : \sprintf("\n%s", preg_replace('/^/m', parent::VAR_DUMP_PREFIX, $argumentsTrace));
     }
 
     /**

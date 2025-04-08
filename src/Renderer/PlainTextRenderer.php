@@ -43,7 +43,7 @@ class PlainTextRenderer extends AbstractRenderer
         %s
         OUTPUT;
 
-        return sprintf(
+        return \sprintf(
             $outputString,
             $exception::class,
             $exception->getCode(),

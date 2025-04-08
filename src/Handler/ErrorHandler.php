@@ -110,13 +110,13 @@ class ErrorHandler extends SlimErrorHandler
         $this->errorRenderers[$contentType] = $errorRenderer;
     }
 
-    protected function determineContentType(ServerRequestInterface $request): ?string
+    protected function determineContentType(ServerRequestInterface $request): string
     {
         if ($this->inCli()) {
             return 'text/plain';
         }
 
-        $header = trim($request->getHeaderLine('Accept'));
+        $header = mb_trim($request->getHeaderLine('Accept'));
         $priorities = array_keys($this->errorRenderers);
         $contentType = $this->defaultErrorRendererContentType;
 

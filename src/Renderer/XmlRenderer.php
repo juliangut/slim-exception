@@ -53,7 +53,7 @@ class XmlRenderer extends AbstractRenderer
         return $xmlTag . implode(
             '',
             array_map(
-                static fn(string $line): string => ltrim($line, ' '),
+                static fn(string $line): string => mb_ltrim($line, ' '),
                 $errorParts,
             ),
         );
@@ -61,6 +61,6 @@ class XmlRenderer extends AbstractRenderer
 
     private function createCdataSection(string $content): string
     {
-        return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
+        return \sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
     }
 }

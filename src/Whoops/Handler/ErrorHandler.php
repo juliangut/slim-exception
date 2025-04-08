@@ -79,7 +79,7 @@ class ErrorHandler extends BaseErrorHandler
         $clonedWhoops->allowQuit(false);
         $clonedWhoops->writeToOutput(false);
 
-        $excludedPathRegex = sprintf('!^%s/.+\.php$!', \dirname(__DIR__, 3));
+        $excludedPathRegex = \sprintf('!^%s/.+\.php$!', \dirname(__DIR__, 3));
         $clonedWhoops->addFrameFilter(
             static fn(Frame $frame): bool => preg_match($excludedPathRegex, $frame->getFile() ?? '') !== 1,
         );
@@ -119,7 +119,7 @@ class ErrorHandler extends BaseErrorHandler
     protected function getRenderer(mixed $renderer): callable
     {
         if (!$renderer instanceof HandlerInterface) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Renderer "%s" for Whoops error handler should implement "%s".',
                 \is_object($renderer) ? $renderer::class : \gettype($renderer),
                 HandlerInterface::class,

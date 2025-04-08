@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Jgut\Slim\Exception\Whoops\Renderer;
 
+use DOMCdataSection;
 use DOMDocument;
 use DOMElement;
 use SimpleXMLElement;
@@ -108,7 +109,10 @@ class XmlRenderer extends XmlResponseHandler
                     /** @var DOMDocument $document */
                     $document = $child->ownerDocument;
 
-                    $child->appendChild($document->createCDATASection($value));
+                    /** @var DOMCdataSection $cdataNode */
+                    $cdataNode = $document->createCDATASection($value);
+
+                    $child->appendChild($cdataNode);
                 } else {
                     $node->addChild($key, $value);
                 }

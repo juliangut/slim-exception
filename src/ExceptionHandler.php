@@ -72,7 +72,7 @@ class ExceptionHandler
              * @var string $file
              * @var int    $line
              */
-            throw new ErrorException(rtrim($message, '.') . '.', $severity, $severity, $file, $line);
+            throw new ErrorException(mb_rtrim($message, '.') . '.', $severity, $severity, $file, $line);
         }
 
         return false;
@@ -125,7 +125,7 @@ class ExceptionHandler
     private function getFatalException(array $error): HttpException
     {
         $message = explode("\n", $error['message']);
-        $message = $error['type'] . ' - ' . preg_replace('/ in .+\.php(:\d+)?$/', '', $message[0]);
+        $message = \sprintf('%s - %s', $error['type'], preg_replace('/ in .+\.php(:\d+)?$/', '', $message[0]));
 
         $exception = new HttpInternalServerErrorException($this->request, $message);
 

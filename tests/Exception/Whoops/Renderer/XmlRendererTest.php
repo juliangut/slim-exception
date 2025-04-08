@@ -70,7 +70,7 @@ class XmlRendererTest extends TestCase
         $renderer->handle();
         $output = ob_get_clean();
 
-        $expected = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n"
+        $expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
             . '<error>'
             . '<type>Slim\Exception\HttpForbiddenException</type>'
             . '<message><![CDATA[403 Forbidden]]></message>'
@@ -131,14 +131,14 @@ class XmlRendererTest extends TestCase
         $renderer->handle();
         $output = ob_get_clean();
 
-        $expected = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n"
+        $expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
             . '<error>'
             . '<type>Slim\Exception\HttpForbiddenException</type>'
             . '<message><![CDATA[403 Forbidden]]></message>'
             . '<code>403</code>'
             . '<file>' . __FILE__ . '</file>'
             . '<line>120</line>'
-            . '</error>' . "\n";
+            . "</error>\n";
         static::assertEquals($expected, $output);
     }
 }
