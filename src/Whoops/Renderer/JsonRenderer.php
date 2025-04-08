@@ -47,13 +47,14 @@ class JsonRenderer extends Handler
         $this->prettify = $prettify;
     }
 
-    public function addTraceToOutput(bool $returnFrames = null): bool
+    public function isTraceToOutput(): bool
     {
-        if ($returnFrames !== null) {
-            $this->returnFrames = $returnFrames;
-        }
-
         return $this->returnFrames;
+    }
+
+    public function addTraceToOutput(bool $returnFrames): void
+    {
+        $this->returnFrames = $returnFrames;
     }
 
     /**
@@ -67,13 +68,13 @@ class JsonRenderer extends Handler
         if ($this->jsonApi === true) {
             $response = [
                 'errors' => [
-                    $this->getExceptionData($this->getInspector(), $this->addTraceToOutput(), $frameFilters),
+                    $this->getExceptionData($this->getInspector(), $this->isTraceToOutput(), $frameFilters),
                 ],
             ];
         } else {
             $response = [
                 'error' => [
-                    $this->getExceptionData($this->getInspector(), $this->addTraceToOutput(), $frameFilters),
+                    $this->getExceptionData($this->getInspector(), $this->isTraceToOutput(), $frameFilters),
                 ],
             ];
         }
