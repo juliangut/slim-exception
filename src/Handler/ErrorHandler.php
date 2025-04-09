@@ -53,7 +53,6 @@ class ErrorHandler extends SlimErrorHandler
         \E_USER_ERROR => LogLevel::ERROR,
         \E_USER_WARNING => LogLevel::WARNING,
         \E_USER_NOTICE => LogLevel::NOTICE,
-        \E_STRICT => LogLevel::WARNING,
         \E_RECOVERABLE_ERROR => LogLevel::ERROR,
         \E_DEPRECATED => LogLevel::WARNING,
         \E_USER_DEPRECATED => LogLevel::WARNING,
